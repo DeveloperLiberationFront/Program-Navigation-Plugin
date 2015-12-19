@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Statement Highlighter Plug-in
+Bundle-SymbolicName: dataTool;singleton:=true
+Bundle-Version: 1.0.3
+Bundle-Activator: dataTool.Activator
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jdt.core,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.workbench.texteditor,
+ org.junit,
+ edu.pdx.cs.multiview.util
+Eclipse-LazyStart: true

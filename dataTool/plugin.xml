@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="dataTool.actionSet1"
+            label="dataTool.actionSet1"
+            visible="true">
+         <menu
+               id="dataTool.menu2"
+               label="TempMenu">
+            <groupMarker name="TempGroup"/>
+         </menu>
+         <action
+               class="dataTool.EnableHelperAction"
+               icon="icons/data.gif"
+               id="dataTool.action1"
+               label="Find EOS"
+               style="toggle"
+               toolbarPath="TempGroup"
+               tooltip="Highlights flow of data within your code"/>
+      </actionSet>
+   </extension>
+
+</plugin>
