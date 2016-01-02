@@ -12,7 +12,7 @@ import edu.pdx.cs.multiview.jface.annotation.ISelfDrawingAnnotation;
  * I am an annotation that suggests a bunch of lines 
  * should be selected
  * 
- * @author emerson
+ * @author Chris
  */
 public class SuggestedSelectionAnnotation extends Annotation implements ISelfDrawingAnnotation{
 

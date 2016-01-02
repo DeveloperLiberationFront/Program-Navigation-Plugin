@@ -27,7 +27,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 	private AnnotationPainter painter;
 	
 	//the visitor for the editor 
-	private StatementVisitor visitor;
+	private Visitor visitor;
 	
 	/**
 	 * Creates an  annotation manager given an editor, containing a
@@ -48,17 +48,17 @@ public class AnnotationManager implements ISelectionChangedListener {
 	}
 
 	public void selectionChanged(ITextSelection selection) {
-		//TODO: Don't allow all types of ASTNodes, only want vars and params!
+		
 		try {								
 	
-			ASTNode one = getNode(selection.getOffset(),true);
+			ASTNode one = getNode(selection.getOffset());
 			
 			if(selection.getLength()==0){
 				addAnnotation(one, one);
 				return;
 			}
 			
-			ASTNode two = getNode(selection.getOffset()+selection.getLength(),false);
+			ASTNode two = getNode(selection.getOffset()+selection.getLength());
 			
 			if(one!=null){
 				if(!areSiblings(one,two))			
@@ -80,8 +80,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 	private void addAnnotation(ASTNode one, ASTNode two) {
 		int start = one.getStartPosition();
 		int end = two.getStartPosition()+two.getLength();
-		System.out.println(one.toString());
-		System.out.println(one.getNodeType() + " type " + two.getNodeType());
+		
 		if(!isAlreadyAnnotated(start, end))
 			addAnnotationsAt(start, end-start);
 	}
@@ -114,8 +113,8 @@ public class AnnotationManager implements ISelectionChangedListener {
 	}
 
 
-	private ASTNode getNode(int position, boolean includeWhitespace) {
-		return visitor.statementAt(position,includeWhitespace);
+	private ASTNode getNode(int position) {
+		return visitor.statementAt(position);
 	}
 	
 	private void parseCU(AbstractTextEditor editor){
@@ -126,13 +125,13 @@ public class AnnotationManager implements ISelectionChangedListener {
 		}
 	}
 	
-	private static StatementVisitor parse(String source) throws JavaModelException{
+	private static Visitor parse(String source) throws JavaModelException{
 		
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(source.toCharArray());
 		CompilationUnit astRoot = (CompilationUnit) parser.createAST(null);
 		
-		StatementVisitor visitor = new StatementVisitor(source);			
+		Visitor visitor = new Visitor(source);			
 		astRoot.accept(visitor);
 		
 		return visitor;

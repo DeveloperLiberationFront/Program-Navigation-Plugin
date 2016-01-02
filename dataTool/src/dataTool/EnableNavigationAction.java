@@ -12,7 +12,7 @@ import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
  * 
  * @author emerson
  */
-public class EnableHelperAction implements IWorkbenchWindowActionDelegate {
+public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 
 	//TODO: have little roll-overs so you can select arbitarary expressions
 	//	aka - mouse-hovers that replace hot-keys for selecting nodes
@@ -64,9 +64,6 @@ public class EnableHelperAction implements IWorkbenchWindowActionDelegate {
 	
 	public void selectionChanged(IAction action, ISelection selection) {
 		//do nothing
-		System.out.println(selection.toString() + " " + selection);
-		System.out.println(action.getText());
-		
 	}
 
 }
