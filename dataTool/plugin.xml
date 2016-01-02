@@ -13,7 +13,7 @@
             <groupMarker name="TempGroup"/>
          </menu>
          <action
-               class="dataTool.EnableHelperAction"
+               class="dataTool.EnableNavigationAction"
                icon="icons/data.gif"
                id="dataTool.action1"
                label="Find EOS"
