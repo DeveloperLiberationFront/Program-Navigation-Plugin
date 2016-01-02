@@ -17,7 +17,7 @@ import edu.pdx.cs.multiview.test.JavaTestProject;
  * 
  * @author emerson
  */
-public class StatementVisitorTest extends TestCase{
+public class VisitorTest extends TestCase{
 
 	private JavaTestProject project;
 	
