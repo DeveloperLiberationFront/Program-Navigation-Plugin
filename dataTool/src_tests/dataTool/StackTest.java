@@ -2,7 +2,7 @@ package dataTool;
 
 import java.util.Stack;
 
-import dataTool.StatementVisitor.BackwardStack;
+import dataTool.Visitor.BackwardStack;
 import junit.framework.TestCase;
 
 public class StackTest extends TestCase{

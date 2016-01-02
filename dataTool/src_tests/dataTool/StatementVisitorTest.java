@@ -9,7 +9,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 
-import dataTool.StatementVisitor;
+import dataTool.Visitor;
 import edu.pdx.cs.multiview.test.JavaTestProject;
 
 /**
@@ -29,41 +29,41 @@ public class StatementVisitorTest extends TestCase{
 	public void testBasic() throws JavaModelException, CoreException{
 		IType type = project.getType("CharArrayReader", "java.io");
 		
-		StatementVisitor visitor = parse(type);
+		Visitor visitor = parse(type);
 		
 		String statement = "this.buf=buf;\n";
 		
 		//the beginning of a statement
-		assertTrue(visitor.statementAt(981,true).toString().equals(statement));
+		assertTrue(visitor.statementAt(981).toString().equals(statement));
 		
 		//a little whitespace out front
-		assertTrue(visitor.statementAt(980,true).toString().equals(statement));
+		assertTrue(visitor.statementAt(980).toString().equals(statement));
 		
 		//the middle of the statement
-		assertTrue(visitor.statementAt(983,true).toString().equals(statement));		
+		assertTrue(visitor.statementAt(983).toString().equals(statement));		
 	}
 	
 	public void testLastStatement() throws JavaModelException, CoreException{
 		
 		IType type = project.getType("CharArrayReader", "java.io");
 		
-		StatementVisitor visitor = parse(type);
+		Visitor visitor = parse(type);
 		
 		String statement = "this.count=buf.length;\n";
 		
 		//the middle of the statement
-		assertTrue(visitor.statementAt(1022,true).toString().equals(statement));		
+		assertTrue(visitor.statementAt(1022).toString().equals(statement));		
 	}
 	
 
-	private StatementVisitor parse(IType type) throws JavaModelException {
+	private Visitor parse(IType type) throws JavaModelException {
 		String source = type.getCompilationUnit().getSource();
 		
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(source.toCharArray());
 		CompilationUnit astRoot = (CompilationUnit) parser.createAST(null);
 		
-		StatementVisitor visitor = new StatementVisitor(source);			
+		Visitor visitor = new Visitor(source);			
 		astRoot.accept(visitor);
 		
 		return visitor;
