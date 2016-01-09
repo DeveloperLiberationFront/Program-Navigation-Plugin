@@ -17,6 +17,7 @@ import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
@@ -70,6 +71,7 @@ class Visitor extends ASTVisitor{
 	 * @param str
 	 */
 	public static void getData(char[] str) {
+		UpFinder finder = UpFinder.getInstance();
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(str);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -77,9 +79,11 @@ class Visitor extends ASTVisitor{
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 		cu.accept(new ASTVisitor() {
 
-		    public boolean visit(VariableDeclarationFragment var) {
-		        if (!data.contains(var.getName().toString())) {
-		        	data.add(var.getName().getIdentifier());
+		    public boolean visit(VariableDeclarationFragment varDeclFrag) {
+		    	String var = varDeclFrag.getName().getIdentifier();
+		        if (!data.contains(var)) {
+		        	data.add(var);
+		        	finder.add(var, varDeclFrag);
 		        }
 		        return false;
 		    }
@@ -87,13 +91,18 @@ class Visitor extends ASTVisitor{
 		    public boolean visit(MethodDeclaration md) {
 		    	if (!seenMethod.contains(md.getName())) {
 		    		seenMethod.add(md.getName());
-		    		for (Object param: md.parameters()) {
-		    			data.add(((SingleVariableDeclaration) param).getName().getIdentifier());
+		    		String param = "";
+		    		for (Object o: md.parameters()) {
+		    			param = ((SingleVariableDeclaration) o).getName().getIdentifier();
+		    			data.add(param);
+		    			finder.add(param, (SingleVariableDeclaration) o);
 		    		}
 		    		md.accept(new ASTVisitor() {
-			                public boolean visit(VariableDeclarationFragment fd) {
-			                	if (!data.contains(fd.getName().toString())) {
-			                		data.add(fd.getName().getIdentifier());
+			                public boolean visit(VariableDeclarationFragment vdf) {
+			                	String var2 = vdf.getName().getIdentifier();
+			                	if (!data.contains(var2)) {
+			                		data.add(var2);
+			                		finder.add(var2, vdf);
 			                	}
 			                    return true;
 			                }

@@ -14,6 +14,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
+import dataTool.annotations.ProgramNavigationPainter;
 import dataTool.annotations.SuggestedSelectionAnnotation;
 import edu.pdx.cs.multiview.jdt.util.JDTUtils;
 import edu.pdx.cs.multiview.jface.annotation.AnnTransaction;
@@ -40,7 +41,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 		parseCU(anEditor);
 		
 		SourceViewer sourceViewer = EclipseHacks.getSourceViewer(anEditor);
-		painter = new AnnotationPainter(sourceViewer);
+		painter = new ProgramNavigationPainter(sourceViewer);
 		painter.addSelectionChangedListener(this);
 		sourceViewer.addPainter(painter);
 		
@@ -48,7 +49,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 	}
 
 	public void selectionChanged(ITextSelection selection) {
-		
+		painter.removeAllAnnotations();
 		try {								
 	
 			ASTNode one = getNode(selection.getOffset());
@@ -149,7 +150,8 @@ public class AnnotationManager implements ISelectionChangedListener {
 	public void removeAnnotations(){
 		try{
 			if(currentAnnotation!=null){
-				painter.removeAnnotation(currentAnnotation);
+				//painter.removeAnnotation(currentAnnotation);
+				painter.removeAllAnnotations();
 			}
 		}catch(Exception ignore){}
 	}
@@ -159,6 +161,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 	}
 
 	public void selectionChanged(SelectionChangedEvent event) {
+		painter.removeAllAnnotations();
 		selectionChanged((ITextSelection)event.getSelection());
 	}
 }
