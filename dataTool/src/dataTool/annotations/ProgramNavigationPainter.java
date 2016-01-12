@@ -188,7 +188,6 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	 * Controls what is painted in the display.
 	 */
 	public void paintControl(PaintEvent e) {
-		viewer.showAnnotations(false);
 		IRegion r;
 		ISelfDrawingAnnotation ann;
 		Position p;
@@ -224,7 +223,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 				}
 			}
 		}
-		viewer.showAnnotationsOverview(true);
+		viewer.getTextWidget().redraw();
 	}
 	
 	private int widgetIndex(int offset){
