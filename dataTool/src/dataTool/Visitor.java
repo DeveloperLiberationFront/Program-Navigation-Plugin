@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 
+import javax.xml.transform.Source;
+
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -26,6 +28,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.MethodRefParameter;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jface.text.Position;
 
 import edu.pdx.cs.multiview.jdt.util.JDTUtils;
@@ -40,13 +43,23 @@ class Visitor extends ASTVisitor{
 	
 	public Visitor(String someSource) {
 		this.source = someSource;
-		getData(source.toCharArray());
+		parseData(source.toCharArray());
+		Finder finder = new Finder(Finder.UP);
+		finder.initialize(data, source);
 	}
 
 	public void preVisit(ASTNode node){
 		if(shouldVisit(node)) {
 			add(node);
 		}
+	}
+	
+	/**
+	 *  Function that returns the source code
+	 * @return- source code as a str
+	 */
+	public String getSource() {
+		return source;
 	}
 	
 	/**
@@ -70,7 +83,7 @@ class Visitor extends ASTVisitor{
 	 * http://stackoverflow.com/questions/15308080/how-to-get-all-visible-variables-for-a-certain-method-in-jdt
 	 * @param str
 	 */
-	public static void getData(char[] str) {
+	public static void parseData(char[] str) {	
 		UpFinder finder = UpFinder.getInstance();
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(str);
@@ -79,13 +92,13 @@ class Visitor extends ASTVisitor{
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
 		cu.accept(new ASTVisitor() {
 
-		    public boolean visit(VariableDeclarationFragment varDeclFrag) {
-		    	String var = varDeclFrag.getName().getIdentifier();
+		    public boolean visit(VariableDeclarationFragment vdf) {
+		    	String var = vdf.getName().getIdentifier();
 		        if (!data.contains(var)) {
 		        	data.add(var);
-		        	finder.add(var, varDeclFrag);
+		        	finder.add(var, vdf.getName());
 		        }
-		        return false;
+		        return true;
 		    }
 
 		    public boolean visit(MethodDeclaration md) {
@@ -98,17 +111,18 @@ class Visitor extends ASTVisitor{
 		    			finder.add(param, (SingleVariableDeclaration) o);
 		    		}
 		    		md.accept(new ASTVisitor() {
-			                public boolean visit(VariableDeclarationFragment vdf) {
-			                	String var2 = vdf.getName().getIdentifier();
+			                public boolean visit(VariableDeclarationFragment vdf2) {
+			                	String var2 = vdf2.getName().getIdentifier();
+			                	//System.out.println("in method: " + vdf);
 			                	if (!data.contains(var2)) {
 			                		data.add(var2);
-			                		finder.add(var2, vdf);
+			                		finder.add(var2, vdf2.getName());
 			                	}
 			                    return true;
 			                }
-			            });
-		    		}
-			    return false;
+			        });
+		    	}
+			    return true;
 		    }
 		});
 	}
@@ -124,7 +138,6 @@ class Visitor extends ASTVisitor{
 	}
 	
 	public ASTNode statementAt(int index){
-		
 		for(Position p : nodes.keyStack()){			
 			boolean isContained = p.offset <= index && index < p.offset + p.length;								
 			if(isContained){

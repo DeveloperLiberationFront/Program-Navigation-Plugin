@@ -75,6 +75,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 		} catch (Exception e) {
 			Activator.logError(e);
 			removeAnnotations();
+			System.out.println("error: " + getNode(selection.getOffset()).getNodeType());
 		} 
 	}
 
@@ -112,7 +113,6 @@ public class AnnotationManager implements ISelectionChangedListener {
 		
 		return false;
 	}
-
 
 	private ASTNode getNode(int position) {
 		return visitor.statementAt(position);

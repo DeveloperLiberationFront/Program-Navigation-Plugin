@@ -9,7 +9,6 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.NodeFinder;
 
 /**
- * /**
  * Class that handles finding and storing where data is being declared in the source code.
  * Originally intended to extend OccurrencesFinder but that didn't work for the moment but
  * will might be needed for a DownFinder implementation.
@@ -18,21 +17,21 @@ import org.eclipse.jdt.core.dom.NodeFinder;
  *
  */
 
-public class UpFinder {
+public class UpFinder extends Finder {
 	
-	private Map<String, ArrayList<ASTNode>> map;
-	private static UpFinder instance;
+	private Map<String, ArrayList<DataNode>> map; // contains name and first node for all data
+	private static UpFinder instance; // current instance of UpFinder
 
 	/**
 	 * Singleton pattern because we only want one DeclarationFinder
 	 */
 	private UpFinder() {
-		map = new HashMap<String, ArrayList<ASTNode>>();
+		map = new HashMap<String, ArrayList<DataNode>>();
 	}
 	
 	/**
-	 * Returns current DeclarationFinder instance to keep track of data.
-	 * @return DeclarationFinder instance
+	 * Returns current UpFinder instance to keep track of data to the current point.
+	 * @return UpFinder instance
 	 */
 	public static UpFinder getInstance() {
 		if (instance == null) {
@@ -46,17 +45,18 @@ public class UpFinder {
 	 * @param s: String name of the variable
 	 * @param node: ASTNode containing the variable declaration
 	 */
-	public void add(String s, ASTNode node) {
-		ArrayList<ASTNode> list;
-		if (!map.containsKey(s)) {
-			list = new ArrayList<ASTNode>();
-			list.add(node);
-			map.put(s, list);
+	public void add(String key, ASTNode node) {
+		ArrayList<DataNode> list;
+		DataNode dn = new DataNode(node);
+		if (!map.containsKey(key)) {
+			list = new ArrayList<DataNode>();
+			list.add(dn);
+			map.put(key, list);
 		}
 		else {
-			list = map.get(s);
-			list.add(node);
-			map.put(s, list);
+			list = map.get(key);
+			list.add(dn);
+			map.put(key, list);
 		}
 	}
 	
@@ -65,7 +65,7 @@ public class UpFinder {
 	 * @param s: String to check
 	 * @return true if the string is a variable, else false
 	 */
-	public boolean containsVar(String s) {
+	public boolean contains(String s) {
 		return map.containsKey(s);
 	}
 	
@@ -75,7 +75,16 @@ public class UpFinder {
 	 * @param s: Current String
 	 * @return ArrayList<ASTNode> of "up" occurrences for current variable name
 	 */
-	public ArrayList<ASTNode> getUpOccurences(String s) {
+	public ArrayList<DataNode> getUpOccurrences(String s) {
 		return map.get(s);
+	}
+	
+	public Map getMap() {
+		return map;
+	}
+	
+	public static void searchClassUp(String code) {
+		//Mostly implemented in Visitor class parseData
+		
 	}
 }

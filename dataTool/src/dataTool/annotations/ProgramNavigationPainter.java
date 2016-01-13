@@ -18,6 +18,7 @@ import org.eclipse.jface.text.IRegion;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.Region;
+import org.eclipse.jface.text.reconciler.Reconciler;
 import org.eclipse.jface.text.source.AnnotationModel;
 import org.eclipse.jface.text.source.IAnnotationModelExtension;
 import org.eclipse.jface.text.source.SourceViewer;
@@ -33,6 +34,8 @@ import edu.pdx.cs.multiview.jface.annotation.AnnotationPainter;
 import edu.pdx.cs.multiview.jface.annotation.ISelfDrawingAnnotation;
 
 import dataTool.AnnotationManager;
+import dataTool.DataNode;
+import dataTool.Finder;
 import dataTool.UpFinder;
 
 /**
@@ -50,11 +53,13 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	private Set<ISelectionChangedListener> listeners = new HashSet<ISelectionChangedListener>();
 	private SourceViewer viewer;
 	private Map<ISelfDrawingAnnotation,Position> anns = new HashMap<ISelfDrawingAnnotation,Position>();
+	Reconciler r = new Reconciler();
 	
 	public ProgramNavigationPainter(SourceViewer v) {
 		super(v);
 		viewer = v;
-		viewer.getTextWidget().addPaintListener(this);	}
+		viewer.getTextWidget().addPaintListener(this);	
+	}
 	
 	public void addSelectionChangedListener(ISelectionChangedListener listener){
 		listeners.add(listener);
@@ -188,17 +193,18 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	 * Controls what is painted in the display.
 	 */
 	public void paintControl(PaintEvent e) {
-		viewer.showAnnotations(false);
 		IRegion r;
-		ISelfDrawingAnnotation ann;
+		ISelfDrawingAnnotation ann = null;
 		Position p;
+		String word;
 		OccurrenceLocation[] locations = null;
 		//DeclarationFinder finder = new DeclarationFinder();
-		UpFinder finder = UpFinder.getInstance();
+		Finder finder = Finder.getInstance();
 		for(Map.Entry<ISelfDrawingAnnotation,Position> entry : anns.entrySet()){
 			ann = entry.getKey();
 			p = entry.getValue();
 			r = viewer.modelRange2WidgetRange(new Region(p.offset,p.length));
+			word = viewer.getTextWidget().getText(r.getOffset(), r.getOffset() + r.getLength()-1);
 			//draw the annotation only if it's visible
 			if(r!=null) {
 				ann.draw(e.gc, viewer.getTextWidget(),
@@ -208,23 +214,15 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 				//finder.initialize(finder.getCompUnit(source), r.getOffset(), r.getLength());
 				//locations = finder.getUpOccurrences();
 				//System.out.println(locations);
-				String source = viewer.getTextWidget().getText();
-				String word = viewer.getTextWidget().getText(r.getOffset(), r.getOffset() + r.getLength()-1);
-				if(finder.containsVar(word)) {
-					for (ASTNode up: finder.getUpOccurences(word)) {
-						int length;
-						if(up.getParent().getNodeType() == 60) {
-							length = word.length();
-						}
-						else {
-							length = up.getLength();
-						}
-						ann.draw(e.gc,viewer.getTextWidget(),up.getStartPosition(),length);
+				//String source = viewer.getTextWidget().getText();
+				if(finder.contains(word)) {
+					for (DataNode node: finder.getOccurrences(word)) {
+						ann.draw(e.gc,viewer.getTextWidget(),node.getStartPosition(),node.getLength());
 					}
 				}
 			}
 		}
-		viewer.showAnnotationsOverview(true);
+		viewer.getTextWidget().redraw();
 	}
 	
 	private int widgetIndex(int offset){
