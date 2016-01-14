@@ -16,6 +16,7 @@ public class DataNode {
 	private int index;
 	private int length;
 	private String method;
+	private String type;
 	
 	/**
 	 * Constructor to build DataNode with an ASTNode, used for UpFinder mostly
@@ -25,10 +26,12 @@ public class DataNode {
 		if (node instanceof SimpleName) {
 			value = ((SimpleName) node).getIdentifier();
 			length = value.length();
+			type = "variable";
 		}
 		else {
 			value = ((SingleVariableDeclaration) node).getName().getIdentifier();
 			length = node.getLength();
+			type = "parameter";
 		}
 		index = node.getStartPosition();
 	}

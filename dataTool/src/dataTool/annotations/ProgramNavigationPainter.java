@@ -37,6 +37,9 @@ import dataTool.AnnotationManager;
 import dataTool.DataNode;
 import dataTool.Finder;
 import dataTool.UpFinder;
+import dataTool.ui.NavigationBox;
+import dataTool.ui.NavigationDownBox;
+import dataTool.ui.NavigationUpBox;
 
 /**
  * Class to handle the annotation painting for the Program Navigation Plugin. Basically
@@ -53,7 +56,8 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	private Set<ISelectionChangedListener> listeners = new HashSet<ISelectionChangedListener>();
 	private SourceViewer viewer;
 	private Map<ISelfDrawingAnnotation,Position> anns = new HashMap<ISelfDrawingAnnotation,Position>();
-	Reconciler r = new Reconciler();
+	private boolean isActive = false;
+	private NavigationBox box;
 	
 	public ProgramNavigationPainter(SourceViewer v) {
 		super(v);
@@ -141,6 +145,10 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	public void removeAllAnnotations(){
 		Collection<Position> positions = new ArrayList<Position>(anns.values());
 		anns.clear();
+		isActive = false;
+		if(box!=null) {
+			box.dispose();
+		}
 		fireAnnotationChangedEvent(positions);
 	}
 
@@ -198,7 +206,6 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 		Position p;
 		String word;
 		OccurrenceLocation[] locations = null;
-		//DeclarationFinder finder = new DeclarationFinder();
 		Finder finder = Finder.getInstance();
 		for(Map.Entry<ISelfDrawingAnnotation,Position> entry : anns.entrySet()){
 			ann = entry.getKey();
@@ -207,14 +214,13 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 			word = viewer.getTextWidget().getText(r.getOffset(), r.getOffset() + r.getLength()-1);
 			//draw the annotation only if it's visible
 			if(r!=null) {
-				ann.draw(e.gc, viewer.getTextWidget(),
-								r.getOffset(),
-								r.getLength());
-				//TODO Original implementation that doesn't work - will revisit this with down finder
-				//finder.initialize(finder.getCompUnit(source), r.getOffset(), r.getLength());
-				//locations = finder.getUpOccurrences();
-				//System.out.println(locations);
-				//String source = viewer.getTextWidget().getText();
+				ann.draw(e.gc, viewer.getTextWidget(),r.getOffset(),r.getLength());
+				if(!isActive) {
+					isActive = true;
+					if(box != null) { box.dispose(); }
+					box = new NavigationBox(viewer.getTextWidget(),r.getOffset());
+					box.showLabel();
+				}
 				if(finder.contains(word)) {
 					for (DataNode node: finder.getOccurrences(word)) {
 						ann.draw(e.gc,viewer.getTextWidget(),node.getStartPosition(),node.getLength());

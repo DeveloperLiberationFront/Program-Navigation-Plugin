@@ -5,6 +5,8 @@ import java.util.HashSet;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
 
 import dataTool.annotations.SuggestedSelectionAnnotation;
 
@@ -16,6 +18,7 @@ public class Finder {
 	private static String findDirection = UP; //default direction is up
 	private static Finder currentFinder;
 	private static Color currentColor;
+	private IWorkbenchPage page;
 	
 	public Finder () {
 		//Do nothing
@@ -31,6 +34,7 @@ public class Finder {
 		UpFinder up = UpFinder.getInstance();
 		//up.searchClassUp(sourceCode);
 		down.searchClassDown(list, sourceCode);
+		up.searchProjectUp();
 	}
 	
 	public ArrayList<DataNode> getOccurrences(String data) {
@@ -70,13 +74,18 @@ public class Finder {
 		return findDirection;
 	}
 	
+	/**
+	 * Function that checks if selected text is a variable
+	 * @param str: String value of current text
+	 * @returns true if current variable is a DataNode, else false
+	 */
 	public boolean contains(String str) {
 		return currentFinder.contains(str);
 	}
 	
 	/**
 	 * Function to get the finder instance
-	 * @return- Returns the current finder instance searching in the appropriate direction.
+	 * @returns the current finder instance searching in the appropriate direction.
 	 */
 	public static Finder getInstance() {
 		if(findDirection.equals(UP)) {

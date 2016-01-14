@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.jdt.core.IJavaProject;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.NodeFinder;
@@ -79,12 +83,16 @@ public class UpFinder extends Finder {
 		return map.get(s);
 	}
 	
-	public Map getMap() {
-		return map;
+	public void searchClassUp(String code) {
+		//Mostly implemented in Visitor class parseData
+		
 	}
 	
-	public static void searchClassUp(String code) {
-		//Mostly implemented in Visitor class parseData
+	public void searchProjectUp() {
+		//TODO
+		/*
+		 * http://stackoverflow.com/questions/13980726/using-search-engine-to-implement-call-hierarchy-getting-all-the-methods-that-in
+		 */
 		
 	}
 }

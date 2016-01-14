@@ -5,9 +5,17 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.NodeFinder;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 import sun.print.resources.serviceui_de;
 
@@ -77,12 +85,11 @@ public class DownFinder extends Finder {
 	 * @param list: Set of all data variable names
 	 * @param code: String of source code
 	 */
-	public static void searchClassDown(HashSet<String> list, String code) {
-		//TODO go by line, split each line by string and search :(
+	public void searchClassDown(HashSet<String> list, String code) {
 		for(String var: list) {
 			int index = code.indexOf(var);
 			while(index >= 0) {
-				if(notUp(var, index)) {
+				if(variableCheck(var, index, code)) {
 					add(var, index);
 				}
 				index = code.indexOf(var, index+1);
@@ -91,23 +98,65 @@ public class DownFinder extends Finder {
 	}
 	
 	/**
+	 * Function to check if selected text is actually a variable.
+	 * @param var
+	 * @param index
+	 * @param sourceCode
+	 * @returns true if text is use of a variable, else false
+	 */
+	private boolean variableCheck(String var, int index, String sourceCode) {
+		boolean check = false;
+		if(sourceCode.substring(index+var.length(),index+var.length()+1).matches("[a-zA-Z0-9]") || sourceCode.substring(index-1,index).matches("[a-zA-Z0-9]")) {
+			return false;
+		}
+		if(isUp(var,index)) { 
+			return false; 
+		}
+		if(isComment(var, index, sourceCode)) {
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Checks to see if the visited variable name is inside a comment so we don't highlight it.
+	 * Kind of a hack
+	 * @param var: String name of the data
+	 * @param index: int start position of the data
+	 * @param sourceCode: String of the entire code
+	 * @returns true if name is within a comment, else false
+	 */
+	private boolean isComment(String var, int index, String sourceCode) {
+		//Check if line starts with //, /*, /**, or *
+		String temp = sourceCode.substring(0, index);
+		if(temp.lastIndexOf("/**") > temp.lastIndexOf("*/") || temp.lastIndexOf("/*") > temp.lastIndexOf("*/")
+				|| temp.lastIndexOf("//") > temp.lastIndexOf("\n")) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Function that checks to see if the variable is not a declaration/initialization
 	 * @param var: String variable name
 	 * @param start: int start position
 	 * @returns true if variable is not "up", else false
 	 */
-	private static boolean notUp(String var, int start) {
+	private boolean isUp(String var, int start) {
 		UpFinder up = UpFinder.getInstance();
 		ArrayList<DataNode> varList = up.getUpOccurrences(var);
 		for(DataNode node: varList) {
-			if(node.getStartPosition() == start) {
-				return false;
+			if(node.getStartPosition() <= start && node.getStartPosition()+node.getLength()+1 >= start) {
+				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	public static void searchProjectDown() {
 		//TODO
+		/*
+		 * http://stackoverflow.com/questions/13980726/using-search-engine-to-implement-call-hierarchy-getting-all-the-methods-that-in
+		 */
 	}
 }

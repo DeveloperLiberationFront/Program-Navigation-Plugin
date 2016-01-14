@@ -39,6 +39,9 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	private void enable(IEditorPart activeEditor) {
 		if(page.getActiveEditor()!=null)
 			annotationManager = new AnnotationManager((AbstractDecoratedTextEditor)activeEditor);
+		//String[] path = activeEditor.getTitleToolTip().split("/");
+		//String project = path[0];
+		
 	}
 
 	public void init(IWorkbenchWindow window) {

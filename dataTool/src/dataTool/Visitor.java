@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.BlockComment;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -39,12 +40,12 @@ class Visitor extends ASTVisitor{
 	private static HashSet<String> data = new HashSet<String>();
 	private static ArrayList<SimpleName> seenMethod = new ArrayList<SimpleName>();
 	
-	private String source;
+	private static String source;
 	
 	public Visitor(String someSource) {
 		this.source = someSource;
 		parseData(source.toCharArray());
-		Finder finder = new Finder(Finder.UP);
+		Finder finder = Finder.getInstance();
 		finder.initialize(data, source);
 	}
 
@@ -100,7 +101,7 @@ class Visitor extends ASTVisitor{
 		        }
 		        return true;
 		    }
-
+		    
 		    public boolean visit(MethodDeclaration md) {
 		    	if (!seenMethod.contains(md.getName())) {
 		    		seenMethod.add(md.getName());
@@ -126,7 +127,7 @@ class Visitor extends ASTVisitor{
 		    }
 		});
 	}
-	
+
 	/**
 	 * Adds the current node to list of nodes to be highlighted
 	 * @param node

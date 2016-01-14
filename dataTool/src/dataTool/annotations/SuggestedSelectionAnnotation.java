@@ -6,7 +6,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 
-import dataTool.ui.NavigationBox;
+import dataTool.ui.NavigationUpBox;
 import edu.pdx.cs.multiview.jface.annotation.ISelfDrawingAnnotation;
 
 /**
@@ -31,7 +31,10 @@ public class SuggestedSelectionAnnotation extends Annotation implements ISelfDra
 		int nextLineOffset = textWidget.getOffsetAtLine(textWidget.getLineAtOffset(offset)+1);
 		Point nextLineStart = textWidget.getLocationAtOffset(nextLineOffset);
 		Point lastLineEnd = textWidget.getLocationAtOffset(offset+length);
-
+		
+		//NavigationBox box = new NavigationBox(textWidget);
+		//box.showLabel();
+		
 		//a single line is highlighted...
 		if(nextLineOffset>offset+length){
 			gc.fillRectangle(lineStart.x,lineStart.y,lastLineEnd.x-lineStart.x,textWidget.getLineHeight());
