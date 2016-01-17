@@ -7,10 +7,20 @@ import java.util.Map;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IJavaProject;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.NodeFinder;
+import org.eclipse.jdt.core.search.IJavaSearchConstants;
+import org.eclipse.jdt.core.search.IJavaSearchScope;
+import org.eclipse.jdt.core.search.SearchEngine;
+import org.eclipse.jdt.core.search.SearchMatch;
+import org.eclipse.jdt.core.search.SearchParticipant;
+import org.eclipse.jdt.core.search.SearchPattern;
+import org.eclipse.jdt.core.search.SearchRequestor;
 
 /**
  * Class that handles finding and storing where data is being declared in the source code.
@@ -25,6 +35,8 @@ public class UpFinder extends Finder {
 	
 	private Map<String, ArrayList<DataNode>> map; // contains name and first node for all data
 	private static UpFinder instance; // current instance of UpFinder
+	private String searchMatch;
+	
 
 	/**
 	 * Singleton pattern because we only want one DeclarationFinder
@@ -49,9 +61,9 @@ public class UpFinder extends Finder {
 	 * @param s: String name of the variable
 	 * @param node: ASTNode containing the variable declaration
 	 */
-	public void add(String key, ASTNode node) {
+	public void add(String key, ASTNode node, String type) {
 		ArrayList<DataNode> list;
-		DataNode dn = new DataNode(node);
+		DataNode dn = new DataNode(node, type);
 		if (!map.containsKey(key)) {
 			list = new ArrayList<DataNode>();
 			list.add(dn);
@@ -83,16 +95,24 @@ public class UpFinder extends Finder {
 		return map.get(s);
 	}
 	
-	public void searchClassUp(String code) {
-		//Mostly implemented in Visitor class parseData
-		
-	}
-	
-	public void searchProjectUp() {
-		//TODO
-		/*
-		 * http://stackoverflow.com/questions/13980726/using-search-engine-to-implement-call-hierarchy-getting-all-the-methods-that-in
-		 */
-		
+	public String searchProjectUp(String project, String method) throws CoreException {
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+	    IJavaProject javaProject = JavaCore.create(root.getProject(project));
+	    System.out.println(javaProject.exists());
+	    System.out.println(javaProject.isOpen());
+	    String match;
+	    SearchPattern pattern = SearchPattern.createPattern(method, IJavaSearchConstants.METHOD, IJavaSearchConstants.REFERENCES, SearchPattern.R_CASE_SENSITIVE);
+	    IJavaElement[] jProjects = new IJavaElement[] {javaProject};
+	    IJavaSearchScope scope = SearchEngine.createJavaSearchScope(jProjects, false);
+	    SearchRequestor requestor = new SearchRequestor() {
+			@Override
+			public void acceptSearchMatch(SearchMatch arg0) throws CoreException {
+				searchMatch = arg0.getElement().toString();
+			}
+	    };
+	    SearchEngine search = new SearchEngine();
+	    search.search(pattern, new SearchParticipant[] {SearchEngine.getDefaultSearchParticipant()}, scope, requestor, null);
+	    //String results = super.parseSearchResults(searchMatch);
+	    return searchMatch;
 	}
 }

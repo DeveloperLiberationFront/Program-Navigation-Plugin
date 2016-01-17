@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Shell;
 import dataTool.Finder;
 
 public class NavigationBox {
-	final public static int WIDTH = 90;
+	final public static int WIDTH = 80;
 	final public static int HEIGHT = 180;
 	
 	private Shell shell;
@@ -24,15 +24,15 @@ public class NavigationBox {
 	/**
 	 * Displays NavigationBox based on the user's current direction
 	 */
-	public void showLabel() {
+	public void showLabel(String text) {
 		Finder finder = Finder.getInstance();
 		if(finder.getFlowDirection().equals(Finder.UP)) {
 			currentBox = NavigationUpBox.getInstance(widget, offset);
-			currentBox.showLabel();
+			currentBox.showLabel(text);
 		}
 		else if(finder.getFlowDirection().equals(Finder.DOWN)) {
 			currentBox = NavigationDownBox.getInstance(widget, offset);
-			currentBox.showLabel();
+			currentBox.showLabel(text);
 		}
 		else {
 			//Something went very wrong

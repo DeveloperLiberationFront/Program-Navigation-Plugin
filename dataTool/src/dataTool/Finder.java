@@ -3,6 +3,7 @@ package dataTool;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.IWorkbenchPage;
@@ -18,7 +19,6 @@ public class Finder {
 	private static String findDirection = UP; //default direction is up
 	private static Finder currentFinder;
 	private static Color currentColor;
-	private IWorkbenchPage page;
 	
 	public Finder () {
 		//Do nothing
@@ -29,14 +29,6 @@ public class Finder {
 			setFlowDirection(s);
 	}
 	
-	public void initialize(HashSet<String> list, String sourceCode) {
-		DownFinder down = DownFinder.getInstance();
-		UpFinder up = UpFinder.getInstance();
-		//up.searchClassUp(sourceCode);
-		down.searchClassDown(list, sourceCode);
-		up.searchProjectUp();
-	}
-	
 	public ArrayList<DataNode> getOccurrences(String data) {
 		if(findDirection.equals(UP)) {
 			UpFinder finder = UpFinder.getInstance();
@@ -45,6 +37,24 @@ public class Finder {
 		else if(findDirection.equals(DOWN)) {
 			DownFinder finder = DownFinder.getInstance();
 			return finder.getDownOccurrences(data);
+		}
+		return null;
+	}
+	
+	public String searchProject(String method) {
+		String projectName = EnableNavigationAction.project;
+		if(findDirection.equals(UP)) {
+			UpFinder finder = UpFinder.getInstance();
+			try {
+				return finder.searchProjectUp(projectName, method);
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if(findDirection.equals(DOWN)) {
+			DownFinder finder = DownFinder.getInstance();
+			return finder.searchProjectDown(projectName, method);
 		}
 		return null;
 	}
@@ -64,7 +74,10 @@ public class Finder {
 			currentFinder = DownFinder.getInstance();
 			SuggestedSelectionAnnotation.color = new Color(null, 255, 0, 0);
 		}
-		//else something went very wrong...
+		else {
+			//something went very wrong...
+			findDirection = null;
+		}
 	}
 	
 	/**
@@ -91,8 +104,9 @@ public class Finder {
 		if(findDirection.equals(UP)) {
 			return UpFinder.getInstance();
 		}
-		else {
+		else if(findDirection.equals(DOWN)){
 			return DownFinder.getInstance();
-		}	
+		}
+		return null;
 	}
 }

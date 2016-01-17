@@ -207,6 +207,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 		String word;
 		OccurrenceLocation[] locations = null;
 		Finder finder = Finder.getInstance();
+		boolean param = false;
 		for(Map.Entry<ISelfDrawingAnnotation,Position> entry : anns.entrySet()){
 			ann = entry.getKey();
 			p = entry.getValue();
@@ -215,16 +216,19 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 			//draw the annotation only if it's visible
 			if(r!=null) {
 				ann.draw(e.gc, viewer.getTextWidget(),r.getOffset(),r.getLength());
+				if(finder.contains(word)) {
+					//Highlight all instances in class
+					for (DataNode node: finder.getOccurrences(word)) {
+						param = node.isParameter();
+						ann.draw(e.gc,viewer.getTextWidget(),node.getStartPosition(),node.getLength());
+					}
+				}
 				if(!isActive) {
 					isActive = true;
 					if(box != null) { box.dispose(); }
 					box = new NavigationBox(viewer.getTextWidget(),r.getOffset());
-					box.showLabel();
-				}
-				if(finder.contains(word)) {
-					for (DataNode node: finder.getOccurrences(word)) {
-						ann.draw(e.gc,viewer.getTextWidget(),node.getStartPosition(),node.getLength());
-					}
+					String text = "";
+					box.showLabel(text);
 				}
 			}
 		}

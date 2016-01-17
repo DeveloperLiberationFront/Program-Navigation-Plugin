@@ -2,6 +2,7 @@ package dataTool;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IPageListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
@@ -26,6 +27,8 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	//whether the listener is currently enabled
 	private boolean isEnabled = false;
 	
+	public static String project;
+	
 	public void dispose() {
 		if(annotationManager!=null)
 			annotationManager.dispose();
@@ -37,15 +40,35 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	 * @param activeEditor
 	 */
 	private void enable(IEditorPart activeEditor) {
+		String[] path = activeEditor.getTitleToolTip().split("/");
+		project = path[0];
 		if(page.getActiveEditor()!=null)
 			annotationManager = new AnnotationManager((AbstractDecoratedTextEditor)activeEditor);
-		//String[] path = activeEditor.getTitleToolTip().split("/");
-		//String project = path[0];
-		
 	}
 
 	public void init(IWorkbenchWindow window) {
 		this.page = window.getActivePage();
+		window.addPageListener(new IPageListener() {
+
+			@Override
+			public void pageActivated(IWorkbenchPage arg0) {
+				// TODO Auto-generated method stub
+				init(arg0.getWorkbenchWindow());
+			}
+
+			@Override
+			public void pageClosed(IWorkbenchPage arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void pageOpened(IWorkbenchPage arg0) {
+				// TODO Auto-generated method stub
+				init(arg0.getWorkbenchWindow());
+			}
+			
+		});
 	}
 
 	public void run(IAction action) {

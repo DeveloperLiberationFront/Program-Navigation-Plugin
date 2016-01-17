@@ -18,18 +18,26 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.BlockComment;
+import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ConstructorInvocation;
+import org.eclipse.jdt.core.dom.EnhancedForStatement;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.MethodRefParameter;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
+import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jface.text.Position;
 
 import edu.pdx.cs.multiview.jdt.util.JDTUtils;
@@ -39,14 +47,14 @@ class Visitor extends ASTVisitor{
 	private StackMap<Position,ASTNode> nodes = new StackMap<Position,ASTNode>();
 	private static HashSet<String> data = new HashSet<String>();
 	private static ArrayList<SimpleName> seenMethod = new ArrayList<SimpleName>();
+	private static UpFinder upFinder;
+	private static DownFinder downFinder;
 	
 	private static String source;
 	
 	public Visitor(String someSource) {
 		this.source = someSource;
-		parseData(source.toCharArray());
-		Finder finder = Finder.getInstance();
-		finder.initialize(data, source);
+		parseData();
 	}
 
 	public void preVisit(ASTNode node){
@@ -77,6 +85,20 @@ class Visitor extends ASTVisitor{
 	}
 	
 	/**
+	 * Searches through code to find instances of the current variable
+	 * @param currentData: String of current data selected
+	 */
+	private static void findOccurrences(String currentData) {
+		int index = source.indexOf(currentData);
+		while(index >= 0) {
+			if(downFinder.variableCheck(currentData, index, source)) {
+				downFinder.add(currentData, index, DataNode.VAR);
+			}
+			index = source.indexOf(currentData, index+1);
+		}
+	}
+	
+	/**
 	 * Method that parses the source statically to get the data we want for the 
 	 * plugin. This function searches for all parameters and declared variables
 	 * and adds them to the data list.
@@ -84,10 +106,12 @@ class Visitor extends ASTVisitor{
 	 * http://stackoverflow.com/questions/15308080/how-to-get-all-visible-variables-for-a-certain-method-in-jdt
 	 * @param str
 	 */
-	public static void parseData(char[] str) {	
-		UpFinder finder = UpFinder.getInstance();
+	public static void parseData() {	
+		char[] code = source.toCharArray();
+		upFinder = UpFinder.getInstance();
+		downFinder = DownFinder.getInstance();
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		parser.setSource(str);
+		parser.setSource(code);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
@@ -97,11 +121,11 @@ class Visitor extends ASTVisitor{
 		    	String var = vdf.getName().getIdentifier();
 		        if (!data.contains(var)) {
 		        	data.add(var);
-		        	finder.add(var, vdf.getName());
+		        	upFinder.add(var, vdf.getName(), DataNode.CLASS_VAR);
 		        }
 		        return true;
 		    }
-		    
+
 		    public boolean visit(MethodDeclaration md) {
 		    	if (!seenMethod.contains(md.getName())) {
 		    		seenMethod.add(md.getName());
@@ -109,18 +133,83 @@ class Visitor extends ASTVisitor{
 		    		for (Object o: md.parameters()) {
 		    			param = ((SingleVariableDeclaration) o).getName().getIdentifier();
 		    			data.add(param);
-		    			finder.add(param, (SingleVariableDeclaration) o);
+		    			upFinder.add(param, (SingleVariableDeclaration) o, DataNode.PARAM_UP);
+		    			findOccurrences(param);
 		    		}
-		    		md.accept(new ASTVisitor() {
-			                public boolean visit(VariableDeclarationFragment vdf2) {
-			                	String var2 = vdf2.getName().getIdentifier();
-			                	//System.out.println("in method: " + vdf);
-			                	if (!data.contains(var2)) {
-			                		data.add(var2);
-			                		finder.add(var2, vdf2.getName());
-			                	}
-			                    return true;
-			                }
+		    		
+	               	md.accept(new ASTVisitor() {
+			            public boolean visit(VariableDeclarationFragment vdf) {
+			            	String var = vdf.getName().getIdentifier();
+			               	if (!data.contains(var)) {
+			               		data.add(var);
+			               		upFinder.add(var, vdf.getName(), DataNode.VAR_DECL);
+			               	}			
+			               	findOccurrences(var);
+			               	return true;
+			            }
+			            
+			            public boolean visit(EnhancedForStatement efs) {
+			            	SimpleName forThis = efs.getParameter().getName();
+			            	String forStr = forThis.getIdentifier();
+			            	data.add(forThis.getIdentifier());
+			            	upFinder.add(forThis.getIdentifier(), forThis, DataNode.FOR_VAR);
+			            	Statement body = efs.getBody();
+			            	findOccurrences(forStr);
+			            	return true;
+			            }
+			            public boolean visit(ForStatement fs) {
+			            	List<Expression> conds = fs.initializers();
+			            	for(ASTNode e: conds) {
+			            		VariableDeclarationExpression temp = (VariableDeclarationExpression)e;
+			            		for(Object frag: temp.fragments()) {
+			            			SimpleName forThis = ((VariableDeclarationFragment) frag).getName();
+			            			String forStr = forThis.getIdentifier();
+			            			data.add(forStr);
+			            			upFinder.add(forStr, forThis, DataNode.FOR_VAR);
+			            			Statement body = fs.getBody();
+			            			findOccurrences(forStr);
+			            		}
+			            	}
+			            	return true;
+			            }
+			            public boolean visit(WhileStatement ws) {
+			            	String cond = ws.getExpression().toString();
+			            	for(String found: data) {
+			            		if(cond.contains(found)){
+			            			downFinder.add(found, ws.getExpression().getStartPosition() + cond.indexOf(found), DataNode.VAR);
+			            		}
+			            		Statement body = ws.getBody();
+			            		findOccurrences(found);
+			            	}
+			            	return true;
+			            }
+			            
+			            public boolean visit(TryStatement ts) {
+			            	List<CatchClause> catches = ts.catchClauses();
+			            	SimpleName e;
+			            	for(CatchClause error: catches) {
+			            		e = error.getException().getName();
+			            		data.add(e.getIdentifier());
+			            		upFinder.add(e.getIdentifier(), e, DataNode.VAR);
+			            		Statement errorCode = error.getBody();
+			            		findOccurrences(e.getIdentifier());
+			            	}
+			            	return true;
+			            }
+			            
+			            public boolean visit(MethodInvocation mi) {
+			            	List<ASTNode> args = mi.arguments();
+			            	for(ASTNode arg: args) {
+			            		if(data.contains(arg.toString())) {
+			            			downFinder.add(arg, DataNode.PARAM_DOWN);
+			            		}
+				            }
+			            	return true;
+			            }
+			            public boolean visit(Expression expr) {
+			            	//Other expressions
+			            	return true;
+			            }
 			        });
 		    	}
 			    return true;
@@ -128,6 +217,13 @@ class Visitor extends ASTVisitor{
 		});
 	}
 
+	/**
+	 * Function that returns the data to be highlighted
+	 * @returns HashSet of data found during parsing
+	 */
+	public HashSet<String> getData() {
+		return data;
+	}
 	/**
 	 * Adds the current node to list of nodes to be highlighted
 	 * @param node

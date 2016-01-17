@@ -15,57 +15,30 @@ import edu.pdx.cs.multiview.test.JavaTestProject;
 /**
  * Makes sure the statement visitor behaves as expected
  * 
- * @author emerson
+ * @author Chris
  */
 public class VisitorTest extends TestCase{
 
 	private JavaTestProject project;
-	
+	private Visitor visitor;
+		
 	public void setUp() throws Exception{
-		project = new JavaTestProject();
-		project.copyToSourceDir (JavaTestProject.JAVA_IO_LOC);
+		//project = new JavaTestProject();
+		//project.copyToSourceDir (JavaTestProject.JAVA_IO_LOC);
 	}
 	
-	public void testBasic() throws JavaModelException, CoreException{
-		IType type = project.getType("CharArrayReader", "java.io");
+	public void testParseDataEnhancedFor() {
+		String enhancedForTestStr = "public class Test {" +
+						 "public void func() {\n" + 
+						 "	for(int i = 0; i < 100; i++) {\n" +
+						 "		System.out.println(i);\n" +
+						 "		int test = i*5\n" +
+						 "	}\n" +
+						 "}}";
 		
-		Visitor visitor = parse(type);
-		
-		String statement = "this.buf=buf;\n";
-		
-		//the beginning of a statement
-		assertTrue(visitor.statementAt(981).toString().equals(statement));
-		
-		//a little whitespace out front
-		assertTrue(visitor.statementAt(980).toString().equals(statement));
-		
-		//the middle of the statement
-		assertTrue(visitor.statementAt(983).toString().equals(statement));		
+		visitor = new Visitor(enhancedForTestStr);
+		visitor.parseData();
+		System.out.println(visitor.getData().size());
 	}
 	
-	public void testLastStatement() throws JavaModelException, CoreException{
-		
-		IType type = project.getType("CharArrayReader", "java.io");
-		
-		Visitor visitor = parse(type);
-		
-		String statement = "this.count=buf.length;\n";
-		
-		//the middle of the statement
-		assertTrue(visitor.statementAt(1022).toString().equals(statement));		
-	}
-	
-
-	private Visitor parse(IType type) throws JavaModelException {
-		String source = type.getCompilationUnit().getSource();
-		
-		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		parser.setSource(source.toCharArray());
-		CompilationUnit astRoot = (CompilationUnit) parser.createAST(null);
-		
-		Visitor visitor = new Visitor(source);			
-		astRoot.accept(visitor);
-		
-		return visitor;
-	}
 }

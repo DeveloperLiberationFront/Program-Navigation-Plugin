@@ -75,7 +75,6 @@ public class AnnotationManager implements ISelectionChangedListener {
 		} catch (Exception e) {
 			Activator.logError(e);
 			removeAnnotations();
-			System.out.println("error: " + getNode(selection.getOffset()).getNodeType());
 		} 
 	}
 

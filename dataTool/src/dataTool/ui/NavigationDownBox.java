@@ -40,7 +40,7 @@ public class NavigationDownBox extends NavigationBox {
 		return instance;
 	}
 	
-	public void showLabel() {
+	public void showLabel(String text) {
 		if(shell != null) {
 			dispose();
 		}
@@ -70,12 +70,12 @@ public class NavigationDownBox extends NavigationBox {
 				downButton.setSelection(false);
 				NavigationUpBox up = NavigationUpBox.getInstance(widget, offset);
 				dispose();
-				up.showLabel();
+				up.showLabel(text);
 			}	
 	    });
 	    
 	    Label label = new Label(composite, SWT.NONE);
-	    label.setText("test down");
+	    label.setText(text);
 	    shell.setSize(super.WIDTH, super.HEIGHT);
 	    shell.setLocation((int)MouseInfo.getPointerInfo().getLocation().getX()-(super.WIDTH/2),(int)MouseInfo.getPointerInfo().getLocation().getY());
 	    shell.open();

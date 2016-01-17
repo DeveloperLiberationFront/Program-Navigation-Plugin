@@ -1,8 +1,11 @@
 package dataTool;
 
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclaration;
 
 /**
  * DataNode class that creates objects for the data we find and want to highlight.
@@ -11,6 +14,13 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
  *
  */
 public class DataNode {
+	
+	final public static String PARAM_UP = "parameterUp";
+	final public static String PARAM_DOWN = "parameterDown";
+	final public static String VAR_DECL = "variableDecl";
+	final public static String CLASS_VAR = "variableClass";
+	final public static String FOR_VAR = "variableFor";
+	final public static String VAR = "variable";
 	
 	private String value;
 	private int index;
@@ -22,16 +32,23 @@ public class DataNode {
 	 * Constructor to build DataNode with an ASTNode, used for UpFinder mostly
 	 * @param node= current SimpleName ASTNode selected
 	 */
-	public DataNode (ASTNode node) {
+	public DataNode (ASTNode node, String nodeType) {
 		if (node instanceof SimpleName) {
 			value = ((SimpleName) node).getIdentifier();
 			length = value.length();
-			type = "variable";
+			type = nodeType;
+			method = null;
 		}
 		else {
 			value = ((SingleVariableDeclaration) node).getName().getIdentifier();
 			length = node.getLength();
-			type = "parameter";
+			type = nodeType;
+			if(node.getParent() instanceof MethodDeclaration) {
+				method = ((MethodDeclaration) node.getParent()).getName().getIdentifier();
+			}
+			else if(node.getParent() instanceof MethodInvocation) {
+				method = ((MethodInvocation) node.getParent()).getName().getIdentifier();
+			}
 		}
 		index = node.getStartPosition();
 	}
@@ -41,10 +58,12 @@ public class DataNode {
 	 * @param val= Current variable name
 	 * @param start= start position of the current variable
 	 */
-	public DataNode (String val, int start) {
+	public DataNode (String val, int start, String nodeType) {
 		value = val;
 		index = start;
 		length = val.length();
+		type = nodeType;
+		method = null;
 	}
 	
 	/**
@@ -52,7 +71,7 @@ public class DataNode {
 	 * @returns variable name
 	 */
 	public String getValue() {
-		return value;
+		return this.value;
 	}
 	
 	/**
@@ -60,15 +79,40 @@ public class DataNode {
 	 * @returns variable start position
 	 */
 	public int getStartPosition() {
-		return index;
+		return this.index;
 	}
 	
 	/**
 	 * Gets the length of the data for highlighting
-	 * @returns variable length
+	 * @returns int variable length
 	 */
 	public int getLength() {
-		return length;
+		return this.length;
+	}
+	
+	/**
+	 * Gets the type of the DataNode
+	 * @returns String of data type
+	 */
+	public String getType() {
+		return this.type;
+	}
+	
+	/**
+	 * Gets the name of the method of the node if one exists
+	 * @returns string method
+	 */
+	public String getMethod() {
+		return this.method;
+	}
+	
+	/**
+	 * Checks to see if current node is a parameter or used as one. Used in call hierarchy search
+	 * for entire project.
+	 * @returns true if node is a parameter, else false
+	 */
+	public boolean isParameter() {
+		return (this.type.equals(PARAM_UP) || this.type.equals(PARAM_DOWN));
 	}
 
 }
