@@ -14,6 +14,8 @@ import java.util.Stack;
 
 import javax.xml.transform.Source;
 
+import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
@@ -26,6 +28,7 @@ import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
@@ -39,6 +42,8 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jface.text.Position;
+import org.eclipse.jdt.core.ICompilationUnit;
+import org.eclipse.jdt.core.IJavaElement;
 
 import edu.pdx.cs.multiview.jdt.util.JDTUtils;
 
@@ -92,7 +97,7 @@ class Visitor extends ASTVisitor{
 		int index = source.indexOf(currentData);
 		while(index >= 0) {
 			if(downFinder.variableCheck(currentData, index, source)) {
-				downFinder.add(currentData, index, DataNode.VAR);
+				downFinder.add(currentData, index, DataNode.VAR, null);
 			}
 			index = source.indexOf(currentData, index+1);
 		}
@@ -125,19 +130,27 @@ class Visitor extends ASTVisitor{
 		        }
 		        return true;
 		    }
-
+		    
+		    public boolean visit(ConstructorInvocation ci) {
+		    	System.out.println(ci.toString());
+		    	return true;
+		    }
 		    public boolean visit(MethodDeclaration md) {
 		    	if (!seenMethod.contains(md.getName())) {
 		    		seenMethod.add(md.getName());
 		    		String param = "";
+		    		String[] array = new String[md.parameters().size()];
+		    		int i = 0;
 		    		for (Object o: md.parameters()) {
+		    			array[i] = o.toString();
+		    			i++;
 		    			param = ((SingleVariableDeclaration) o).getName().getIdentifier();
 		    			data.add(param);
 		    			upFinder.add(param, (SingleVariableDeclaration) o, DataNode.PARAM_UP);
 		    			findOccurrences(param);
 		    		}
 		    		
-	               	md.accept(new ASTVisitor() {
+		    		md.accept(new ASTVisitor() {
 			            public boolean visit(VariableDeclarationFragment vdf) {
 			            	String var = vdf.getName().getIdentifier();
 			               	if (!data.contains(var)) {
@@ -157,6 +170,7 @@ class Visitor extends ASTVisitor{
 			            	findOccurrences(forStr);
 			            	return true;
 			            }
+			            
 			            public boolean visit(ForStatement fs) {
 			            	List<Expression> conds = fs.initializers();
 			            	for(ASTNode e: conds) {
@@ -172,11 +186,12 @@ class Visitor extends ASTVisitor{
 			            	}
 			            	return true;
 			            }
+			            
 			            public boolean visit(WhileStatement ws) {
 			            	String cond = ws.getExpression().toString();
 			            	for(String found: data) {
 			            		if(cond.contains(found)){
-			            			downFinder.add(found, ws.getExpression().getStartPosition() + cond.indexOf(found), DataNode.VAR);
+			            			downFinder.add(found, ws.getExpression().getStartPosition() + cond.indexOf(found), DataNode.VAR, null);
 			            		}
 			            		Statement body = ws.getBody();
 			            		findOccurrences(found);
@@ -201,13 +216,9 @@ class Visitor extends ASTVisitor{
 			            	List<ASTNode> args = mi.arguments();
 			            	for(ASTNode arg: args) {
 			            		if(data.contains(arg.toString())) {
-			            			downFinder.add(arg, DataNode.PARAM_DOWN);
+			            			downFinder.add(arg.toString(), arg.getStartPosition(), DataNode.PARAM_DOWN, mi.getName().getIdentifier());
 			            		}
 				            }
-			            	return true;
-			            }
-			            public boolean visit(Expression expr) {
-			            	//Other expressions
 			            	return true;
 			            }
 			        });

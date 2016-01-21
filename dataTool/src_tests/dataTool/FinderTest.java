@@ -49,7 +49,7 @@ public class FinderTest extends TestCase {
 	
 	public void testContains() {
 		DownFinder down = DownFinder.getInstance();
-		down.add("abc", 123, "TEST_TYPE");
+		down.add("abc", 123, "TEST_TYPE", "TEST_METHOD");
 		Finder f = new Finder(Finder.DOWN);
 		assert(f.contains("abc"));
 		assertFalse(f.contains("xyz"));
@@ -59,10 +59,10 @@ public class FinderTest extends TestCase {
 	
 	public void testGetOccurrences() {
 		DownFinder down = DownFinder.getInstance();
-		down.add("test", 0, "type");
-		down.add("test", 1, "type");
-		down.add("test", 2, "new_type");
-		down.add("data", 20, DataNode.VAR);
+		down.add("test", 0, "type", "");
+		down.add("test", 1, "type", "method");
+		down.add("test", 2, "new_type", "new_method");
+		down.add("data", 20, DataNode.VAR, null);
 		Finder f = new Finder(Finder.DOWN);
 		ArrayList<DataNode> testList = f.getOccurrences("test");
 		ArrayList<DataNode> dataList = f.getOccurrences("data");

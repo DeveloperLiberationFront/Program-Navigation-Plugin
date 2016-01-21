@@ -1,6 +1,7 @@
 package dataTool.ui;
 
 import java.awt.MouseInfo;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
@@ -17,8 +18,12 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Widget;
 
 import dataTool.Finder;
 
@@ -41,7 +46,7 @@ public class NavigationUpBox extends NavigationBox {
 		}
 		return instance;
 	}
-	public void showLabel(String text) {
+	public void showLabel(Object text, boolean param) {
 		if(shell != null) {
 			dispose();
 		}
@@ -72,11 +77,27 @@ public class NavigationUpBox extends NavigationBox {
 				upButton.setSelection(false);
 				NavigationDownBox down = NavigationDownBox.getInstance(widget, offset);
 				dispose();
-				down.showLabel(text);
+				down.showLabel("", param);
 			}
 	    });
-	    Label label = new Label(composite, SWT.NONE);
-	    label.setText(text);
+	    if(!param) {
+	    	Label label = new Label(composite, SWT.NONE);
+	    	label.setText((String) text);
+	    }
+	    else {
+	    	for(Object l: (List<DataLink>)text) {
+	    		Link link = new Link(composite, SWT.WRAP);
+		    	link.setText(((DataLink) l).getText());
+		    	link.addListener(SWT.Selection, new Listener() {
+	
+		    		@Override
+					public void handleEvent(Event arg0) {
+					// 	TODO Auto-generated method stub
+						System.out.println(((DataLink)l).getLocation());
+					}			    	
+		    	});
+		    }
+	    }
 	    shell.setSize(super.WIDTH, super.HEIGHT);
 	    shell.setLocation((int)MouseInfo.getPointerInfo().getLocation().getX()-(super.WIDTH/2),(int)MouseInfo.getPointerInfo().getLocation().getY()-super.HEIGHT);
 	    shell.open();

@@ -28,6 +28,8 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	private boolean isEnabled = false;
 	
 	public static String project;
+	public static String file;
+	public static String path;
 	
 	public void dispose() {
 		if(annotationManager!=null)
@@ -42,6 +44,8 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	private void enable(IEditorPart activeEditor) {
 		String[] path = activeEditor.getTitleToolTip().split("/");
 		project = path[0];
+		file = activeEditor.getTitle();
+		this.path = activeEditor.getEditorInput().toString().replace("org.eclipse.ui.part.FileEditorInput(", "").replace(")","");
 		if(page.getActiveEditor()!=null)
 			annotationManager = new AnnotationManager((AbstractDecoratedTextEditor)activeEditor);
 	}
@@ -72,9 +76,8 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	}
 
 	public void run(IAction action) {
-		
+		//JavaCore.cre
 		try {
-			
 			if(!isEnabled )
 				enable(page.getActiveEditor());	
 				

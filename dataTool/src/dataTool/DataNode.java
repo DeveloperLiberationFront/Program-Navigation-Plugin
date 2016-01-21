@@ -30,7 +30,7 @@ public class DataNode {
 	
 	/**
 	 * Constructor to build DataNode with an ASTNode, used for UpFinder mostly
-	 * @param node= current SimpleName ASTNode selected
+	 * @param node: current SimpleName ASTNode selected
 	 */
 	public DataNode (ASTNode node, String nodeType) {
 		if (node instanceof SimpleName) {
@@ -46,9 +46,6 @@ public class DataNode {
 			if(node.getParent() instanceof MethodDeclaration) {
 				method = ((MethodDeclaration) node.getParent()).getName().getIdentifier();
 			}
-			else if(node.getParent() instanceof MethodInvocation) {
-				method = ((MethodInvocation) node.getParent()).getName().getIdentifier();
-			}
 		}
 		index = node.getStartPosition();
 	}
@@ -58,12 +55,12 @@ public class DataNode {
 	 * @param val= Current variable name
 	 * @param start= start position of the current variable
 	 */
-	public DataNode (String val, int start, String nodeType) {
+	public DataNode (String val, int start, String nodeType, String call) {
 		value = val;
 		index = start;
 		length = val.length();
 		type = nodeType;
-		method = null;
+		method = call;
 	}
 	
 	/**
@@ -103,7 +100,10 @@ public class DataNode {
 	 * @returns string method
 	 */
 	public String getMethod() {
-		return this.method;
+		if(isParameter()) {
+			return this.method;
+		}
+		return null;
 	}
 	
 	/**
@@ -112,7 +112,14 @@ public class DataNode {
 	 * @returns true if node is a parameter, else false
 	 */
 	public boolean isParameter() {
-		return (this.type.equals(PARAM_UP) || this.type.equals(PARAM_DOWN));
+		Finder f = Finder.getInstance();
+		if(f.getFlowDirection().equals(Finder.UP)) {
+			return type.equals(PARAM_UP);
+		}
+		else if(f.getFlowDirection().equals(Finder.DOWN)) {
+			return type.equals(PARAM_DOWN);
+		}
+		return false;
 	}
 
 }

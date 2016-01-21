@@ -1,5 +1,7 @@
 package dataTool.ui;
 
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Composite;
@@ -8,8 +10,8 @@ import org.eclipse.swt.widgets.Shell;
 import dataTool.Finder;
 
 public class NavigationBox {
-	final public static int WIDTH = 80;
-	final public static int HEIGHT = 180;
+	public static int WIDTH = 60;
+	public static int HEIGHT = 80;
 	
 	private Shell shell;
 	private StyledText widget;
@@ -24,19 +26,28 @@ public class NavigationBox {
 	/**
 	 * Displays NavigationBox based on the user's current direction
 	 */
-	public void showLabel(String text) {
+	public void showLabel(Object text, boolean parameter) {
 		Finder finder = Finder.getInstance();
+		if(parameter) {
+			HEIGHT = HEIGHT + (((ArrayList)text).size()*20);
+			WIDTH = WIDTH*3;
+		}
 		if(finder.getFlowDirection().equals(Finder.UP)) {
-			currentBox = NavigationUpBox.getInstance(widget, offset);
-			currentBox.showLabel(text);
+			NavigationUpBox up = NavigationUpBox.getInstance(widget, offset);
+			up.showLabel(text, parameter);
+			currentBox = up;
 		}
 		else if(finder.getFlowDirection().equals(Finder.DOWN)) {
-			currentBox = NavigationDownBox.getInstance(widget, offset);
-			currentBox.showLabel(text);
+			NavigationDownBox down = NavigationDownBox.getInstance(widget, offset);
+			down.showLabel(text, parameter);
+			currentBox = down;
 		}
-		else {
-			//Something went very wrong
-		}
+		resetSize();
+	}
+	
+	private void resetSize() {
+		HEIGHT = 80;
+		WIDTH = 60;
 	}
 	
 	public void dispose() {

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -93,26 +94,5 @@ public class UpFinder extends Finder {
 	 */
 	public ArrayList<DataNode> getUpOccurrences(String s) {
 		return map.get(s);
-	}
-	
-	public String searchProjectUp(String project, String method) throws CoreException {
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-	    IJavaProject javaProject = JavaCore.create(root.getProject(project));
-	    System.out.println(javaProject.exists());
-	    System.out.println(javaProject.isOpen());
-	    String match;
-	    SearchPattern pattern = SearchPattern.createPattern(method, IJavaSearchConstants.METHOD, IJavaSearchConstants.REFERENCES, SearchPattern.R_CASE_SENSITIVE);
-	    IJavaElement[] jProjects = new IJavaElement[] {javaProject};
-	    IJavaSearchScope scope = SearchEngine.createJavaSearchScope(jProjects, false);
-	    SearchRequestor requestor = new SearchRequestor() {
-			@Override
-			public void acceptSearchMatch(SearchMatch arg0) throws CoreException {
-				searchMatch = arg0.getElement().toString();
-			}
-	    };
-	    SearchEngine search = new SearchEngine();
-	    search.search(pattern, new SearchParticipant[] {SearchEngine.getDefaultSearchParticipant()}, scope, requestor, null);
-	    //String results = super.parseSearchResults(searchMatch);
-	    return searchMatch;
 	}
 }

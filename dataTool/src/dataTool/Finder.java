@@ -41,24 +41,6 @@ public class Finder {
 		return null;
 	}
 	
-	public String searchProject(String method) {
-		String projectName = EnableNavigationAction.project;
-		if(findDirection.equals(UP)) {
-			UpFinder finder = UpFinder.getInstance();
-			try {
-				return finder.searchProjectUp(projectName, method);
-			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		else if(findDirection.equals(DOWN)) {
-			DownFinder finder = DownFinder.getInstance();
-			return finder.searchProjectDown(projectName, method);
-		}
-		return null;
-	}
-	
 	/**
 	 * Controls which flow the tool will navigate to show data flow
 	 * @param s: Direction for flow display, required to be UP or DOWN

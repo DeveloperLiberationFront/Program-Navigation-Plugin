@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.internal.ui.search.IOccurrencesFinder.OccurrenceLocation;
@@ -34,9 +35,11 @@ import edu.pdx.cs.multiview.jface.annotation.AnnotationPainter;
 import edu.pdx.cs.multiview.jface.annotation.ISelfDrawingAnnotation;
 
 import dataTool.AnnotationManager;
+import dataTool.DataCallHierarchy;
 import dataTool.DataNode;
 import dataTool.Finder;
 import dataTool.UpFinder;
+import dataTool.ui.DataLink;
 import dataTool.ui.NavigationBox;
 import dataTool.ui.NavigationDownBox;
 import dataTool.ui.NavigationUpBox;
@@ -207,7 +210,11 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 		String word;
 		OccurrenceLocation[] locations = null;
 		Finder finder = Finder.getInstance();
+		DataCallHierarchy call = new DataCallHierarchy();
 		boolean param = false;
+		Object text = null;
+		HashSet<String> methods = new HashSet<String>();
+		ArrayList<DataLink> paramLinks = new ArrayList<DataLink>();
 		for(Map.Entry<ISelfDrawingAnnotation,Position> entry : anns.entrySet()){
 			ann = entry.getKey();
 			p = entry.getValue();
@@ -220,15 +227,29 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 					//Highlight all instances in class
 					for (DataNode node: finder.getOccurrences(word)) {
 						param = node.isParameter();
+						if(param) {
+							methods.add(node.getMethod());
+							try {
+								paramLinks.addAll(call.searchProject(node.getMethod()));
+							} catch (CoreException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
 						ann.draw(e.gc,viewer.getTextWidget(),node.getStartPosition(),node.getLength());
 					}
 				}
 				if(!isActive) {
 					isActive = true;
 					if(box != null) { box.dispose(); }
+					if(!param) {
+						text = word; 
+					}
+					else {
+						text = paramLinks;
+					}
 					box = new NavigationBox(viewer.getTextWidget(),r.getOffset());
-					String text = "";
-					box.showLabel(text);
+					box.showLabel(text, param);
 				}
 			}
 		}

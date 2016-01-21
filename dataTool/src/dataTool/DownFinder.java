@@ -49,9 +49,9 @@ public class DownFinder extends Finder {
 	 * @param s: String name of the variable
 	 * @param node: ASTNode containing the variable declaration
 	 */
-	public static void add(String key, int start, String type) {
+	public static void add(String key, int start, String type, String method) {
 		ArrayList<DataNode> list;
-		DataNode dn = new DataNode(key, start, type);
+		DataNode dn = new DataNode(key, start, type, method);
 		if (!map.containsKey(key)) {
 			list = new ArrayList<DataNode>();
 			list.add(dn);
