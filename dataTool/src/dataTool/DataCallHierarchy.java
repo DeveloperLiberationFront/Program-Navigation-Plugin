@@ -1,8 +1,10 @@
 package dataTool;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -47,9 +49,17 @@ public class DataCallHierarchy {
 	private String className;
 	private String location;
 	private ICompilationUnit cUnit;
+	private HashMap<String, ArrayList<DataLink>> results;
+	
+	public String goTo = null;
+	public int goToOffset;
 	
 	public DataCallHierarchy() {
 		
+	}
+	
+	public void setGoTo(int offset) {
+		goToOffset = offset;
 	}
 	
 	public HashSet<IMethod> getCalls(IMethod m) {
@@ -123,11 +133,17 @@ public class DataCallHierarchy {
 	 * @returns String of next method name
 	 * @throws CoreException
 	 */
-	public ArrayList<DataLink> searchProject(String method) throws CoreException {
-		ArrayList<DataLink> results = new ArrayList<DataLink>();
+	public HashMap<String, ArrayList<DataLink>> searchProject(String method) throws CoreException {
+		results = new HashMap<String, ArrayList<DataLink>>();
 		String projectName = EnableNavigationAction.project;
 		String path = EnableNavigationAction.path;
-		String projectPath = path.substring(path.indexOf("/src/")+5,path.lastIndexOf("/")).replace("/", ".");
+		String projectPath;
+		if(path.contains("/src/")) {
+			projectPath = path.substring(path.indexOf("/src/")+5,path.lastIndexOf("/")).replace("/", ".");
+		}
+		else {
+			projectPath = path;
+		}
 		String projectFile = EnableNavigationAction.file;
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 	    IProject project = root.getProject(projectName);
@@ -139,46 +155,27 @@ public class DataCallHierarchy {
 	    cUnit = frag.getCompilationUnit(projectFile);
 	    IType type = cUnit.getType(projectFile.replace(".java", ""));
 	    HashSet<IMethod> calls = null;
+		ArrayList<DataLink> links = new ArrayList<DataLink>();
 	    for(IMethod im: type.getMethods()){
 	    	if(im.getElementName().equals(method)) {
 	    		calls = getCalls(im);
 	    		for(IMethod mem: calls) {
-	    			//results += mem.getElementName() + "\n";
-	    			results.add(new DataLink(mem.getElementName(), mem.toString()));
+	    			links.add(new DataLink(mem, mem.getElementName(), mem.getPath().toString()));
 	    			searchMatch = mem.toString();
 	    		}
 	    	}
 	    }
+	    results.put(Finder.UP, links);
 	    if(calls == null) {
-	    	results.add(processRootDirectory(method));
+	    	results.put(Finder.DOWN, processRootDirectory(method));
 	    }
 	    return results;
 	}
 	
-	/**
-	 * Function to parse the output from the search function above
-	 * @param s: String of search results
-	 */
-	private void parseSearchResults(String s) {
-		System.out.println(s);
-		method = s.substring(s.indexOf(" ")+1,s.indexOf("("));
-		parameters = s.substring(s.indexOf("("),s.indexOf(")")+1);
-		String temp[] = s.substring(s.indexOf("[")).split("\\[in ");
-		String tempLoc = "";
-		for(int i = 1; i < temp.length; i++) {
-			String str = temp[i].trim().replace("[Working copy] ","").replace("]","");
-			if(i==1) {
-				className = str;
-				continue;
-			}
-			tempLoc = str+"."+tempLoc;
-		}
-		location = tempLoc.substring(0,tempLoc.length()-1);
-	}
-	
-	private DataLink processRootDirectory(String method) throws JavaModelException,CoreException {
+	private ArrayList<DataLink> processRootDirectory(String method) throws JavaModelException,CoreException {
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();		
 		IProject[] projects = root.getProjects();
+		ArrayList<DataLink> links = new ArrayList<DataLink>();
 		
 		// process each project
 		for (IProject project : projects) {
@@ -199,7 +196,7 @@ public class DataCallHierarchy {
 								for (IMethod imethod : methods) {
 									if(imethod.getElementName().equals(method)) {
 										searchMatch = method.toString();
-										return new DataLink(imethod.getElementName(), imethod.toString());
+										links.add(new DataLink(imethod, imethod.getElementName(),imethod.getPath().toString()));
 									}
 								}
 							}
@@ -209,6 +206,10 @@ public class DataCallHierarchy {
 			}
 
 		}
-		return new DataLink(DataLink.INVALID, DataLink.INVALID_DESC);
+		if(links.isEmpty())
+		{
+			links.add(new DataLink(null, DataLink.INVALID, DataLink.INVALID_DESC));
+		}
+		return links;
 	}
 }

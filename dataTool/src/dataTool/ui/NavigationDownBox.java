@@ -1,9 +1,11 @@
 package dataTool.ui;
 
 import java.awt.MouseInfo;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -12,16 +14,21 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 
 import dataTool.Finder;
 
@@ -30,6 +37,7 @@ public class NavigationDownBox extends NavigationBox {
 	private StyledText widget;
 	private int offset;
 	private static NavigationDownBox instance;
+	private static boolean resize = false;
 	
 	private NavigationDownBox(StyledText text, int start) {
 		super(text, SWT.BORDER);
@@ -38,66 +46,58 @@ public class NavigationDownBox extends NavigationBox {
 	}
 	
 	public static NavigationDownBox getInstance(StyledText text, int start) {
+		resize = false;
 		if(instance == null) {
 			instance = new NavigationDownBox(text, start);
 		}
 		return instance;
 	}
 	
-	public void showLabel(Object text, boolean param) {
+	public void showLabel() {
 		if(shell != null) {
 			dispose();
 		}
-		Finder finder = Finder.getInstance();
-		finder.setFlowDirection(Finder.DOWN);
 		Display display = Display.getDefault();
-	    shell = new Shell();
+	    shell = new Shell(display, SWT.ON_TOP);
 	    shell.setLayout(new FillLayout());
-	    Composite composite = new Composite(shell, SWT.NULL);
-	    composite.setLayout(new RowLayout());
-	    Button upButton = new Button(composite, SWT.RADIO);
-	    upButton.setText("Up");
-	    upButton.setSelection(false);
-	    Button downButton = new Button(composite, SWT.RADIO);
-	    downButton.setText("Down");
-	    downButton.setSelection(true);
-	    upButton.addSelectionListener(new SelectionListener() {
+
+    	Monitor primary = display.getPrimaryMonitor();
+        Rectangle bounds = primary.getBounds();
+    	Canvas c = (Canvas) widget.getParent();
+    	Composite comp = c.getParent();
+    	comp.addListener(SWT.Resize, new Listener() {
 
 			@Override
-			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
+			public void handleEvent(Event arg0) {
+				if(!resize) {
+					resize = true;
+					showLabel();
+				}
 			}
-
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				downButton.setSelection(false);
-				NavigationUpBox up = NavigationUpBox.getInstance(widget, offset);
-				dispose();
-				up.showLabel("", param);
-			}	
-	    });
-	    if(!param) {
-	    	Label label = new Label(composite, SWT.NONE);
-	    	label.setText((String) text);
-	    }
-	    else {
-	    	for(Object l: (List<DataLink>)text) {
+    		
+    	});
+        shell.setSize(comp.getClientArea().width-30, comp.getClientArea().height/5);
+	    shell.setLocation(comp.toDisplay(comp.getLocation()).x,comp.toDisplay(comp.getLocation()).y+(c.getClientArea().height-comp.getClientArea().height/5)-15);
+	    shell.open();
+	}
+	
+	public void setText(ArrayList<DataLink> text) {
+		Finder finder = Finder.getInstance();
+		Composite composite = new Composite(shell, SWT.NULL);
+	    composite.setLayout(new RowLayout());
+	    if(text != null) {
+	    	for(DataLink l: text) {
 	    		Link link = new Link(composite, SWT.WRAP);
-		    	link.setText(((DataLink) l).getText());
+		    	link.setText(l.getText());
 		    	link.addListener(SWT.Selection, new Listener() {
 	
 		    		@Override
 					public void handleEvent(Event arg0) {
-					// 	TODO Auto-generated method stub
-						System.out.println(((DataLink)l).getLocation());
+						l.open(finder.getGoToIndex());
 					}			    	
 		    	});
-		    }
+	    	}
 	    }
-	    shell.setSize(super.WIDTH, super.HEIGHT);
-	    shell.setLocation((int)MouseInfo.getPointerInfo().getLocation().getX()-(super.WIDTH/2),(int)MouseInfo.getPointerInfo().getLocation().getY());
-	    shell.open();
 	}
 	
 	public void dispose() {

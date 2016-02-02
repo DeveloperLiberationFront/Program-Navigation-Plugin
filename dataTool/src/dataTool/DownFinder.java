@@ -154,14 +154,4 @@ public class DownFinder extends Finder {
 		}
 		return false;
 	}
-
-	public static String searchProjectDown(String project, String method) {
-		//TODO
-		/*
-		 * http://stackoverflow.com/questions/13980726/using-search-engine-to-implement-call-hierarchy-getting-all-the-methods-that-in
-		 */
-		IWorkspaceRoot root= ResourcesPlugin.getWorkspace().getRoot();
-	    IProject iProject= root.getProject(project);
-	    return "";
-	}
 }

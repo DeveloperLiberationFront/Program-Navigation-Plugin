@@ -100,26 +100,23 @@ public class DataNode {
 	 * @returns string method
 	 */
 	public String getMethod() {
-		if(isParameter()) {
+		if(isParameter(index)) {
 			return this.method;
 		}
 		return null;
 	}
 	
 	/**
-	 * Checks to see if current node is a parameter or used as one. Used in call hierarchy search
-	 * for entire project.
+	 * Checks to see if current node is a parameter, only want to display box when actual
+	 * param is selected
 	 * @returns true if node is a parameter, else false
 	 */
-	public boolean isParameter() {
+	public boolean isParameter(int pos) {
 		Finder f = Finder.getInstance();
-		if(f.getFlowDirection().equals(Finder.UP)) {
-			return type.equals(PARAM_UP);
+		if(pos < index || pos > index+length) {
+			return false;
 		}
-		else if(f.getFlowDirection().equals(Finder.DOWN)) {
-			return type.equals(PARAM_DOWN);
-		}
-		return false;
+		return (type.equals(PARAM_UP) || (type.equals(PARAM_DOWN)));
 	}
 
 }

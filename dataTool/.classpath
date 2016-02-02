@@ -8,5 +8,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src_tests"/>
+	<classpathentry kind="lib" path="C:/Users/Chris/Documents/Classes/NC State/research/org.eclipse.ui.articles.views/views.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

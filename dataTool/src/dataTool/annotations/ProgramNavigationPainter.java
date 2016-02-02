@@ -29,6 +29,7 @@ import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.ui.PlatformUI;
 
 import edu.pdx.cs.multiview.jface.annotation.AnnTransaction;
 import edu.pdx.cs.multiview.jface.annotation.AnnotationPainter;
@@ -61,6 +62,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	private Map<ISelfDrawingAnnotation,Position> anns = new HashMap<ISelfDrawingAnnotation,Position>();
 	private boolean isActive = false;
 	private NavigationBox box;
+	private boolean painted = false;
 	
 	public ProgramNavigationPainter(SourceViewer v) {
 		super(v);
@@ -148,10 +150,6 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	public void removeAllAnnotations(){
 		Collection<Position> positions = new ArrayList<Position>(anns.values());
 		anns.clear();
-		isActive = false;
-		if(box!=null) {
-			box.dispose();
-		}
 		fireAnnotationChangedEvent(positions);
 	}
 
@@ -211,10 +209,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 		OccurrenceLocation[] locations = null;
 		Finder finder = Finder.getInstance();
 		DataCallHierarchy call = new DataCallHierarchy();
-		boolean param = false;
-		Object text = null;
-		HashSet<String> methods = new HashSet<String>();
-		ArrayList<DataLink> paramLinks = new ArrayList<DataLink>();
+		HashMap<String, ArrayList<DataLink>> map = new HashMap<String, ArrayList<DataLink>>();		
 		for(Map.Entry<ISelfDrawingAnnotation,Position> entry : anns.entrySet()){
 			ann = entry.getKey();
 			p = entry.getValue();
@@ -223,33 +218,30 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 			//draw the annotation only if it's visible
 			if(r!=null) {
 				ann.draw(e.gc, viewer.getTextWidget(),r.getOffset(),r.getLength());
+				if(!isActive) {
+					isActive = true;
+					box = new NavigationBox(viewer.getTextWidget(),r.getOffset());
+					box.showLabels();
+				}
 				if(finder.contains(word)) {
 					//Highlight all instances in class
 					for (DataNode node: finder.getOccurrences(word)) {
-						param = node.isParameter();
-						if(param) {
-							methods.add(node.getMethod());
+						if(node.isParameter(r.getOffset())) {
+							//Only display pop-up if selected text is a parameter
+							finder.setGoToFunc(word);
 							try {
-								paramLinks.addAll(call.searchProject(node.getMethod()));
-							} catch (CoreException e1) {
+								map = call.searchProject(node.getMethod());
+								if(!map.isEmpty()) {
+									box.setText(map);
+								}
+							} 
+							catch (CoreException e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
 						}
 						ann.draw(e.gc,viewer.getTextWidget(),node.getStartPosition(),node.getLength());
 					}
-				}
-				if(!isActive) {
-					isActive = true;
-					if(box != null) { box.dispose(); }
-					if(!param) {
-						text = word; 
-					}
-					else {
-						text = paramLinks;
-					}
-					box = new NavigationBox(viewer.getTextWidget(),r.getOffset());
-					box.showLabel(text, param);
 				}
 			}
 		}

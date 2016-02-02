@@ -17,7 +17,7 @@
                icon="icons/data.gif"
                id="dataTool.action1"
                label="Find EOS"
-               style="toggle"
+               style="menu"
                toolbarPath="TempGroup"
                tooltip="Highlights flow of data within your code"/>
       </actionSet>
@@ -25,5 +25,4 @@
    <extension
          point="org.eclipse.ui.commands">
    </extension>
-
 </plugin>

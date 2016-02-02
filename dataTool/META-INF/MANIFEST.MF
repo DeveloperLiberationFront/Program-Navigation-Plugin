@@ -17,6 +17,9 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources,
  org.eclipse.ui.workbench,
  org.eclipse.equinox.registry,
- org.eclipse.jdt.ui
+ org.eclipse.jdt.ui,
+ org.eclipse.ui.ide;bundle-version="3.11.0",
+ org.eclipse.ui.ide.application;bundle-version="1.1.0",
+ org.eclipse.text
 Eclipse-LazyStart: true
 Import-Package: org.eclipse.jdt.internal.ui.search

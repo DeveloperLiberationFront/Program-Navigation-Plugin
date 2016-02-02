@@ -4,59 +4,63 @@ import java.util.ArrayList;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import junit.framework.TestCase;
 
 public class FinderTest extends TestCase {
 	
+	private Finder finder;
+	
+	@Before
 	public void setUp() {
-		
+		finder = finder.getInstance();
+		finder.setFlowDirection(Finder.UP);
 	}
 	
+	@Test
 	public void testGetInstance() {
-		Finder f = new Finder(Finder.UP);
-		assert(f instanceof UpFinder);
+		assert(finder instanceof UpFinder);
 		
-		f.setFlowDirection(Finder.DOWN);
-		f = Finder.getInstance();
-		assert(f instanceof DownFinder);
+		finder.setFlowDirection(Finder.DOWN);
+		finder = Finder.getInstance();
+		assert(finder instanceof DownFinder);
 		
-		f.setFlowDirection("middle");
+		finder.setFlowDirection("middle");
 		try {
-			f = Finder.getInstance();
+			finder = Finder.getInstance();
 		}
 		catch (NullPointerException e) {
 			
 		}
-		assert(f == null);
-		reset(f);
+		assert(finder == null);
 	}
 	
+	@Test
 	public void testFlowDirection() {
-		Finder f = Finder.getInstance();
-		assertEquals(f.getFlowDirection(), Finder.UP);
+		assertEquals(finder.getFlowDirection(), Finder.UP);
 		
-		f.setFlowDirection(Finder.DOWN);
-		assertEquals(f.getFlowDirection(), Finder.DOWN);
-		f.setFlowDirection(Finder.DOWN);
-		assertEquals(f.getFlowDirection(), Finder.DOWN);
-		f.setFlowDirection("tester");
-		assertEquals(f.getFlowDirection(), null);
+		finder.setFlowDirection(Finder.DOWN);
+		assertEquals(finder.getFlowDirection(), Finder.DOWN);
 		
-		reset(f);
+		finder.setFlowDirection(Finder.DOWN);
+		assertEquals(finder.getFlowDirection(), Finder.DOWN);
+		
+		finder.setFlowDirection("tester");
+		assertEquals(finder.getFlowDirection(), null);
 	}
 	
+	@Test
 	public void testContains() {
 		DownFinder down = DownFinder.getInstance();
 		down.add("abc", 123, "TEST_TYPE", "TEST_METHOD");
 		Finder f = new Finder(Finder.DOWN);
 		assert(f.contains("abc"));
 		assertFalse(f.contains("xyz"));
-		
-		reset(f);
 	}
 	
+	@Test
 	public void testGetOccurrences() {
 		DownFinder down = DownFinder.getInstance();
 		down.add("test", 0, "type", "");
@@ -68,14 +72,5 @@ public class FinderTest extends TestCase {
 		ArrayList<DataNode> dataList = f.getOccurrences("data");
 		assertEquals(testList.size(), 3);
 		assertEquals(dataList.size(), 1);
-		
-		reset(f);
-	}
-	/**
-	 * To fix errors with order tests are run and singleton pattern
-	 */
-	private void reset(Finder f) {
-		f.setFlowDirection(Finder.UP);
-		
 	}
 }

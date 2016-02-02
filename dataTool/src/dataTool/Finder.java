@@ -19,14 +19,34 @@ public class Finder {
 	private static String findDirection = UP; //default direction is up
 	private static Finder currentFinder;
 	private static Color currentColor;
+	private String goToName = null;
+	private int goToOffset = -1;
 	
 	public Finder () {
 		//Do nothing
 	}
 	
-	public Finder (String s) {
-		if (s.equals(UP) || s.equals(DOWN))
-			setFlowDirection(s);
+	public void setGoToIndex(int offset) {
+		System.out.println(offset + " off");
+		goToOffset = offset;
+	}
+	
+	public void setGoToFunc(String name) {
+		goToName = name;
+	}
+	
+	public int getGoToIndex() {
+		if(goToOffset > 0) {
+			return goToOffset;
+		}
+		return -1;
+	}
+		
+	public String getGoToFunc() {
+		if(goToName != null) {
+			return goToName;
+		}
+		return null;
 	}
 	
 	public ArrayList<DataNode> getOccurrences(String data) {
@@ -45,7 +65,7 @@ public class Finder {
 	 * Controls which flow the tool will navigate to show data flow
 	 * @param s: Direction for flow display, required to be UP or DOWN
 	 */
-	public void setFlowDirection(String s) {
+	/*public void setFlowDirection(String s) {
 		if(s.equals(UP)) {
 			findDirection = s;
 			currentFinder = UpFinder.getInstance();
@@ -60,7 +80,7 @@ public class Finder {
 			//something went very wrong...
 			findDirection = null;
 		}
-	}
+	}*/
 	
 	/**
 	 * Function to return the current direction of the flow navigation.

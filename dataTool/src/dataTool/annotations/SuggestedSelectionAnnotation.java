@@ -25,8 +25,7 @@ public class SuggestedSelectionAnnotation extends Annotation implements ISelfDra
 	public void draw(GC gc, StyledText textWidget, int offset, int length) {
 		gc.setBackground(color);
 		gc.setAlpha(50);
-		textWidget.getDisplay().getData();
-
+		
 		Point lineStart = textWidget.getLocationAtOffset(offset);
 		int nextLineOffset = textWidget.getOffsetAtLine(textWidget.getLineAtOffset(offset)+1);
 		Point nextLineStart = textWidget.getLocationAtOffset(nextLineOffset);
