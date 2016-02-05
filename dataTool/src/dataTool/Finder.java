@@ -16,7 +16,6 @@ public class Finder {
 	final public static String UP = "up";
 	final public static String DOWN = "down";
 	
-	private static String findDirection = UP; //default direction is up
 	private static Finder currentFinder;
 	private static Color currentColor;
 	private String goToName = null;
@@ -27,7 +26,6 @@ public class Finder {
 	}
 	
 	public void setGoToIndex(int offset) {
-		System.out.println(offset + " off");
 		goToOffset = offset;
 	}
 	
@@ -49,44 +47,16 @@ public class Finder {
 		return null;
 	}
 	
+	/**
+	 * Returns the occurrences of the selected string in the class
+	 * @param data: current String value
+	 * @returns ArrayList of DataNodes for string
+	 */
 	public ArrayList<DataNode> getOccurrences(String data) {
-		if(findDirection.equals(UP)) {
-			UpFinder finder = UpFinder.getInstance();
-			return finder.getUpOccurrences(data);
-		}
-		else if(findDirection.equals(DOWN)) {
-			DownFinder finder = DownFinder.getInstance();
-			return finder.getDownOccurrences(data);
-		}
-		return null;
-	}
-	
-	/**
-	 * Controls which flow the tool will navigate to show data flow
-	 * @param s: Direction for flow display, required to be UP or DOWN
-	 */
-	/*public void setFlowDirection(String s) {
-		if(s.equals(UP)) {
-			findDirection = s;
-			currentFinder = UpFinder.getInstance();
-			SuggestedSelectionAnnotation.color = new Color(null, 0, 0, 255);
-		}
-		else if(s.equals(DOWN)) {
-			findDirection = s;
-			currentFinder = DownFinder.getInstance();
-			SuggestedSelectionAnnotation.color = new Color(null, 255, 0, 0);
-		}
-		else {
-			//something went very wrong...
-			findDirection = null;
-		}
-	}*/
-	
-	/**
-	 * Function to return the current direction of the flow navigation.
-	 */
-	public String getFlowDirection() {
-		return findDirection;
+		ArrayList<DataNode> occurrences = new ArrayList<DataNode>();
+		occurrences.addAll(UpFinder.getInstance().getUpOccurrences(data));
+		occurrences.addAll(DownFinder.getInstance().getDownOccurrences(data));
+		return occurrences;
 	}
 	
 	/**
@@ -95,20 +65,6 @@ public class Finder {
 	 * @returns true if current variable is a DataNode, else false
 	 */
 	public boolean contains(String str) {
-		return currentFinder.contains(str);
-	}
-	
-	/**
-	 * Function to get the finder instance
-	 * @returns the current finder instance searching in the appropriate direction.
-	 */
-	public static Finder getInstance() {
-		if(findDirection.equals(UP)) {
-			return UpFinder.getInstance();
-		}
-		else if(findDirection.equals(DOWN)){
-			return DownFinder.getInstance();
-		}
-		return null;
+		return (UpFinder.getInstance().contains(str) || DownFinder.getInstance().contains(str));
 	}
 }

@@ -112,7 +112,6 @@ public class DataNode {
 	 * @returns true if node is a parameter, else false
 	 */
 	public boolean isParameter(int pos) {
-		Finder f = Finder.getInstance();
 		if(pos < index || pos > index+length) {
 			return false;
 		}

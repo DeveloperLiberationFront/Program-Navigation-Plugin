@@ -89,7 +89,6 @@ public class NavigationUpBox extends NavigationBox {
 	}
 
 	public void setText(ArrayList<DataLink> text) {
-		Finder finder = Finder.getInstance();
 		Composite composite = new Composite(shell, SWT.NULL);
 	    composite.setLayout(new RowLayout());
 	    if(text != null) {
@@ -102,7 +101,7 @@ public class NavigationUpBox extends NavigationBox {
 			    	link.addListener(SWT.Selection, new Listener() {
 			    		@Override
 						public void handleEvent(Event arg0) {
-							l.open(finder.getGoToIndex());
+							l.open(10);
 						}			    	
 			    	});
 			    	Label blank = new Label(composite, SWT.NULL);

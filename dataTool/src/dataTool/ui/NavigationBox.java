@@ -49,6 +49,6 @@ public class NavigationBox {
 		NavigationDownBox down = NavigationDownBox.getInstance(null, -1);
 		up.setText(map.get(Finder.UP));
 		down.setText(map.get(Finder.DOWN));
-		
+		System.out.println(map.get(Finder.DOWN));		
 	}
 }

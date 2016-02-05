@@ -115,7 +115,6 @@ class Visitor extends ASTVisitor{
 		char[] code = source.toCharArray();
 		upFinder = UpFinder.getInstance();
 		downFinder = DownFinder.getInstance();
-		Finder finder = Finder.getInstance();
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(code);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -135,9 +134,6 @@ class Visitor extends ASTVisitor{
 		    public boolean visit(MethodDeclaration md) {
 		    	if (!seenMethod.contains(md.getName())) {
 		    		seenMethod.add(md.getName());
-		    		if(md.getName().getIdentifier().equals(finder.getGoToFunc())) {
-	            		finder.setGoToIndex(md.getStartPosition());
-	            	}
 		    		String param = "";
 		    		String[] array = new String[md.parameters().size()];
 		    		int i = 0;
@@ -213,9 +209,6 @@ class Visitor extends ASTVisitor{
 			            
 			            public boolean visit(MethodInvocation mi) {
 			            	List<ASTNode> args = mi.arguments();
-			            	if(finder.getFlowDirection().equals(Finder.UP) && mi.getName().getIdentifier().equals(finder.getGoToFunc())) {
-			            		finder.setGoToIndex(mi.getStartPosition());
-			            	}
 			            	for(ASTNode arg: args) {
 			            		if(data.contains(arg.toString())) {
 			            			downFinder.add(arg.toString(), arg.getStartPosition(), DataNode.PARAM_DOWN, mi.getName().getIdentifier());
@@ -237,6 +230,7 @@ class Visitor extends ASTVisitor{
 	public HashSet<String> getData() {
 		return data;
 	}
+	
 	/**
 	 * Adds the current node to list of nodes to be highlighted
 	 * @param node

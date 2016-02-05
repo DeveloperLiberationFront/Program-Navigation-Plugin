@@ -17,7 +17,7 @@
                icon="icons/data.gif"
                id="dataTool.action1"
                label="Find EOS"
-               style="menu"
+               style="toggle"
                toolbarPath="TempGroup"
                tooltip="Highlights flow of data within your code"/>
       </actionSet>

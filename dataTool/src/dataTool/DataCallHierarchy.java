@@ -62,15 +62,16 @@ public class DataCallHierarchy {
 		goToOffset = offset;
 	}
 	
+	/**
+	 * Returns all instances of method
+	 * @param m: IMethod to search for
+	 * @returns Set of IMethods for m
+	 */
 	public HashSet<IMethod> getCalls(IMethod m) {
-		Finder f = Finder.getInstance();
-		if(f instanceof UpFinder) {
-			return getCallersOf(m);
-		}
-		else if(f instanceof DownFinder) {
-			return getCalleesOf(m);
-		}
-		return null;
+		HashSet<IMethod> methods = new HashSet<IMethod>();
+		methods.addAll(getCallersOf(m));
+		methods.addAll(getCalleesOf(m));
+		return methods;
 	}
 	
 	public HashSet<IMethod> getCalleesOf(IMethod m) {

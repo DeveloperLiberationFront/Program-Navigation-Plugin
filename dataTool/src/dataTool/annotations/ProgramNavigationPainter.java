@@ -207,8 +207,8 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 		Position p;
 		String word;
 		OccurrenceLocation[] locations = null;
-		Finder finder = Finder.getInstance();
 		DataCallHierarchy call = new DataCallHierarchy();
+		Finder finder = new Finder();
 		HashMap<String, ArrayList<DataLink>> map = new HashMap<String, ArrayList<DataLink>>();		
 		for(Map.Entry<ISelfDrawingAnnotation,Position> entry : anns.entrySet()){
 			ann = entry.getKey();
@@ -228,7 +228,6 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 					for (DataNode node: finder.getOccurrences(word)) {
 						if(node.isParameter(r.getOffset())) {
 							//Only display pop-up if selected text is a parameter
-							finder.setGoToFunc(word);
 							try {
 								map = call.searchProject(node.getMethod());
 								if(!map.isEmpty()) {

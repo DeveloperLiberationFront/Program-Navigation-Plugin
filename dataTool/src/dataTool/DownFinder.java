@@ -111,9 +111,6 @@ public class DownFinder extends Finder {
 		if(sourceCode.substring(index+var.length(),index+var.length()+1).matches("[a-zA-Z0-9]") || sourceCode.substring(index-1,index).matches("[a-zA-Z0-9]")) {
 			return false;
 		}
-		if(isUp(var,index)) { 
-			return false; 
-		}
 		if(isComment(var, index, sourceCode)) {
 			return false;
 		}
@@ -134,23 +131,6 @@ public class DownFinder extends Finder {
 		if(temp.lastIndexOf("/**") > temp.lastIndexOf("*/") || temp.lastIndexOf("/*") > temp.lastIndexOf("*/")
 				|| temp.lastIndexOf("//") > temp.lastIndexOf("\n")) {
 			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Function that checks to see if the variable is not a declaration/initialization
-	 * @param var: String variable name
-	 * @param start: int start position
-	 * @returns true if variable is not "up", else false
-	 */
-	public boolean isUp(String var, int start) {
-		UpFinder up = UpFinder.getInstance();
-		ArrayList<DataNode> varList = up.getUpOccurrences(var);
-		for(DataNode node: varList) {
-			if(node.getStartPosition() <= start && node.getStartPosition()+node.getLength()+1 >= start) {
-				return true;
-			}
 		}
 		return false;
 	}
