@@ -231,7 +231,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 							try {
 								map = call.searchProject(node.getMethod());
 								if(!map.isEmpty()) {
-									box.setText(map);
+									//box.setText(map);
 								}
 							} 
 							catch (CoreException e1) {

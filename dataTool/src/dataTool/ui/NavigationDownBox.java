@@ -97,6 +97,9 @@ public class NavigationDownBox extends NavigationBox {
 		    	});
 	    	}
 	    }
+	    else {
+	    	shell.setText("");
+	    }
 	}
 	
 	public void dispose() {

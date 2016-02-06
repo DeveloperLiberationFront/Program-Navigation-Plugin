@@ -93,7 +93,6 @@ public class NavigationUpBox extends NavigationBox {
 	    composite.setLayout(new RowLayout());
 	    if(text != null) {
 	    	for(DataLink l: text) {
-	    		System.out.println(shell.getText());
 		    	if(!links.contains(l.getName())) {
 		    		links.add(l.getName());
 		    		Link link = new Link(composite, SWT.WRAP);
@@ -109,6 +108,9 @@ public class NavigationUpBox extends NavigationBox {
 				    setSize();
 		    	}
 	    	}
+	    }
+	    else {
+	    	shell.setText("");
 	    }
 	}
 

@@ -44,11 +44,11 @@ public class NavigationBox {
 		}
 	}
 
-	public void setText(HashMap<String, ArrayList<DataLink>> map) {
+	/*public void setText(HashMap<String, ArrayList<DataLink>> map) {
 		NavigationUpBox up = NavigationUpBox.getInstance(null, -1);
 		NavigationDownBox down = NavigationDownBox.getInstance(null, -1);
 		up.setText(map.get(Finder.UP));
 		down.setText(map.get(Finder.DOWN));
 		System.out.println(map.get(Finder.DOWN));		
-	}
+	}*/
 }
