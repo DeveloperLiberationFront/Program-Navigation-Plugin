@@ -46,154 +46,159 @@ import dataTool.ui.NavigationDownBox;
 import dataTool.ui.NavigationUpBox;
 
 /**
- * Class to handle the annotation painting for the Program Navigation Plugin. Basically
- * the only difference between this and AnnotationPainter is the paintControl function
- * that performs the search and highlights multiple positions.
+ * Class to handle the annotation painting for the Program Navigation Plugin.
+ * Basically the only difference between this and AnnotationPainter is the
+ * paintControl function that performs the search and highlights multiple
+ * positions.
  * 
  * @author Chris
  */
 public class ProgramNavigationPainter extends AnnotationPainter {
-	
+
 	/*
 	 * remove this field and detangle
 	 */
 	private Set<ISelectionChangedListener> listeners = new HashSet<ISelectionChangedListener>();
 	private SourceViewer viewer;
-	private Map<ISelfDrawingAnnotation,Position> anns = new HashMap<ISelfDrawingAnnotation,Position>();
+	private Map<ISelfDrawingAnnotation, Position> anns = new HashMap<ISelfDrawingAnnotation, Position>();
 	private boolean isActive = false;
 	private NavigationBox box;
 	private boolean painted = false;
-	
+
 	public ProgramNavigationPainter(SourceViewer v) {
 		super(v);
 		viewer = v;
-		viewer.getTextWidget().addPaintListener(this);	
+		viewer.getTextWidget().addPaintListener(this);
 	}
-	
-	public void addSelectionChangedListener(ISelectionChangedListener listener){
+
+	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		listeners.add(listener);
 	}
-	
-	public void removeSelectionChangedListener(ISelectionChangedListener listener){
+
+	public void removeSelectionChangedListener(ISelectionChangedListener listener) {
 		listeners.remove(listener);
 	}
-	
-	private void fireSelectionEvent(){
-		SelectionChangedEvent e = new SelectionChangedEvent(this,getSelection());
-		for(ISelectionChangedListener l : listeners)
+
+	private void fireSelectionEvent() {
+		SelectionChangedEvent e = new SelectionChangedEvent(this, getSelection());
+		for (ISelectionChangedListener l : listeners)
 			l.selectionChanged(e);
 	}
-	
+
 	/**
 	 * @param annotation
 	 * 
-	 * @return	the position of the given parameter, or null if none
+	 * @return the position of the given parameter, or null if none
 	 */
 	public Position getPosition(ISelfDrawingAnnotation annotation) {
 		return anns.get(annotation);
 	}
 
 	/**
-	 * @see IAnnotationModelExtension#replaceAnnotations(org.eclipse.jface.text.source.Annotation[], Map)
+	 * @see IAnnotationModelExtension#replaceAnnotations(org.eclipse.jface.text.source.Annotation[],
+	 *      Map)
 	 * 
 	 * @deprecated use replaceAnnotations(AnnTransaction) instead
 	 */
 	public void replaceAnnotations(ISelfDrawingAnnotation[] remove, Map<ISelfDrawingAnnotation, Position> add) {
-		
+
 		List<Position> positions = new ArrayList<Position>();
-		
-		if(remove!=null)
-			for(ISelfDrawingAnnotation r : remove){
+
+		if (remove != null)
+			for (ISelfDrawingAnnotation r : remove) {
 				Position p = anns.remove(r);
-				if(p!=null)
+				if (p != null)
 					positions.add(p);
 			}
-		
-		if(add!=null){
+
+		if (add != null) {
 			anns.putAll(add);
 			positions.addAll(add.values());
 		}
-			
+
 		fireAnnotationChangedEvent(positions);
 	}
-	
-	public void replaceAnnotations(AnnTransaction trans){
+
+	public void replaceAnnotations(AnnTransaction trans) {
 		trans.replaceAnnotations(this);
 	}
 
 	/**
-	 * @see AnnotationModel#addAnnotation(org.eclipse.jface.text.source.Annotation, Position)
+	 * @see AnnotationModel#addAnnotation(org.eclipse.jface.text.source.Annotation,
+	 *      Position)
 	 */
-	public void addAnnotation(ISelfDrawingAnnotation a, Position p){
-		
-		anns.put(a,p);
+	public void addAnnotation(ISelfDrawingAnnotation a, Position p) {
+
+		anns.put(a, p);
 		List<Position> positions = new ArrayList<Position>(1);
 		positions.add(p);
 		fireAnnotationChangedEvent(positions);
 	}
-	
 
 	/**
 	 * @see AnnotationModel#removeAnnotation(org.eclipse.jface.text.source.Annotation)
 	 */
 	public void removeAnnotation(ISelfDrawingAnnotation ann) {
-		
+
 		Position position = anns.remove(ann);
-		
-		if(position!=null){
+
+		if (position != null) {
 			List<Position> positions = new ArrayList<Position>(1);
 			positions.add(position);
 			fireAnnotationChangedEvent(positions);
 		}
 	}
-	
-	public void removeAllAnnotations(){
+
+	public void removeAllAnnotations() {
 		Collection<Position> positions = new ArrayList<Position>(anns.values());
 		anns.clear();
 		fireAnnotationChangedEvent(positions);
 	}
 
 	private void fireAnnotationChangedEvent(Collection<Position> positions) {
-		
-		if(positions.isEmpty())
+
+		if (positions.isEmpty())
 			return;
-		
+
 		int tempEnd, start = Integer.MAX_VALUE, end = Integer.MIN_VALUE;
-		
-		for(Position p : positions){
-			if(start>p.getOffset())
+
+		for (Position p : positions) {
+			if (start > p.getOffset())
 				start = p.offset;
-			tempEnd = p.getOffset()+p.getLength();
-			if(end<tempEnd)
+			tempEnd = p.getOffset() + p.getLength();
+			if (end < tempEnd)
 				end = tempEnd;
 		}
-		
+
 		start = widgetIndex(start);
 		end = widgetIndex(end);
-		viewer.getTextWidget().redrawRange(start, end-start, false);
+		viewer.getTextWidget().redrawRange(start, end - start, false);
 	}
-	
-	public void deactivate(boolean redraw) {}
-	public void setPositionManager(IPaintPositionManager manager) {}
+
+	public void deactivate(boolean redraw) {
+	}
+
+	public void setPositionManager(IPaintPositionManager manager) {
+	}
 
 	public void paint(int reason) {
-		
-		switch(reason){
-			case IPainter.KEY_STROKE:
-			case IPainter.MOUSE_BUTTON:
-			case IPainter.SELECTION:
-			case IPainter.TEXT_CHANGE:
-				fireSelectionEvent();
+
+		switch (reason) {
+		case IPainter.KEY_STROKE:
+		case IPainter.MOUSE_BUTTON:
+		case IPainter.SELECTION:
+		case IPainter.TEXT_CHANGE:
+			fireSelectionEvent();
 		}
 	}
-	
+
 	public void dispose() {
-	
+
 		refresh();
-		
+
 		anns.clear();
 		paint(IPainter.INTERNAL);
-		
+
 		viewer.getTextWidget().removePaintListener(this);
 		viewer.removePainter(this);
 	}
@@ -209,53 +214,51 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 		OccurrenceLocation[] locations = null;
 		DataCallHierarchy call = new DataCallHierarchy();
 		Finder finder = new Finder();
-		HashMap<String, ArrayList<DataLink>> map = new HashMap<String, ArrayList<DataLink>>();		
-		for(Map.Entry<ISelfDrawingAnnotation,Position> entry : anns.entrySet()){
+		HashMap<String, ArrayList<DataLink>> map = null;
+		for (Map.Entry<ISelfDrawingAnnotation, Position> entry : anns.entrySet()) {
 			ann = entry.getKey();
 			p = entry.getValue();
-			r = viewer.modelRange2WidgetRange(new Region(p.offset,p.length));
-			word = viewer.getTextWidget().getText(r.getOffset(), r.getOffset() + r.getLength()-1);
-			//draw the annotation only if it's visible
-			if(r!=null) {
-				ann.draw(e.gc, viewer.getTextWidget(),r.getOffset(),r.getLength());
-				if(!isActive) {
+			r = viewer.modelRange2WidgetRange(new Region(p.offset, p.length));
+			word = viewer.getTextWidget().getText(r.getOffset(), r.getOffset() + r.getLength() - 1);
+			System.out.println(word);
+			// draw the annotation only if it's visible
+			if (r != null) {
+				ann.draw(e.gc, viewer.getTextWidget(), r.getOffset(), r.getLength());
+				if (!isActive) {
 					isActive = true;
-					box = new NavigationBox(viewer.getTextWidget(),r.getOffset());
+					box = new NavigationBox(viewer.getTextWidget(), r.getOffset());
 					box.showLabels();
 				}
-				if(finder.contains(word)) {
-					//Highlight all instances in class
-					for (DataNode node: finder.getOccurrences(word)) {
-						if(node.isParameter(r.getOffset())) {
-							//Only display pop-up if selected text is a parameter
-							try {
-								map = call.searchProject(node.getMethod());
-								if(!map.isEmpty()) {
-									//box.setText(map);
-								}
-							} 
-							catch (CoreException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
+				// Highlight all instances in class
+				for (DataNode node : finder.getOccurrences(word, p)) {
+					if (node.isParameter(r.getOffset())) {
+						// Only display pop-up if selected text is a parameter
+						try {
+							map = call.searchProject(node.getMethod());
+							if (!map.isEmpty()) {
+								// box.setText(map);
 							}
+						} catch (CoreException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
 						}
-						ann.draw(e.gc,viewer.getTextWidget(),node.getStartPosition(),node.getLength());
 					}
+					ann.draw(e.gc, viewer.getTextWidget(), node.getStartPosition(), node.getLength());
 				}
 			}
 		}
 		viewer.getTextWidget().redraw();
 	}
-	
-	private int widgetIndex(int offset){
+
+	private int widgetIndex(int offset) {
 		int index = viewer.modelOffset2WidgetOffset(offset);
-		if(index < 0)
+		if (index < 0)
 			index = viewer.getBottomIndexEndOffset();
 		return index;
 	}
 
 	public ITextSelection getSelection() {
-		return (ITextSelection)viewer.getSelection();
+		return (ITextSelection) viewer.getSelection();
 	}
 
 	public void setSelection(ISelection selection) {
@@ -263,7 +266,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	}
 
 	/**
-	 * @return	all of my annotations
+	 * @return all of my annotations
 	 */
 	public Iterator<ISelfDrawingAnnotation> getAnnotationIterator() {
 		return anns.keySet().iterator();
@@ -272,10 +275,10 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	private void refresh() {
 		fireAnnotationChangedEvent(anns.values());
 	}
-	
+
 	public void refresh(Collection<ISelfDrawingAnnotation> someAnnotations) {
 		List<Position> positions = new ArrayList<Position>();
-		for(ISelfDrawingAnnotation ann : someAnnotations){
+		for (ISelfDrawingAnnotation ann : someAnnotations) {
 			positions.add(anns.get(ann));
 		}
 		fireAnnotationChangedEvent(positions);

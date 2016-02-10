@@ -27,6 +27,7 @@ public class DataNode {
 	private int length;
 	private String method;
 	private String type;
+	private String signature;
 	
 	/**
 	 * Constructor to build DataNode with an ASTNode, used for UpFinder mostly
@@ -61,6 +62,16 @@ public class DataNode {
 		length = val.length();
 		type = nodeType;
 		method = call;
+		signature = method + "." + value;
+		try {
+			if(value.contains("=")) {
+				throw new Exception();
+			} 
+		} catch( Exception e) {
+			e.printStackTrace();
+			System.exit(0);
+		}
+		
 	}
 	
 	/**
@@ -106,6 +117,9 @@ public class DataNode {
 		return null;
 	}
 	
+	public String getSignature() {
+		return this.signature;
+	}
 	/**
 	 * Checks to see if current node is a parameter, only want to display box when actual
 	 * param is selected

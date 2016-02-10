@@ -3,6 +3,7 @@ package dataTool;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -22,6 +23,7 @@ import org.eclipse.jdt.core.search.SearchMatch;
 import org.eclipse.jdt.core.search.SearchParticipant;
 import org.eclipse.jdt.core.search.SearchPattern;
 import org.eclipse.jdt.core.search.SearchRequestor;
+import org.eclipse.jface.text.Position;
 
 /**
  * Class that handles finding and storing where data is being declared in the source code.
@@ -34,10 +36,7 @@ import org.eclipse.jdt.core.search.SearchRequestor;
 
 public class UpFinder extends Finder {
 	
-	private Map<String, ArrayList<DataNode>> map; // contains name and first node for all data
-	private static UpFinder instance; // current instance of UpFinder
-	private String searchMatch;
-	
+	private static UpFinder instance; // current instance of UpFinder	
 
 	/**
 	 * Singleton pattern because we only want one DeclarationFinder
@@ -57,34 +56,15 @@ public class UpFinder extends Finder {
 		return instance;
 	}
 	
-	/**
-	 * Function to add a variable name and it's "up" occurrences to the DeclarationFinder map.
-	 * @param s: String name of the variable
-	 * @param node: ASTNode containing the variable declaration
-	 */
-	public void add(String key, ASTNode node, String type) {
-		ArrayList<DataNode> list;
-		DataNode dn = new DataNode(node, type);
-		if (!map.containsKey(key)) {
-			list = new ArrayList<DataNode>();
-			list.add(dn);
-			map.put(key, list);
-		}
-		else {
-			list = map.get(key);
-			list.add(dn);
-			map.put(key, list);
-		}
-	}
-	
-	/**
-	 * Function that checks to see if the current string is in the data list.
-	 * @param s: String to check
-	 * @return true if the string is a variable, else false
-	 */
-	public boolean contains(String s) {
-		return map.containsKey(s);
-	}
+//	/**
+//	 * Function that checks to see if the current string is in the data list.
+//	 * @param s: String to check
+//	 * @return true if the string is a variable, else false
+//	 */
+//	@Override
+//	public boolean contains(String s) {
+//		return map.containsKey(s);
+//	}
 	
 	/**
 	 * This function returns a list of all the places where the current variable is 
@@ -92,7 +72,23 @@ public class UpFinder extends Finder {
 	 * @param s: Current String
 	 * @return ArrayList<ASTNode> of "up" occurrences for current variable name
 	 */
-	public ArrayList<DataNode> getUpOccurrences(String s) {
-		return map.get(s);
+	public ArrayList<DataNode> getUpOccurrences(String s, Position p) {
+		ArrayList<DataNode> returnList = new ArrayList<DataNode>();
+		for(Entry<String, ArrayList<DataNode>> entry : map.entrySet()) {
+		    String key = entry.getKey();
+		    ArrayList<DataNode> list = entry.getValue();
+		    System.out.println(key + " " + s);
+		    if( key.endsWith("." + s)) {
+		    	System.out.println(key + " ||| " + p.offset);
+		    	if( list.get(0).getStartPosition() == p.offset) {
+		    		System.out.println("-------" + key + " " + s);
+			    	returnList.addAll(entry.getValue());
+		    	}
+		    }
+
+		    // do what you have to do here
+		    // In your case, an other loop.
+		}
+		return returnList;	
 	}
 }
