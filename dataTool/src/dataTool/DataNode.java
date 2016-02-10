@@ -13,7 +13,7 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
  * @author Chris
  *
  */
-public class DataNode {
+public class DataNode implements Comparable {
 	
 	final public static String PARAM_UP = "parameterUp";
 	final public static String PARAM_DOWN = "parameterDown";
@@ -130,6 +130,25 @@ public class DataNode {
 			return false;
 		}
 		return (type.equals(PARAM_UP) || (type.equals(PARAM_DOWN)));
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		if( o == null || !( o instanceof DataNode ) ) {
+			return 1;
+		}
+		if( method == null ) {
+			return -1;
+		}
+		String otherMethod = ( ( DataNode ) o).getMethod();
+		
+		if( ( otherMethod == null || ( otherMethod.compareTo(method)) < 0) ){
+			return 1;
+		}
+		if( otherMethod.compareTo(method) > 0 ) {
+			return -1;
+		}
+		return -1;
 	}
 
 }

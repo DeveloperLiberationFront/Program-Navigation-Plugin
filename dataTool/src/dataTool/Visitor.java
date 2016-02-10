@@ -50,10 +50,8 @@ import edu.pdx.cs.multiview.jdt.util.JDTUtils;
 class Visitor extends ASTVisitor {
 
 	private StackMap<Position, ASTNode> nodes = new StackMap<Position, ASTNode>();
-	private static HashSet<String> data = new HashSet<String>();
 	private static ArrayList<SimpleName> seenMethod = new ArrayList<SimpleName>();
-	private static UpFinder upFinder;
-	private static DownFinder downFinder;
+	private static Finder finder;
 
 	private static String source;
 
@@ -62,11 +60,6 @@ class Visitor extends ASTVisitor {
 		parseData();
 	}
 
-	public void preVisit(ASTNode node) {
-		if (shouldVisit(node)) {
-			add(node);
-		}
-	}
 
 	/**
 	 * Function that returns the source code
@@ -78,34 +71,13 @@ class Visitor extends ASTVisitor {
 	}
 
 	/**
-	 * Method to determine if the current node should be highlighted
-	 * 
-	 * @param node
-	 * @return boolean: True if selected node should be highlighted, else false
-	 */
-	private boolean shouldVisit(ASTNode node) {
-		if (node instanceof SimpleName) {
-			String name = ((SimpleName) node).getIdentifier();
-			return data.contains(name);
-		}
-		return false;
-	}
-
-	/**
 	 * Searches through code to find instances of the current variable
 	 * 
 	 * @param currentData:
 	 *            String of current data selected
 	 */
-	private static void findOccurrences(String currentData, String methodName) {
-		int index = source.indexOf(currentData);
-		while (index >= 0) {
-			if (downFinder.variableCheck(currentData, index, source)) {
-				DataNode addedNode = new DataNode( currentData, index, DataNode.VAR, methodName);
-				downFinder.add(addedNode);
-			}
-			index = source.indexOf(currentData, index + 1);
-		}
+	private static void addOccurrences(DataNode dn) {
+		finder.add(dn);
 	}
 
 	/**
@@ -120,8 +92,7 @@ class Visitor extends ASTVisitor {
 	 */
 	public static void parseData() {
 		char[] code = source.toCharArray();
-		upFinder = UpFinder.getInstance();
-		downFinder = DownFinder.getInstance();
+		finder = Finder.getInstance();
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(code);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -132,11 +103,15 @@ class Visitor extends ASTVisitor {
 			SimpleName methodName = null;
 			public boolean visit(VariableDeclarationFragment vdf) {
 				String var = vdf.getName().toString();
-				if (!data.contains(var)) {
-					data.add(var);
-					addedNode = new DataNode(var, vdf.getStartPosition(), DataNode.CLASS_VAR, methodName.toString());
-					upFinder.add(addedNode);
+				if( methodName != null ) {
+					//If not a class variable.
+					//Ignore and go on to next blocks.
+				} else {
+					//In the event of a class variable
+					addedNode = new DataNode(var, vdf.getStartPosition(), DataNode.CLASS_VAR, null);
+					addOccurrences(addedNode);
 				}
+				
 				return true;
 			}
 
@@ -154,23 +129,18 @@ class Visitor extends ASTVisitor {
 						param = svd.getName().getIdentifier();
 						addedNode = new DataNode(param, svd.getStartPosition(), DataNode.PARAM_UP,
 								methodName.toString());
-						data.add(addedNode.getSignature());
-						upFinder.add(addedNode);
+						addOccurrences(addedNode );
 					}
 
 					md.accept(new ASTVisitor() {
 						public boolean visit(VariableDeclarationFragment vdf) {
 							String var = vdf.getName().getIdentifier();
 							String signature = methodName + "." + var;
-							if (!data.contains(signature)) {
-								data.add(signature);
-								addedNode = new DataNode(var.toString(), 
-															vdf.getStartPosition(), 
-															DataNode.PARAM_DOWN,
-														    methodName.toString());
-								upFinder.add(addedNode);
-							}
-							findOccurrences(var, methodName.toString() );
+							addedNode = new DataNode(var.toString(), 
+														vdf.getStartPosition(), 
+														DataNode.PARAM_DOWN,
+														methodName.toString());
+							addOccurrences(addedNode );
 							return true;
 						}
 
@@ -186,10 +156,8 @@ class Visitor extends ASTVisitor {
 													 	startPosition, 
 													 	DataNode.FOR_VAR,
 													 	methodName.toString());
-							data.add(addedNode.getSignature());
-							upFinder.add(addedNode);
 							Statement body = efs.getBody();
-							findOccurrences(forStr, methodName.toString());
+							addOccurrences(addedNode );
 							return true;
 						}
 
@@ -206,10 +174,8 @@ class Visitor extends ASTVisitor {
 																startPosition, 
 																DataNode.FOR_VAR, 
 																methodName.toString());
-									data.add(addedNode.getSignature());
-									upFinder.add( addedNode );
 									Statement body = fs.getBody();
-									findOccurrences(forStr, methodName.toString());
+									addOccurrences(addedNode );
 								}
 							}
 							return true;
@@ -217,18 +183,19 @@ class Visitor extends ASTVisitor {
 
 						public boolean visit(WhileStatement ws) {
 							String cond = ws.getExpression().toString();
-							for (String found : data) {
-								if (cond.contains(found)) {
-									int startPosition = ws.getExpression().getStartPosition() + cond.indexOf(found);
-									addedNode = new DataNode( found, 
-																startPosition, 
-																DataNode.VAR, 
-																methodName.toString());
-									downFinder.add(addedNode);
-								}
-								Statement body = ws.getBody();
-								findOccurrences(found, methodName.toString());
-							}
+							//TODO look into while loop parsing syntax
+//							for (String found : data) {
+//								if (cond.contains(found)) {
+//									int startPosition = ws.getExpression().getStartPosition() + cond.indexOf(found);
+//									addedNode = new DataNode( found, 
+//																startPosition, 
+//																DataNode.VAR, 
+//																methodName.toString());
+//									downFinder.add(addedNode);
+//								}
+//								Statement body = ws.getBody();
+//								addOccurrences(addedNode );
+//							}
 							return true;
 						}
 
@@ -242,11 +209,9 @@ class Visitor extends ASTVisitor {
 										startPosition, 
 										DataNode.VAR, 
 										methodName.toString());
-								data.add(addedNode.getSignature());
 								
-								upFinder.add(addedNode);
 								Statement errorCode = error.getBody();
-								findOccurrences(e.getIdentifier(), methodName.toString());
+								addOccurrences(addedNode );
 							}
 							return true;
 						}
@@ -254,33 +219,25 @@ class Visitor extends ASTVisitor {
 						public boolean visit(MethodInvocation mi) {
 							List<ASTNode> args = mi.arguments();
 							for (ASTNode arg : args) {
-								if (data.contains(methodName + "." + arg.toString())) {
 				
 									int startPosition = arg.getStartPosition();
-									downFinder.add(new DataNode(arg.toString(), 
-																	startPosition,
-																	DataNode.PARAM_DOWN, 
-																	mi.getName().toString()));
-								}
+									addedNode = new DataNode(arg.toString(), 
+											startPosition,
+											DataNode.PARAM_DOWN, 
+											mi.getName().toString());
+									addOccurrences(addedNode);
 							}
 							return true;
 						}
 					});
 				}
+				//Set to null so that class variables can have a null method name
+				methodName = null;
 				return true;
 			}
 		});
-		System.out.println(data.toString());
 	}
 
-	/**
-	 * Function that returns the data to be highlighted
-	 * 
-	 * @returns HashSet of data found during parsing
-	 */
-	public HashSet<String> getDta() {
-		return data;
-	}
 
 	/**
 	 * Adds the current node to list of nodes to be highlighted

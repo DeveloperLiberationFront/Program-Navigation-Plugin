@@ -1,8 +1,11 @@
 package dataTool;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -14,7 +17,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import dataTool.annotations.SuggestedSelectionAnnotation;
 
 public class Finder {
-	protected static Map<String, ArrayList<DataNode>> map; // contains name and first node for all data
+	protected static Map<String, TreeSet<DataNode>> map; // contains name and first node for all data
 	final public static String UP = "up";
 	final public static String DOWN = "down";
 	
@@ -23,10 +26,17 @@ public class Finder {
 	private String goToName = null;
 	private int goToOffset = -1;
 	
-	public Finder () {
-		//Do nothing
+	private Finder () {
+		map = new HashMap<String, TreeSet<DataNode>>();
 	}
 	
+	public static Finder getInstance() {
+		if( currentFinder != null ) {
+			return currentFinder;
+		}
+		currentFinder = new Finder();
+		return currentFinder;
+	}
 	public void setGoToIndex(int offset) {
 		goToOffset = offset;
 	}
@@ -49,31 +59,12 @@ public class Finder {
 		return null;
 	}
 	
-	/**
-	 * Returns the occurrences of the selected string in the class
-	 * @param data: current String value
-	 * @returns ArrayList of DataNodes for string
-	 */
-	public ArrayList<DataNode> getOccurrences(String data, Position position) {
-		ArrayList<DataNode> occurrences = new ArrayList<DataNode>();
-		ArrayList<DataNode> upOccurrences = UpFinder.getInstance().getUpOccurrences(data, position);
-		ArrayList<DataNode> downOccurrences = DownFinder.getInstance().getDownOccurrences(data, position);
-		
-		if( upOccurrences != null ) {
-			occurrences.addAll(upOccurrences);
-		}
-		if( downOccurrences != null ) {
-			occurrences.addAll( downOccurrences);
-		}
-		
-		return occurrences;
-	}
 	public static void add( DataNode dn ) {
 		System.out.println(dn.getSignature() + " " + dn.getStartPosition());
-		ArrayList<DataNode> list;
-		String key = dn.getSignature();
+		TreeSet<DataNode> list;
+		String key = dn.getValue();
 		if (!map.containsKey(key)) {
-			list = new ArrayList<DataNode>();
+			list = new TreeSet<DataNode>();
 			list.add(dn);
 			map.put(key, list);
 		}
@@ -82,6 +73,80 @@ public class Finder {
 			list.add(dn);
 			map.put(key, list);
 		}
+	}
+	
+	/**
+	 * Function to check if selected text is actually a variable.
+	 * @param var
+	 * @param index
+	 * @param sourceCode
+	 * @returns true if text is use of a variable, else false
+	 */
+	public boolean variableCheck(String var, int index, String sourceCode) {
+		boolean check = false;
+		if(sourceCode.substring(index+var.length(),index+var.length()+1).matches("[a-zA-Z0-9]") || sourceCode.substring(index-1,index).matches("[a-zA-Z0-9]")) {
+			return false;
+		}
+		if(isComment(var, index, sourceCode)) {
+			return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Checks to see if the visited variable name is inside a comment so we don't highlight it.
+	 * Kind of a hack
+	 * @param var: String name of the data
+	 * @param index: int start position of the data
+	 * @param sourceCode: String of the entire code
+	 * @returns true if name is within a comment, else false
+	 */
+	private boolean isComment(String var, int index, String sourceCode) {
+		//Check if line starts with //, /*, /**, or *
+		String temp = sourceCode.substring(0, index);
+		if(temp.lastIndexOf("/**") > temp.lastIndexOf("*/") || temp.lastIndexOf("/*") > temp.lastIndexOf("*/")
+				|| temp.lastIndexOf("//") > temp.lastIndexOf("\n")) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * This function returns a list of all the places where the current variable is 
+	 * initialized which will determine where to highlight in the file.
+	 * @param s: Current String
+	 * @return ArrayList<ASTNode> of "up" occurrences for current variable name
+	 */
+	public TreeSet<DataNode> getOccurrences(String s, Position p) {
+		TreeSet<DataNode> returnList = new TreeSet<DataNode>();
+		String method = null;
+		for(Entry<String, TreeSet<DataNode>> entry : map.entrySet()) {
+		    String key = entry.getKey();
+		    TreeSet<DataNode> list = entry.getValue();
+		    System.out.println(key + " " + s);
+		    
+		    for( DataNode dn : list ) {
+		    	if( dn.getStartPosition() == p.offset) {
+			    	method = key.substring( 0, key.indexOf(".") );
+			    }
+		    }
+		    
+		}
+		if( method != null ) {
+			for(Entry<String, TreeSet<DataNode>> entry : map.entrySet()) {
+			    String key = entry.getKey();
+			    TreeSet<DataNode> list = entry.getValue();
+			    System.out.println(key + " " + s);
+			    
+			    for( DataNode dn : list ) {
+			    	if( dn.getValue().equals(s) && dn.getMethod().equals(method)) {
+				    	returnList.add(dn);
+				    }
+			    }
+			    
+			}
+		}
+		return returnList;	
 	}
 //	/**
 //	 * Function that checks if selected text is a variable

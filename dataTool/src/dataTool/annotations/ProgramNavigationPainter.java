@@ -39,7 +39,6 @@ import dataTool.AnnotationManager;
 import dataTool.DataCallHierarchy;
 import dataTool.DataNode;
 import dataTool.Finder;
-import dataTool.UpFinder;
 import dataTool.ui.DataLink;
 import dataTool.ui.NavigationBox;
 import dataTool.ui.NavigationDownBox;
@@ -213,7 +212,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 		String word;
 		OccurrenceLocation[] locations = null;
 		DataCallHierarchy call = new DataCallHierarchy();
-		Finder finder = new Finder();
+		Finder finder = Finder.getInstance();
 		HashMap<String, ArrayList<DataLink>> map = null;
 		for (Map.Entry<ISelfDrawingAnnotation, Position> entry : anns.entrySet()) {
 			ann = entry.getKey();
