@@ -64,6 +64,7 @@ public class Finder {
 		TreeSet<DataNode> list;
 		String key = dn.getValue();
 		if (!map.containsKey(key)) {
+			System.out.println(dn.getSignature() + " " + dn.getStartPosition());
 			list = new TreeSet<DataNode>();
 			list.add(dn);
 			map.put(key, list);
@@ -82,7 +83,7 @@ public class Finder {
 	 * @param sourceCode
 	 * @returns true if text is use of a variable, else false
 	 */
-	public boolean variableCheck(String var, int index, String sourceCode) {
+	public boolean isVariable(String var, int index, String sourceCode) {
 		boolean check = false;
 		if(sourceCode.substring(index+var.length(),index+var.length()+1).matches("[a-zA-Z0-9]") || sourceCode.substring(index-1,index).matches("[a-zA-Z0-9]")) {
 			return false;
@@ -118,12 +119,13 @@ public class Finder {
 	 * @return ArrayList<ASTNode> of "up" occurrences for current variable name
 	 */
 	public TreeSet<DataNode> getOccurrences(String s, Position p) {
+		System.out.println(s + " !!! " + p.toString());
 		TreeSet<DataNode> returnList = new TreeSet<DataNode>();
 		String method = null;
 		for(Entry<String, TreeSet<DataNode>> entry : map.entrySet()) {
 		    String key = entry.getKey();
 		    TreeSet<DataNode> list = entry.getValue();
-		    System.out.println(key + " " + s);
+		    System.out.println(key + " ||| " + s);
 		    
 		    for( DataNode dn : list ) {
 		    	if( dn.getStartPosition() == p.offset) {
@@ -148,13 +150,4 @@ public class Finder {
 		}
 		return returnList;	
 	}
-//	/**
-//	 * Function that checks if selected text is a variable
-//	 * @param str: String value of current text
-//	 * @returns true if current variable is a DataNode, else false
-//	 */
-//	public boolean contains(String str) {
-//		System.out.println(str);
-//		return (UpFinder.getInstance().contains(str) || DownFinder.getInstance().contains(str));
-//	}
 }

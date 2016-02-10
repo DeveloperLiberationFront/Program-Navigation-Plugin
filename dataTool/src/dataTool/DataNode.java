@@ -63,15 +63,6 @@ public class DataNode implements Comparable {
 		type = nodeType;
 		method = call;
 		signature = method + "." + value;
-		try {
-			if(value.contains("=")) {
-				throw new Exception();
-			} 
-		} catch( Exception e) {
-			e.printStackTrace();
-			System.exit(0);
-		}
-		
 	}
 	
 	/**
@@ -137,18 +128,7 @@ public class DataNode implements Comparable {
 		if( o == null || !( o instanceof DataNode ) ) {
 			return 1;
 		}
-		if( method == null ) {
-			return -1;
-		}
-		String otherMethod = ( ( DataNode ) o).getMethod();
-		
-		if( ( otherMethod == null || ( otherMethod.compareTo(method)) < 0) ){
-			return 1;
-		}
-		if( otherMethod.compareTo(method) > 0 ) {
-			return -1;
-		}
-		return -1;
+		return index - ( ( DataNode ) o ).getStartPosition();
 	}
 
 }

@@ -102,17 +102,41 @@ class Visitor extends ASTVisitor {
 			DataNode addedNode = null;
 			SimpleName methodName = null;
 			public boolean visit(VariableDeclarationFragment vdf) {
-				String var = vdf.getName().toString();
+				String var = vdf.toString();
+				String left = var.substring( 0, var.indexOf("=") ).trim();
+				String right = var.substring( var.indexOf("=") + 1 ).trim();
+				int offset;
+				
 				if( methodName != null ) {
 					//If not a class variable.
-					//Ignore and go on to next blocks.
+					if( isVariable(left) ) {
+						offset = vdf.getStartPosition();
+						addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, methodName.toString());
+						addOccurrences(addedNode);
+					}
+					if( isVariable(right) ) {
+						offset = vdf.getStartPosition() + vdf.toString().indexOf(right);
+						addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, methodName.toString());
+						addOccurrences(addedNode);
+					}
 				} else {
-					//In the event of a class variable
-					addedNode = new DataNode(var, vdf.getStartPosition(), DataNode.CLASS_VAR, null);
-					addOccurrences(addedNode);
+					if( isVariable(left) ) {
+						offset = vdf.getStartPosition();
+						addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, null);
+						addOccurrences(addedNode);
+					}
+					if( isVariable(right) ) {
+						offset = vdf.getStartPosition() + vdf.toString().indexOf(right);
+						addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, null);
+						addOccurrences(addedNode);
+					}
 				}
 				
 				return true;
+			}
+
+			private boolean isVariable(String varName) {
+				return varName.matches( "^[_a-z]\\w*$" );
 			}
 
 			public boolean visit(MethodDeclaration md) {
@@ -135,7 +159,7 @@ class Visitor extends ASTVisitor {
 					md.accept(new ASTVisitor() {
 						public boolean visit(VariableDeclarationFragment vdf) {
 							String var = vdf.getName().getIdentifier();
-							String signature = methodName + "." + var;
+							System.out.println("---" + var);
 							addedNode = new DataNode(var.toString(), 
 														vdf.getStartPosition(), 
 														DataNode.PARAM_DOWN,
@@ -232,7 +256,7 @@ class Visitor extends ASTVisitor {
 					});
 				}
 				//Set to null so that class variables can have a null method name
-				methodName = null;
+				//methodName = null;
 				return true;
 			}
 		});
