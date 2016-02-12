@@ -4,7 +4,9 @@ import java.awt.MouseInfo;
 import java.awt.Toolkit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
@@ -35,42 +37,61 @@ import org.eclipse.ui.PlatformUI;
 
 import dataTool.Finder;
 
-public class NavigationUpBox extends NavigationBox {
+public class NavigationUpBox {
 	
-	private Shell shell;
-	private StyledText widget;
+	private static Display display;
+	private static Shell shell;
+	private static StyledText widget;
+	private static Label label;
+	private static Composite composite;
 	private int offset;
 	private static NavigationUpBox instance;
 	private static boolean resize = false;
 	private ArrayList<String> links = new ArrayList<String>();
 	
 	private NavigationUpBox(StyledText text, int start) {
-		super(text, SWT.BORDER);
 		widget = text;
 		offset = start;
 	}
 	
-	public static NavigationUpBox getInstance(StyledText text, int start) {
+	/**
+	 * Creates singleton instance of the top UI box
+	 * @param st: currently selected StyledText
+	 * @param start: Offset of the current node
+	 */
+	public static void createInstance(StyledText st, int start) {
 		if(instance == null) {
-			instance = new NavigationUpBox(text, start);
+			instance = new NavigationUpBox(st, start);
+			showLabel();
 		}
+	}
+	
+	/**
+	 * Returns current instance of the top box
+	 * @returns NavigationUpBox instance
+	 */
+	public static NavigationUpBox getInstance() {
 		resize = false;
 		return instance;
 	}
 	
-	public void showLabel() {
+	public static void showLabel() {
 		if(shell != null) {
 			dispose();
 		}
-		Display display = Display.getDefault();
+		display = Display.getDefault();
 	    shell = new Shell(display, SWT.ON_TOP);
-	    boolean mode = false;
+	    label = new Label(shell, SWT.NULL);
+	    composite = new Composite(shell, SWT.NULL);
 	    shell.setLayout(new GridLayout());
 	    setSize();
 	    shell.open();
 	  }
 	
-	private void setSize() {
+	/**
+	 * Method to set the size and location of the shell
+	 */
+	private static void setSize() {
 		Canvas c = (Canvas) widget.getParent();
     	Composite comp = c.getParent();
     	comp.addListener(SWT.Resize, new Listener() {
@@ -84,18 +105,17 @@ public class NavigationUpBox extends NavigationBox {
 			}
     	});
     	
-    	shell.setSize(comp.getClientArea().width-30, comp.getClientArea().height/5);
+    	shell.setSize(comp.getClientArea().width-30, 35);
 	    shell.setLocation(comp.toDisplay(comp.getLocation()).x,comp.toDisplay(comp.getLocation()).y);
 	}
 
-	public void setText(ArrayList<DataLink> text) {
-		Composite composite = new Composite(shell, SWT.NULL);
-	    composite.setLayout(new RowLayout());
-	    if(text != null) {
-	    	for(DataLink l: text) {
+	public void setText(Set<IMethod> set) {
+		if(set != null) {
+	    	for(IMethod i: set) {
+	    		DataLink l = new DataLink(i, i.getElementName(), i.getPath().toString());
 		    	if(!links.contains(l.getName())) {
 		    		links.add(l.getName());
-		    		Link link = new Link(composite, SWT.WRAP);
+		    		Link link = new Link(composite, SWT.NULL);
 			    	link.setText(l.getText());
 			    	link.addListener(SWT.Selection, new Listener() {
 			    		@Override
@@ -103,20 +123,30 @@ public class NavigationUpBox extends NavigationBox {
 							l.open(10);
 						}			    	
 			    	});
-			    	Label blank = new Label(composite, SWT.NULL);
-				    shell.pack();
-				    setSize();
 		    	}
 	    	}
 	    }
-	    else {
-	    	shell.setText("");
+		composite.redraw();
+		composite.update();
+		shell.layout();
+	}
+	
+	public void setText(String text) {
+		if(text != null) {
+	    	label.setText(text);
 	    }
+	    else {
+	    	label.setText("");
+	    }
+	    label.redraw();
+	    label.update();
+	    shell.layout();
 	}
 
-	public void dispose() {
+	public static void dispose() {
 		if(shell != null) {
 			shell.dispose();
+			instance = null;
 		}
 	}
 }

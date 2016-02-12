@@ -28,15 +28,6 @@ public class NavigationBox {
 		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * Displays NavigationBox based on the user's current direction
-	 */
-	public void showLabels() {
-		NavigationUpBox up = NavigationUpBox.getInstance(widget, offset);
-		up.showLabel();
-		NavigationDownBox down = NavigationDownBox.getInstance(widget, offset);
-		down.showLabel();
-	}
 	
 	public void dispose() {
 		if(currentBox != null) {

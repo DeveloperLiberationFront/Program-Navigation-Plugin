@@ -13,10 +13,10 @@ public class DataNodeTest extends TestCase {
 	@Before
 	public void setUp() {
 		finder = finder.getInstance();
-		finder.setFlowDirection(Finder.UP);
+		//finder.setFlowDirection(Finder.UP);
 	}
 	
-	@Test
+	/*@Test
 	public void testIsParameter() {
 		DataNode node = new DataNode("Test", 0, DataNode.VAR, "");
 		assertFalse(node.isParameter(0));
@@ -30,7 +30,7 @@ public class DataNodeTest extends TestCase {
 		DataNode node3 = new DataNode("test", 10, DataNode.PARAM_DOWN, "");
 		assertTrue(node3.isParameter(12));
 		assertFalse(node3.isParameter(15));
-	}
+	}*/
 	
 	/*
 	 * Tests for all of the DataNode getters, need to add checks for ASTNode constructor as well

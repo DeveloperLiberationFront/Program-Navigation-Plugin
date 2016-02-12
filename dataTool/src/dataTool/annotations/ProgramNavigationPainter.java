@@ -223,16 +223,11 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 			// draw the annotation only if it's visible
 			if (r != null) {
 				ann.draw(e.gc, viewer.getTextWidget(), r.getOffset(), r.getLength());
-				if (!isActive) {
-					isActive = true;
-					box = new NavigationBox(viewer.getTextWidget(), r.getOffset());
-					box.showLabels();
-				}
 				// Highlight all instances in class
 				for (DataNode node : finder.getOccurrences(word, p)) {
 					if (node.isParameter(r.getOffset())) {
 						// Only display pop-up if selected text is a parameter
-						try {
+						/*try {
 							map = call.searchProject(node.getMethod());
 							if (!map.isEmpty()) {
 								// box.setText(map);
@@ -240,7 +235,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 						} catch (CoreException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
-						}
+						}*/
 					}
 					ann.draw(e.gc, viewer.getTextWidget(), node.getStartPosition(), node.getLength());
 				}

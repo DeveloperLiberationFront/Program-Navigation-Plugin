@@ -3,6 +3,8 @@ package dataTool;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -212,5 +214,60 @@ public class DataCallHierarchy {
 			links.add(new DataLink(null, DataLink.INVALID, DataLink.INVALID_DESC));
 		}
 		return links;
+	}
+	
+	public Set<IMethod> test(String methodName) throws JavaModelException {
+	    CallHierarchyGenerator callGen = new CallHierarchyGenerator();
+	    String projectName = EnableNavigationAction.project;
+		String path = EnableNavigationAction.path;
+		String projectPath;
+		if(path.contains("/src/")) {
+			projectPath = path.substring(path.indexOf("/src/")+5,path.lastIndexOf("/")).replace("/", ".");
+		}
+		else {
+			projectPath = path;
+		}
+		String projectFile = EnableNavigationAction.file;
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+	    IProject project = root.getProject(projectName);
+	    IFolder folder = project.getFolder("src");
+	    IJavaProject javaProject = JavaCore.create(project);
+	    IPackageFragmentRoot ipf = javaProject.getPackageFragmentRoot(folder);
+	    ipf.createPackageFragment(projectPath, true, null);
+	    IPackageFragment frag = ipf.getPackageFragment(projectPath);
+	    cUnit = frag.getCompilationUnit(projectFile);
+	    IType type = cUnit.getType(projectFile.replace(".java", ""));
+		IMethod m = findMethod(type, methodName);
+	    Set<IMethod> methods = new HashSet<IMethod>();
+	    methods = callGen.getCallersOf(m);
+	    for (Iterator<IMethod> i = methods.iterator(); i.hasNext();)
+	    {
+	        System.out.println(i.next().toString());
+	    }
+	    return methods;
+	}
+	
+	private IMethod findMethod(IType type, String methodName) throws JavaModelException
+	{
+	    //IType type = project.findType(typeName);
+
+	    IMethod[] methods = type.getMethods();
+	    IMethod theMethod = null;
+
+	    for (int i = 0; i < methods.length; i++)
+	    {
+	        IMethod imethod = methods[i];
+	        if (imethod.getElementName().equals(methodName)) {
+	            theMethod = imethod;
+	        }
+	    }
+
+	    if (theMethod == null)
+	    {           
+	        System.out.println("Error, method" + methodName + " not found");
+	        return null;
+	    }
+
+	    return theMethod;
 	}
 }

@@ -128,7 +128,7 @@ public class Finder {
 		    System.out.println(key + " ||| " + s);
 		    
 		    for( DataNode dn : list ) {
-		    	if( dn.getStartPosition() == p.offset) {
+		    	if( dn.getStartPosition() == p.offset && key.contains(".")) {
 			    	method = key.substring( 0, key.indexOf(".") );
 			    }
 		    }

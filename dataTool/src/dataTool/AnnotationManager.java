@@ -5,6 +5,7 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.SourceViewer;
@@ -15,6 +16,8 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 
 import dataTool.annotations.ProgramNavigationPainter;
 import dataTool.annotations.SuggestedSelectionAnnotation;
+import dataTool.ui.NavigationDownBox;
+import dataTool.ui.NavigationUpBox;
 import edu.pdx.cs.multiview.jdt.util.JDTUtils;
 import edu.pdx.cs.multiview.jface.annotation.AnnTransaction;
 import edu.pdx.cs.multiview.jface.annotation.AnnotationPainter;
@@ -23,8 +26,9 @@ import edu.pdx.cs.multiview.util.eclipse.EclipseHacks;
 public class AnnotationManager implements ISelectionChangedListener {
 
 	private SuggestedSelectionAnnotation currentAnnotation = new SuggestedSelectionAnnotation();
-
+	private SourceViewer sourceViewer;
 	private AnnotationPainter painter;
+	private boolean isActive;
 
 	// the visitor for the editor
 	private Visitor visitor;
@@ -39,50 +43,61 @@ public class AnnotationManager implements ISelectionChangedListener {
 
 		parseCU(anEditor);
 
-		SourceViewer sourceViewer = EclipseHacks.getSourceViewer(anEditor);
+		sourceViewer = EclipseHacks.getSourceViewer(anEditor);
 		painter = new ProgramNavigationPainter(sourceViewer);
 		painter.addSelectionChangedListener(this);
 		sourceViewer.addPainter(painter);
-
+		
 		selectionChanged((ITextSelection) painter.getSelection());
 	}
 
 	public void selectionChanged(ITextSelection selection) {
 		painter.removeAllAnnotations();
 		try {
-
 			ASTNode one = getNode(selection.getOffset());
-			if (one != null) {
-				if (selection.getLength() == 0) {
-					addAnnotation(one, one);
-					return;
+			if(one != null) {
+				addAnnotation(one);
+				if(!isActive) {
+					NavigationUpBox.createInstance(sourceViewer.getTextWidget(), one.getStartPosition());
+					NavigationDownBox.createInstance(sourceViewer.getTextWidget(), one.getStartPosition());
 				}
-
-				ASTNode two = getNode(selection.getOffset() + selection.getLength());
-
-				if (one != null && two != null) {
-					if (!areSiblings(one, two)) {
-						two = meet(one, two);
-					}
-
-					addAnnotation(one, two);
-
-				} else {
-					removeAnnotations();
-				}
-			} else {
+				//TODO Perform project search here instead of in ProgramNavigationPainter
+				NavigationUpBox.getInstance().setText(one.toString()+" up");
+				NavigationDownBox.getInstance().setText(one.toString()+" down");
+			}
+			else {
 				removeAnnotations();
 			}
-
 		} catch (Exception e) {
 			Activator.logError(e);
+			if(isActive) {
+				NavigationUpBox.getInstance().setText("");
+				NavigationDownBox.getInstance().setText("");
+			}
 			removeAnnotations();
 		}
 	}
 
-	private void addAnnotation(ASTNode one, ASTNode two) {
+	/**
+	 * Function that returns the method the current node is located in
+	 * @param node: Current node selected by the user
+	 * @returns String method name
+	 */
+	private String getMethod(ASTNode node) {
+		// TODO Function that could come in handy later to get current method mouse is clicked in
+		ASTNode temp = node;
+		while(!(temp instanceof MethodDeclaration) && temp != null) {
+			temp = temp.getParent();
+		}
+		if(temp == null) {
+			return null;
+		}
+		return ((MethodDeclaration) temp).getName().getIdentifier();
+	}
+	
+	private void addAnnotation(ASTNode one) {
 		int start = one.getStartPosition();
-		int end = two.getStartPosition() + two.getLength();
+		int end = one.getStartPosition() + one.getLength();
 
 		if (!isAlreadyAnnotated(start, end))
 			addAnnotationsAt(start, end - start);
@@ -159,6 +174,9 @@ public class AnnotationManager implements ISelectionChangedListener {
 
 	public void dispose() {
 		painter.dispose();
+		NavigationUpBox.dispose();
+		NavigationDownBox.dispose();
+		isActive = false;
 	}
 
 	public void selectionChanged(SelectionChangedEvent event) {
