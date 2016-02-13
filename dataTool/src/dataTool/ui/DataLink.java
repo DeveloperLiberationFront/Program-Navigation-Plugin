@@ -29,8 +29,7 @@ public class DataLink {
 	private String location;
 	private IMethod method;
 	
-	final public static String INVALID = "Invalid";
-	final public static String INVALID_DESC = "Function is not in scope project.";
+	final public static String INVALID = "Method does not exist in project source.";
 	
 	public DataLink(IMethod method, String name, String location) {
 		this.method = method;
@@ -51,56 +50,5 @@ public class DataLink {
 			return "<a>"+name+"</a>";
 		}
 		return name;
-	}
-	
-	public void open(int index) {
-		IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(method.getPath());
-		if (file.exists()) {// && file.isFile()) {
-		    String path = file.getLocation().toString();//Path for that to file to open;
-		    IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-			IEditorDescriptor desc = PlatformUI.getWorkbench().getEditorRegistry().getDefaultEditor(file.getName());
-		    URI fromString = null;
-		    IEditorPart openEditor = null;
-			try {
-				fromString = org.eclipse.core.runtime.URIUtil.fromString("file://" + path);
-			} 
-			catch (URISyntaxException e) {
-				e.printStackTrace();
-			}
-		    try {
-		        openEditor = IDE.openEditor(page, fromString, desc.getId(), true);
-		        IEditorInput editorInput = openEditor.getEditorInput();
-		    } 
-		    catch (PartInitException e) {
-		         e.printStackTrace();
-		    }
-		    EnableNavigationAction plugin = new EnableNavigationAction();
-	        plugin.init(page.getWorkbenchWindow());
-	        plugin.run(null);
-	        System.out.println(index);
-	        if(index > 0)
-	        {
-	        	//TODO go to the actual line in the new file, refresh plugin to work on new page.
-	        }
-		}
-	}
-	
-	private static void goToLine(IEditorPart editorPart, int index) {
-		if (!(editorPart instanceof ITextEditor) || index <= 0) {
-		    return;
-		}
-		ITextEditor editor = (ITextEditor) editorPart;
-		IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
-		if (document != null) {
-		    IRegion lineInfo = null;
-		    try {
-		      lineInfo = document.getLineInformationOfOffset(index);
-		    } catch (BadLocationException e) {
-		      
-		    }
-		    if (lineInfo != null) {
-		        editor.selectAndReveal(lineInfo.getOffset(), lineInfo.getLength());
-		    }
-		}
 	}
 }

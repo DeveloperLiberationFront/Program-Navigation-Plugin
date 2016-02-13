@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
@@ -126,9 +128,14 @@ public class NavigationDownBox {
 		    		@Override
 					public void handleEvent(Event arg0) {
 		    			try {
-							setText(null);
-			    			NavigationUpBox.getInstance().setText(null);
-							JavaUI.openInEditor(i, true, true);
+		    				if(i.getSource() == null) {
+		    					JOptionPane.showMessageDialog(null, DataLink.INVALID, "Error",JOptionPane.ERROR_MESSAGE);
+		    				}
+		    				else {
+								setText(null);
+				    			NavigationUpBox.getInstance().setText(null);
+								JavaUI.openInEditor(i, true, true);
+		    				}
 						} catch (JavaModelException | PartInitException e1) {
 							// Auto-generated catch block
 							e1.printStackTrace();

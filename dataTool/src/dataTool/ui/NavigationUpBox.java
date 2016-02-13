@@ -6,8 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
+import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -129,9 +134,14 @@ public class NavigationUpBox {
 		    		@Override
 					public void handleEvent(Event arg0) {
 		    			try {
-							setText(null);
-			    			NavigationDownBox.getInstance().setText(null);
-							JavaUI.openInEditor(i, true, true);
+		    				if(i.getSource() == null) {
+		    					JOptionPane.showMessageDialog(null, DataLink.INVALID, "Error",JOptionPane.ERROR_MESSAGE);
+		    				}
+		    				else {
+								setText(null);
+				    			NavigationUpBox.getInstance().setText(null);
+								JavaUI.openInEditor(i, true, true);
+		    				}
 						} catch (JavaModelException | PartInitException e1) {
 							// Auto-generated catch block
 							e1.printStackTrace();
