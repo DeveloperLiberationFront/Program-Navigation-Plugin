@@ -6,7 +6,10 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
@@ -108,8 +111,9 @@ public class NavigationDownBox {
 	/**
 	 * Sets the text for the bottom box of the user interface
 	 * @param set: Set of methods called by current node
+	 * @throws JavaModelException 
 	 */
-	public void setText(Set<IMethod> set) {
+	public void setText(Set<IMethod> set) throws JavaModelException {
 		for(Control c: shell.getChildren()) {
 			c.dispose();
 		}
@@ -121,9 +125,14 @@ public class NavigationDownBox {
 		    	link.addListener(SWT.Selection, new Listener() {
 		    		@Override
 					public void handleEvent(Event arg0) {
-		    			setText(null);
-		    			NavigationUpBox.getInstance().setText(null);
-						l.open(50);
+		    			try {
+							setText(null);
+			    			NavigationUpBox.getInstance().setText(null);
+							JavaUI.openInEditor(i, true, true);
+						} catch (JavaModelException | PartInitException e1) {
+							// Auto-generated catch block
+							e1.printStackTrace();
+						}
 					}			    	
 		    	});
 		    }
@@ -132,6 +141,9 @@ public class NavigationDownBox {
 		setSize();
 	}
 	
+	/**
+	 * Removes the bottom navigation box from view.
+	 */
 	public static void dispose() {
 		if(shell != null) {
 			shell.dispose();

@@ -97,8 +97,13 @@ public class AnnotationManager implements ISelectionChangedListener {
 		} catch (Exception e) {
 			Activator.logError(e);
 			if(isActive) {
-				NavigationUpBox.getInstance().setText(null);
-				NavigationDownBox.getInstance().setText(null);
+				try {
+					NavigationUpBox.getInstance().setText(null);
+					NavigationDownBox.getInstance().setText(null);
+				} catch (JavaModelException e1) {
+					// Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 			removeAnnotations();
 		}
