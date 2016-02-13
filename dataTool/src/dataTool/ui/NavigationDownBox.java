@@ -2,8 +2,11 @@ package dataTool.ui;
 
 import java.awt.MouseInfo;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
@@ -21,6 +24,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -38,7 +42,6 @@ public class NavigationDownBox {
 	
 	private static Display display;
 	private static Shell shell;
-	private static Label label;
 	private static StyledText widget;
 	private int offset;
 	private static NavigationDownBox instance;
@@ -76,8 +79,7 @@ public class NavigationDownBox {
 		}
 		display = Display.getDefault();
 	    shell = new Shell(display, SWT.ON_TOP);
-	    label = new Label(shell, SWT.NULL);
-	    shell.setLayout(new GridLayout());
+	    shell.setLayout(new RowLayout());
 	    setSize();
     	shell.open();
 	}
@@ -103,37 +105,31 @@ public class NavigationDownBox {
 	    shell.setLocation(comp.toDisplay(comp.getLocation()).x,comp.toDisplay(comp.getLocation()).y+(c.getClientArea().height-35)-15);
 	}
 	
-	public void setText(ArrayList<DataLink> text) {
-		Composite composite = new Composite(shell, SWT.NULL);
-	    composite.setLayout(new RowLayout());
-	    if(text != null) {
-	    	for(DataLink l: text) {
-	    		Link link = new Link(composite, SWT.WRAP);
+	/**
+	 * Sets the text for the bottom box of the user interface
+	 * @param set: Set of methods called by current node
+	 */
+	public void setText(Set<IMethod> set) {
+		for(Control c: shell.getChildren()) {
+			c.dispose();
+		}
+		if(set != null) {
+	    	for(IMethod i: set) {
+	    		DataLink l = new DataLink(i, i.getElementName(), i.getPath().toString());
+	    		Link link = new Link(shell, SWT.NULL);
 		    	link.setText(l.getText());
 		    	link.addListener(SWT.Selection, new Listener() {
-	
 		    		@Override
 					public void handleEvent(Event arg0) {
-						l.open(10);
+		    			setText(null);
+		    			NavigationUpBox.getInstance().setText(null);
+						l.open(50);
 					}			    	
 		    	});
-	    	}
+		    }
 	    }
-	    else {
-	    	shell.setText("");
-	    }
-	}
-	
-	public void setText(String text) {
-	    if(text != null) {
-	    	label.setText(text);
-	    }
-	    else {
-	    	label.setText("");
-	    }
-	    label.redraw();
-	    label.update();
-	    shell.layout();
+		shell.pack();
+		setSize();
 	}
 	
 	public static void dispose() {

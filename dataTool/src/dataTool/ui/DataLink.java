@@ -65,7 +65,6 @@ public class DataLink {
 				fromString = org.eclipse.core.runtime.URIUtil.fromString("file://" + path);
 			} 
 			catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		    try {
@@ -81,7 +80,7 @@ public class DataLink {
 	        System.out.println(index);
 	        if(index > 0)
 	        {
-	        	goToLine(openEditor, index);
+	        	//TODO go to the actual line in the new file, refresh plugin to work on new page.
 	        }
 		}
 	}

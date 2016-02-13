@@ -9,8 +9,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
-import dataTool.ui.NavigationBox;
-
 /**
  * An action that enables the statement helper
  * 

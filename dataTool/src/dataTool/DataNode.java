@@ -102,10 +102,7 @@ public class DataNode implements Comparable {
 	 * @returns string method
 	 */
 	public String getMethod() {
-		if(isParameter(index)) {
-			return this.method;
-		}
-		return null;
+		return this.method;
 	}
 	
 	public String getSignature() {
@@ -116,11 +113,15 @@ public class DataNode implements Comparable {
 	 * param is selected
 	 * @returns true if node is a parameter, else false
 	 */
-	public boolean isParameter(int pos) {
+	public boolean isParameterSelected(int pos) {
 		if(pos < index || pos > index+length) {
 			return false;
 		}
 		return (type.equals(PARAM_UP) || (type.equals(PARAM_DOWN)));
+	}
+	
+	public boolean isParameter() {
+		return type.equals(PARAM_UP) || type.equals(PARAM_DOWN);
 	}
 
 	@Override

@@ -40,7 +40,6 @@ import dataTool.DataCallHierarchy;
 import dataTool.DataNode;
 import dataTool.Finder;
 import dataTool.ui.DataLink;
-import dataTool.ui.NavigationBox;
 import dataTool.ui.NavigationDownBox;
 import dataTool.ui.NavigationUpBox;
 
@@ -61,7 +60,6 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	private SourceViewer viewer;
 	private Map<ISelfDrawingAnnotation, Position> anns = new HashMap<ISelfDrawingAnnotation, Position>();
 	private boolean isActive = false;
-	private NavigationBox box;
 	private boolean painted = false;
 
 	public ProgramNavigationPainter(SourceViewer v) {
@@ -210,8 +208,6 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 		ISelfDrawingAnnotation ann = null;
 		Position p;
 		String word;
-		OccurrenceLocation[] locations = null;
-		DataCallHierarchy call = new DataCallHierarchy();
 		Finder finder = Finder.getInstance();
 		HashMap<String, ArrayList<DataLink>> map = null;
 		for (Map.Entry<ISelfDrawingAnnotation, Position> entry : anns.entrySet()) {
@@ -219,13 +215,13 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 			p = entry.getValue();
 			r = viewer.modelRange2WidgetRange(new Region(p.offset, p.length));
 			word = viewer.getTextWidget().getText(r.getOffset(), r.getOffset() + r.getLength() - 1);
-			System.out.println("---------" + word);
+			//System.out.println("---------" + word);
 			// draw the annotation only if it's visible
 			if (r != null) {
 				ann.draw(e.gc, viewer.getTextWidget(), r.getOffset(), r.getLength());
 				// Highlight all instances in class
 				for (DataNode node : finder.getOccurrences(word, p)) {
-					if (node.isParameter(r.getOffset())) {
+					if (node.isParameterSelected(r.getOffset())) {
 						// Only display pop-up if selected text is a parameter
 						/*try {
 							map = call.searchProject(node.getMethod());

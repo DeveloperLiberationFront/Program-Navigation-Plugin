@@ -160,8 +160,9 @@ class Visitor extends ASTVisitor {
 						param = svd.getName().getIdentifier();
 						addedNode = new DataNode(param, svd.getName().getStartPosition(), DataNode.PARAM_UP,
 								methodName.toString());
-						nodes.put(new Position(svd.getStartPosition(), svd.getLength()), svd);
+						nodes.put(new Position(svd.getStartPosition(), svd.getLength()), svd.getName());
 						addOccurrences(addedNode );
+						finder.addParameter(addedNode, methodName);
 					}
 
 					md.accept(new ASTVisitor() {
@@ -170,7 +171,7 @@ class Visitor extends ASTVisitor {
 							System.out.println("---" + var);
 							addedNode = new DataNode(var.toString(), 
 														vdf.getName().getStartPosition(), 
-														DataNode.PARAM_DOWN,
+														DataNode.VAR,
 														methodName.toString());
 							nodes.put(new Position(vdf.getName().getStartPosition(), vdf.getName().getLength()),
 														vdf.getName());
@@ -269,6 +270,7 @@ class Visitor extends ASTVisitor {
 											arg.getLength()), 
 											arg);
 									addOccurrences(addedNode);
+									finder.addParameter(addedNode, mi.getName());
 							}
 							return true;
 						}

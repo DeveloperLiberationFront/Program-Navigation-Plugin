@@ -9,6 +9,7 @@ import java.util.TreeSet;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jface.text.Position;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.ui.IWorkbenchPage;
@@ -18,16 +19,17 @@ import dataTool.annotations.SuggestedSelectionAnnotation;
 
 public class Finder {
 	protected static Map<String, TreeSet<DataNode>> map; // contains name and first node for all data
+	protected static Map<String, Map> param_map;
 	final public static String UP = "up";
 	final public static String DOWN = "down";
 	
 	private static Finder currentFinder;
-	private static Color currentColor;
 	private String goToName = null;
 	private int goToOffset = -1;
 	
 	private Finder () {
 		map = new HashMap<String, TreeSet<DataNode>>();
+		param_map = new HashMap<String, Map>();
 	}
 	
 	public static Finder getInstance() {
@@ -60,11 +62,11 @@ public class Finder {
 	}
 	
 	public static void add( DataNode dn ) {
-		System.out.println(dn.getSignature() + " " + dn.getStartPosition());
+		//System.out.println(dn.getSignature() + " " + dn.getStartPosition());
 		TreeSet<DataNode> list;
 		String key = dn.getValue();
 		if (!map.containsKey(key)) {
-			System.out.println(dn.getSignature() + " " + dn.getStartPosition());
+			//System.out.println(dn.getSignature() + " " + dn.getStartPosition());
 			list = new TreeSet<DataNode>();
 			list.add(dn);
 			map.put(key, list);
@@ -73,6 +75,49 @@ public class Finder {
 			list = map.get(key);
 			list.add(dn);
 			map.put(key, list);
+		}
+	}
+	
+	public void addParameter(DataNode dn, SimpleName name) {
+		//System.out.println(dn.getValue()+" "+name.getIdentifier()+" "+dn.getType());
+		ArrayList<SimpleName> list;
+		Map<String, ArrayList<SimpleName>> items;
+		String key = dn.getValue();
+		if (!param_map.containsKey(key)) {
+			items = new HashMap<String, ArrayList<SimpleName>>();
+			list = new ArrayList<SimpleName>();
+			list.add(name);
+			items.put(dn.getType(), list);
+			param_map.put(key, items);
+		}
+		else {
+			items = param_map.get(key);
+			if(!items.containsKey(dn.getType())) {
+				list = new ArrayList<SimpleName>();
+			}
+			else {
+				list = items.get(dn.getType());
+			}
+			list.add(name);
+			items.put(dn.getType(), list);
+			param_map.put(key, items);
+		}
+	}
+	
+	public static ArrayList<String> getParamMethodNames(String key, String direction) {
+		ArrayList<String> list = new ArrayList<String>();
+		if(!param_map.containsKey(key)) {
+			return null;
+		}
+		else if(!param_map.get(key).containsKey(direction)) {
+			return null;
+		}
+		else {
+			ArrayList<SimpleName> methods = (ArrayList<SimpleName>) param_map.get(key).get(direction);
+			for(SimpleName s: methods) {
+				list.add(s.getIdentifier());
+			}
+			return list;
 		}
 	}
 	
@@ -119,13 +164,13 @@ public class Finder {
 	 * @return ArrayList<ASTNode> of "up" occurrences for current variable name
 	 */
 	public TreeSet<DataNode> getOccurrences(String s, Position p) {
-		System.out.println(s + " !!! " + p.toString());
+		//System.out.println(s + " !!! " + p.toString());
 		TreeSet<DataNode> returnList = new TreeSet<DataNode>();
 		String method = null;
 		for(Entry<String, TreeSet<DataNode>> entry : map.entrySet()) {
 		    String key = entry.getKey();
 		    TreeSet<DataNode> list = entry.getValue();
-		    System.out.println(key + " ||| " + s);
+		    //System.out.println(key + " ||| " + s);
 		    
 		    for( DataNode dn : list ) {
 		    	if( dn.getStartPosition() == p.offset && key.contains(".")) {
@@ -138,7 +183,7 @@ public class Finder {
 			for(Entry<String, TreeSet<DataNode>> entry : map.entrySet()) {
 			    String key = entry.getKey();
 			    TreeSet<DataNode> list = entry.getValue();
-			    System.out.println(key + " " + s);
+			    //System.out.println(key + " " + s);
 			    
 			    for( DataNode dn : list ) {
 			    	if( dn.getValue().equals(s) && dn.getMethod().equals(method)) {

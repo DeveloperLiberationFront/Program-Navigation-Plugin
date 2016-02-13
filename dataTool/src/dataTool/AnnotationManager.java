@@ -1,11 +1,18 @@
 package dataTool;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.SourceViewer;
@@ -61,9 +68,28 @@ public class AnnotationManager implements ISelectionChangedListener {
 					NavigationUpBox.createInstance(sourceViewer.getTextWidget(), one.getStartPosition());
 					NavigationDownBox.createInstance(sourceViewer.getTextWidget(), one.getStartPosition());
 				}
-				//TODO Perform project search here instead of in ProgramNavigationPainter
-				NavigationUpBox.getInstance().setText(one.toString()+" up");
-				NavigationDownBox.getInstance().setText(one.toString()+" down");
+				DataCallHierarchy call = new DataCallHierarchy();
+				Set<IMethod> searchUp = null;
+				Set<IMethod> searchDown = null;
+				if(Finder.param_map.containsKey(one.toString())) {
+					ArrayList<String> up = Finder.getParamMethodNames(one.toString(), DataNode.PARAM_UP);
+					ArrayList<String> down = Finder.getParamMethodNames(one.toString(), DataNode.PARAM_DOWN);
+					if (up != null) {
+						searchUp = call.search(up.get(0), Finder.UP);
+						System.out.println(searchUp);
+					}
+					if (down != null) {
+						searchDown = new HashSet<IMethod>();
+						Set<IMethod> temp = call.search(getMethod(one), Finder.DOWN);
+						for(IMethod i: temp) {
+							if(down.contains(i.getElementName())) {
+								searchDown.add(i);
+							}
+						}
+					}
+				}
+				NavigationUpBox.getInstance().setText(searchUp);
+				NavigationDownBox.getInstance().setText(searchDown);
 			}
 			else {
 				removeAnnotations();
@@ -71,8 +97,8 @@ public class AnnotationManager implements ISelectionChangedListener {
 		} catch (Exception e) {
 			Activator.logError(e);
 			if(isActive) {
-				NavigationUpBox.getInstance().setText("");
-				NavigationDownBox.getInstance().setText("");
+				NavigationUpBox.getInstance().setText(null);
+				NavigationDownBox.getInstance().setText(null);
 			}
 			removeAnnotations();
 		}
@@ -84,7 +110,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 	 * @returns String method name
 	 */
 	private String getMethod(ASTNode node) {
-		// TODO Function that could come in handy later to get current method mouse is clicked in
+		//TODO Function that could come in handy later to get current method mouse is clicked in
 		ASTNode temp = node;
 		while(!(temp instanceof MethodDeclaration) && temp != null) {
 			temp = temp.getParent();

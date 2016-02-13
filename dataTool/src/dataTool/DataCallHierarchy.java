@@ -45,6 +45,7 @@ import dataTool.ui.DataLink;
  */
 public class DataCallHierarchy {
 	
+	private String projectName;
 	private String searchMatch;
 	private String method;
 	private String parameters;
@@ -53,172 +54,20 @@ public class DataCallHierarchy {
 	private ICompilationUnit cUnit;
 	private HashMap<String, ArrayList<DataLink>> results;
 	
-	public String goTo = null;
-	public int goToOffset;
-	
 	public DataCallHierarchy() {
 		
-	}
-	
-	public void setGoTo(int offset) {
-		goToOffset = offset;
-	}
+	}	
 	
 	/**
-	 * Returns all instances of method
-	 * @param m: IMethod to search for
-	 * @returns Set of IMethods for m
+	 * Searches project for given method name
+	 * @param methodName: String of current method name
+	 * @param direction: String we are searching (Finder.UP or Finder.DOWN)
+	 * @returns Set of methods calling or called by methodName
+	 * @throws JavaModelException
 	 */
-	public HashSet<IMethod> getCalls(IMethod m) {
-		HashSet<IMethod> methods = new HashSet<IMethod>();
-		methods.addAll(getCallersOf(m));
-		methods.addAll(getCalleesOf(m));
-		return methods;
-	}
-	
-	public HashSet<IMethod> getCalleesOf(IMethod m) {
-		CallHierarchy callHierarchy = CallHierarchy.getDefault();
-		 
-		IMember[] members = {m};
-		MethodWrapper[] methodWrappers = callHierarchy.getCalleeRoots(members);
-		HashSet<IMethod> callers = new HashSet<IMethod>();
-		for (MethodWrapper mw : methodWrappers) {
-		    MethodWrapper[] mw2 = mw.getCalls(new NullProgressMonitor());
-		    HashSet<IMethod> temp = getIMethods(mw2);
-		    callers.addAll(temp);    
-		} 
-		return callers;
-	}
-	
-	public HashSet<IMethod> getCallersOf(IMethod m) {
-		 CallHierarchy callHierarchy = CallHierarchy.getDefault();
-		 
-		 IMember[] members = {m};
-		 
-		 MethodWrapper[] methodWrappers = callHierarchy.getCallerRoots(members);
-		 HashSet<IMethod> callers = new HashSet<IMethod>();
-		 for (MethodWrapper mw : methodWrappers) {
-		     MethodWrapper[] mw2 = mw.getCalls(new NullProgressMonitor());
-		     HashSet<IMethod> temp = getIMethods(mw2);
-		     callers.addAll(temp);    
-		 }
-		return callers;
-	}
-		 
-	private HashSet<IMethod> getIMethods(MethodWrapper[] methodWrappers) {
-		  HashSet<IMethod> c = new HashSet<IMethod>(); 
-		  for (MethodWrapper m : methodWrappers) {
-			  IMethod im = getIMethodFromMethodWrapper(m);
-			  if (im != null) {
-				  c.add(im);
-			  }
-		  }
-		  return c;
-	}
-		 
-	private IMethod getIMethodFromMethodWrapper(MethodWrapper m) {
-		try {
-		    IMember im = m.getMember();
-		    if (im.getElementType() == IJavaElement.METHOD) {
-		    	return (IMethod)m.getMember();
-		    }
-		} 
-		catch (Exception e) {
-		    e.printStackTrace();
-		 }
-		 return null;
-	}
-	
-	/**
-	 * Search project for method
-	 * @param project: String project name
-	 * @param method: String method name
-	 * @returns String of next method name
-	 * @throws CoreException
-	 */
-	public HashMap<String, ArrayList<DataLink>> searchProject(String method) throws CoreException {
-		results = new HashMap<String, ArrayList<DataLink>>();
-		String projectName = EnableNavigationAction.project;
-		String path = EnableNavigationAction.path;
-		String projectPath;
-		if(path.contains("/src/")) {
-			projectPath = path.substring(path.indexOf("/src/")+5,path.lastIndexOf("/")).replace("/", ".");
-		}
-		else {
-			projectPath = path;
-		}
-		String projectFile = EnableNavigationAction.file;
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-	    IProject project = root.getProject(projectName);
-	    IFolder folder = project.getFolder("src");
-	    IJavaProject javaProject = JavaCore.create(project);
-	    IPackageFragmentRoot ipf = javaProject.getPackageFragmentRoot(folder);
-	    ipf.createPackageFragment(projectPath, true, null);
-	    IPackageFragment frag = ipf.getPackageFragment(projectPath);
-	    cUnit = frag.getCompilationUnit(projectFile);
-	    IType type = cUnit.getType(projectFile.replace(".java", ""));
-	    HashSet<IMethod> calls = null;
-		ArrayList<DataLink> links = new ArrayList<DataLink>();
-	    for(IMethod im: type.getMethods()){
-	    	if(im.getElementName().equals(method)) {
-	    		calls = getCalls(im);
-	    		for(IMethod mem: calls) {
-	    			links.add(new DataLink(mem, mem.getElementName(), mem.getPath().toString()));
-	    			searchMatch = mem.toString();
-	    		}
-	    	}
-	    }
-	    results.put(Finder.UP, links);
-	    if(calls == null) {
-	    	results.put(Finder.DOWN, processRootDirectory(method));
-	    }
-	    return results;
-	}
-	
-	private ArrayList<DataLink> processRootDirectory(String method) throws JavaModelException,CoreException {
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();		
-		IProject[] projects = root.getProjects();
-		ArrayList<DataLink> links = new ArrayList<DataLink>();
-		
-		// process each project
-		for (IProject project : projects) {
-			if (project.isNatureEnabled("org.eclipse.jdt.core.javanature")) {
-				IJavaProject javaProject = JavaCore.create(project);
-				IPackageFragment[] packages = javaProject.getPackageFragments();
-		
-				// process each package
-				for (IPackageFragment pack: packages) {
-					// We will only look at the package from the source folder
-					// K_BINARY would include also included JARS
-					// only process the .java files
-					if (pack.getKind() == IPackageFragmentRoot.K_SOURCE) {
-						for (ICompilationUnit unit : pack.getCompilationUnits()) {
-							IType[] allTypes = unit.getAllTypes();
-							for (IType type : allTypes) {
-								IMethod[] methods = type.getMethods();
-								for (IMethod imethod : methods) {
-									if(imethod.getElementName().equals(method)) {
-										searchMatch = method.toString();
-										links.add(new DataLink(imethod, imethod.getElementName(),imethod.getPath().toString()));
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-
-		}
-		if(links.isEmpty())
-		{
-			links.add(new DataLink(null, DataLink.INVALID, DataLink.INVALID_DESC));
-		}
-		return links;
-	}
-	
-	public Set<IMethod> test(String methodName) throws JavaModelException {
+	public Set<IMethod> search(String methodName, String direction) throws JavaModelException {
 	    CallHierarchyGenerator callGen = new CallHierarchyGenerator();
-	    String projectName = EnableNavigationAction.project;
+	    projectName = EnableNavigationAction.project;
 		String path = EnableNavigationAction.path;
 		String projectPath;
 		if(path.contains("/src/")) {
@@ -239,18 +88,27 @@ public class DataCallHierarchy {
 	    IType type = cUnit.getType(projectFile.replace(".java", ""));
 		IMethod m = findMethod(type, methodName);
 	    Set<IMethod> methods = new HashSet<IMethod>();
-	    methods = callGen.getCallersOf(m);
-	    for (Iterator<IMethod> i = methods.iterator(); i.hasNext();)
-	    {
-	        System.out.println(i.next().toString());
+	    if(direction.equals(Finder.UP)) {
+		    methods = callGen.getCallersOf(m);
+	    }
+	    else {
+		    Set<IMethod> temp = callGen.getCalleesOf(m);
+		    for(IMethod i: temp) {
+		    	methods.add(i);
+		    }
 	    }
 	    return methods;
 	}
 	
+	/**
+	 * Finds the method in the current class
+	 * @param type: IType for the current class
+	 * @param methodName: String name of the method
+	 * @returns IMethod of method search or null
+	 * @throws JavaModelException
+	 */
 	private IMethod findMethod(IType type, String methodName) throws JavaModelException
 	{
-	    //IType type = project.findType(typeName);
-
 	    IMethod[] methods = type.getMethods();
 	    IMethod theMethod = null;
 
@@ -262,9 +120,8 @@ public class DataCallHierarchy {
 	        }
 	    }
 
-	    if (theMethod == null)
-	    {           
-	        System.out.println("Error, method" + methodName + " not found");
+	    if (theMethod == null) {           
+	        System.out.println("Error, method " + methodName + " not found");
 	        return null;
 	    }
 

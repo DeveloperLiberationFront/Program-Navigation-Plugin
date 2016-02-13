@@ -16,6 +16,11 @@ import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
  */
 public class CallHierarchyGenerator {
 	
+	/**
+	 * Searches the project for callers of current method
+	 * @param m: Method to search for
+	 * @returns HashSet of methods calling m
+	 */
 	public HashSet<IMethod> getCallersOf(IMethod m) {
 
 	    CallHierarchy callHierarchy = CallHierarchy.getDefault();
@@ -31,6 +36,28 @@ public class CallHierarchyGenerator {
 	    }
 
 	    return callers;
+	}
+	
+	/**
+	 * Searches the project for callees of current method
+	 * @param m: Method to search for
+	 * @returns HashSet of methods called by m
+	 */
+	public HashSet<IMethod> getCalleesOf(IMethod m) {
+
+	    CallHierarchy callHierarchy = CallHierarchy.getDefault();
+
+	    IMember[] members = { m };
+
+	    MethodWrapper[] methodWrappers = callHierarchy.getCalleeRoots(members);
+	    HashSet<IMethod> callees = new HashSet<IMethod>();
+	    for (MethodWrapper mw : methodWrappers) {
+	        MethodWrapper[] mw2 = mw.getCalls(new NullProgressMonitor());
+	        HashSet<IMethod> temp = getIMethods(mw2);
+	        callees.addAll(temp);
+	    }
+
+	    return callees;
 	}
 
 	private HashSet<IMethod> getIMethods(MethodWrapper[] methodWrappers) {
