@@ -60,7 +60,6 @@ public class Finder {
 		}
 		return null;
 	}
-	
 	public static void add( DataNode dn ) {
 		//System.out.println(dn.getSignature() + " " + dn.getStartPosition());
 		TreeSet<DataNode> list;
@@ -169,29 +168,31 @@ public class Finder {
 		String method = null;
 		for(Entry<String, TreeSet<DataNode>> entry : map.entrySet()) {
 		    String key = entry.getKey();
-		    TreeSet<DataNode> list = entry.getValue();
-		    //System.out.println(key + " ||| " + s);
-		    
-		    for( DataNode dn : list ) {
-		    	if( dn.getStartPosition() == p.offset && key.contains(".")) {
-			    	method = key.substring( 0, key.indexOf(".") );
-			    }
-		    }
-		    
-		}
-		if( method != null ) {
-			for(Entry<String, TreeSet<DataNode>> entry : map.entrySet()) {
-			    String key = entry.getKey();
-			    TreeSet<DataNode> list = entry.getValue();
-			    //System.out.println(key + " " + s);
-			    
-			    for( DataNode dn : list ) {
-			    	if( dn.getValue().equals(s) && dn.getMethod().equals(method)) {
-				    	returnList.add(dn);
+		    if( key.equals(s )) {
+		    	TreeSet<DataNode> list = entry.getValue();
+		    	for( DataNode dn : list ) {
+			    	if( dn.getStartPosition() == p.offset ) {
+			    		String signature = dn.getSignature();
+			    		if( signature.indexOf("." ) != -1) {
+			    			method = signature.substring( 0, signature.indexOf(".") );
+			    		} else {
+			    			//figure out what to do about class variables.
+			    		}
 				    }
 			    }
-			    
-			}
+		    	list = entry.getValue();
+		    	for( DataNode dn : list ) {
+		    		String signature = dn.getSignature();
+		    		if( signature.indexOf("." ) != -1) {
+		    			String newMethod = signature.substring( 0, signature.indexOf(".") );
+		    			if( dn.getValue().equals(key) && newMethod.equals(method) ) { 
+		    				returnList.add(dn);
+		    			}
+		    		} else {
+		    			//figure out what to do about class variables.
+		    		}
+		    	}
+		    }
 		}
 		return returnList;	
 	}

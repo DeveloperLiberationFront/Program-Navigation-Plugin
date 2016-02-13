@@ -101,12 +101,13 @@ class Visitor extends ASTVisitor {
 		cu.accept(new ASTVisitor() {
 			DataNode addedNode = null;
 			SimpleName methodName = null;
+
 			public boolean visit(VariableDeclarationFragment vdf) {
 				String var = vdf.toString();
 				String left, right;
 				if(var.contains("=")) {
-				left = var.substring( 0, var.indexOf("=") ).trim();
-				right = var.substring( var.indexOf("=") + 1 ).trim();
+					left = var.substring( 0, var.indexOf("=") ).trim();
+					right = var.substring( var.indexOf("=") + 1).trim();
 				}
 				else {
 					left = var;
@@ -118,11 +119,15 @@ class Visitor extends ASTVisitor {
 					//If not a class variable.
 					if( isVariable(left) ) {
 						offset = vdf.getStartPosition();
+						System.out.println("L:--> " + left + " " + offset);
 						addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, methodName.toString());
 						addOccurrences(addedNode);
 					}
 					if( isVariable(right) ) {
-						offset = vdf.getStartPosition() + vdf.toString().indexOf(right);
+						// Offset is calculated in bytes (I think) 
+						// Therefore, multiply it by 2 to get the correct offset
+						offset = vdf.getStartPosition() + ( vdf.toString().indexOf(right) * 2 );
+						System.out.println("R:--> " + right + " " + offset);
 						addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, methodName.toString());
 						addOccurrences(addedNode);
 					}
@@ -168,7 +173,6 @@ class Visitor extends ASTVisitor {
 					md.accept(new ASTVisitor() {
 						public boolean visit(VariableDeclarationFragment vdf) {
 							String var = vdf.getName().getIdentifier();
-							System.out.println("---" + var);
 							addedNode = new DataNode(var.toString(), 
 														vdf.getName().getStartPosition(), 
 														DataNode.VAR,
