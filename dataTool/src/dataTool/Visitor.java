@@ -213,7 +213,7 @@ class Visitor extends ASTVisitor {
 								//Assignment
 								int offset;
 								left = statement.substring( 0, statement.indexOf("=") ).trim();
-								right = statement.substring( statement.indexOf("=") + 1).trim();
+								right = statement.substring( statement.indexOf("=") + 1, statement.indexOf(";")).trim();
 								if( isVariable(left) ) {
 									offset = a.getStartPosition();
 									System.out.println("L:--> " + left + " " + offset);

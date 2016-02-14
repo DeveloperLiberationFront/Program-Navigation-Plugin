@@ -50,13 +50,14 @@ public class DataNode implements Comparable {
 //		}
 //		index = node.getStartPosition();
 //	}
-	
 	/**
 	 * Constructor to create DataNodes with just values, mainly for DownFinder
 	 * @param val= Current variable name
 	 * @param start= start position of the current variable
 	 */
 	public DataNode (String val, int start, String nodeType, Method call) {
+		
+		
 		value = val;
 		index = start;
 		length = val.length();
