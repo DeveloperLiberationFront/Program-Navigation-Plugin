@@ -51,9 +51,9 @@ import edu.pdx.cs.multiview.jdt.util.JDTUtils;
 
 class Visitor extends ASTVisitor {
 
-	private StackMap<Position, ASTNode> nodes = new StackMap<Position, ASTNode>();
+	private StackMap<Position, DataNode> nodes = new StackMap<Position, DataNode>();
 	private static ArrayList<SimpleName> seenMethod = new ArrayList<SimpleName>();
-	private static Finder finder;
+	private Finder finder;
 
 	private static String source;
 
@@ -78,7 +78,8 @@ class Visitor extends ASTVisitor {
 	 * @param currentData:
 	 *            String of current data selected
 	 */
-	private static void addOccurrences(DataNode dn) {
+	private void addOccurrences(DataNode dn) {
+		nodes.put(new Position(dn.getStartPosition(), dn.getLength()), dn);
 		finder.add(dn);
 	}
 
@@ -110,7 +111,7 @@ class Visitor extends ASTVisitor {
 					addedNode = new DataNode(svd.getName().toString(),
 											 svd.getName().getStartPosition(), 
 											 DataNode.PARAM_UP, null);
-					nodes.put(new Position(svd.getStartPosition(), svd.getLength()), svd.getName());
+					nodes.put(new Position(addedNode.getStartPosition(), addedNode.getLength()), addedNode);
 					addOccurrences(addedNode );
 				}
 				return true;
@@ -136,14 +137,11 @@ class Visitor extends ASTVisitor {
 						addOccurrences(addedNode);
 					}
 					if( isVariable(right) ) {
-						// Offset is calculated in bytes (I think) 
-						// Therefore, multiply it by 2 to get the correct offset
-						offset = vdf.getStartPosition() + ( vdf.toString().indexOf(right) * 2 );
+						offset = source.indexOf(right, cu.getExtendedStartPosition(vdf));
 						System.out.println("R:--> " + right + " " + offset );
 						addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, null);
 						addOccurrences(addedNode);
 					}
-					nodes.put(new Position(vdf.getName().getStartPosition(), vdf.getName().getLength()), vdf.getName());
 				} 
 				return true;
 			}
@@ -175,7 +173,6 @@ class Visitor extends ASTVisitor {
 						param = svd.getName().getIdentifier();
 						addedNode = new DataNode(param, svd.getName().getStartPosition(), DataNode.PARAM_UP,
 								method);
-						nodes.put(new Position(svd.getStartPosition(), svd.getLength()), svd.getName());
 						addOccurrences(addedNode );
 						finder.addParameter(addedNode, methodName);
 					}
@@ -201,15 +198,12 @@ class Visitor extends ASTVisitor {
 								addOccurrences(addedNode);
 							}
 							if( isVariable(right) ) {
-								// Offset is calculated in bytes (I think) 
-								// Therefore, multiply it by 2 to get the correct offset
-								offset = vdf.getStartPosition() + ( vdf.toString().indexOf(right) * 2 );
-								System.out.println("R:--> " + right + " " + offset);
+								offset = source.indexOf(right, cu.getExtendedStartPosition(vdf));
+								System.out.println("R:--> " + right + " " + vdf.getStartPosition() + " " + offset);
 								addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, method);
 								addOccurrences(addedNode);
 							}
 							
-							nodes.put(new Position(vdf.getName().getStartPosition(), vdf.getName().getLength()), vdf.getName());
 							return true;
 						}
 						public boolean visit( ExpressionStatement a ) {
@@ -227,10 +221,8 @@ class Visitor extends ASTVisitor {
 									addOccurrences(addedNode);
 								}
 								if( isVariable(right) ) {
-									// Offset is calculated in bytes (I think) 
-									// Therefore, multiply it by 2 to get the correct offset
-									offset = a.getStartPosition() + ( a.toString().indexOf(right) * 2 );
-									System.out.println("R:--> " + right + " " + offset);
+									offset = source.indexOf(right, cu.getExtendedStartPosition(a));
+									System.out.println("R:--> " + right + " " + a.getStartPosition() + " " + offset);
 									addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, method);
 									addOccurrences(addedNode);
 								}
@@ -245,8 +237,9 @@ class Visitor extends ASTVisitor {
 								
 								if( statement.trim().indexOf(expression) == 0 ) {
 									//Pre-ment
-									only = statement.substring(expression.length());
-									offset = a.getStartPosition() + ( expression.length() * 2);
+									only = statement.substring(expression.length(), statement.indexOf(";"));
+									
+									offset = a.getStartPosition() + expression.length();
 								} else {
 									//Post-ment
 									only = statement.substring(0, statement.indexOf(expression));
@@ -271,9 +264,6 @@ class Visitor extends ASTVisitor {
 													 	startPosition, 
 													 	DataNode.FOR_VAR,
 													 	method);
-							nodes.put(new Position(forThis.getStartPosition(), 
-														forThis.getLength()), 
-														forThis);
 							Statement body = efs.getBody();
 							addOccurrences(addedNode );
 							return true;
@@ -292,9 +282,6 @@ class Visitor extends ASTVisitor {
 																startPosition, 
 																DataNode.FOR_VAR, 
 																method);
-									nodes.put(new Position(forThis.getStartPosition(),
-																forThis.getLength()), 
-																forThis);
 									Statement body = fs.getBody();
 									addOccurrences(addedNode );
 								}
@@ -330,7 +317,6 @@ class Visitor extends ASTVisitor {
 										startPosition, 
 										DataNode.VAR, 
 										method);
-								nodes.put(new Position(e.getStartPosition(), e.getLength()), e);
 								Statement errorCode = error.getBody();
 								addOccurrences(addedNode );
 							}
@@ -347,9 +333,6 @@ class Visitor extends ASTVisitor {
 											startPosition,
 											DataNode.PARAM_DOWN, 
 											method);
-									nodes.put(new Position(arg.getStartPosition(), 
-											arg.getLength()), 
-											arg);
 									addOccurrences(addedNode);
 									finder.addParameter(addedNode, mi.getName());
 							}
@@ -373,11 +356,14 @@ class Visitor extends ASTVisitor {
 	private void add(ASTNode node) {
 		int start = node.getStartPosition();
 		int length = node.getLength();
-		nodes.put(new Position(start, length), node);
 	}
 
-	public ASTNode statementAt(int index) {
+	private void parseEquals( String statement ) {
+		
+	}
+	public DataNode statementAt(int index) {
 		for (Position p : nodes.keyStack()) {
+			System.out.println(p.getOffset());
 			boolean isContained = p.offset <= index && index < p.offset + p.length;
 			if (isContained) {
 				return nodes.get(p);

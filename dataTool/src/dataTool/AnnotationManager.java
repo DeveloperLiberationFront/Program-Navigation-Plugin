@@ -61,7 +61,8 @@ public class AnnotationManager implements ISelectionChangedListener {
 	public void selectionChanged(ITextSelection selection) {
 		painter.removeAllAnnotations();
 		try {
-			ASTNode one = getNode(selection.getOffset());
+			DataNode one = getNode(selection.getOffset());
+			System.out.println(selection.getOffset());
 			if(one != null) {
 				addAnnotation(one);
 				if(!isActive) {
@@ -71,6 +72,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 				DataCallHierarchy call = new DataCallHierarchy();
 				Set<IMethod> searchUp = null;
 				Set<IMethod> searchDown = null;
+				System.out.println(one.toString());
 				if(Finder.param_map.containsKey(one.toString())) {
 					ArrayList<String> up = Finder.getParamMethodNames(one.toString(), DataNode.PARAM_UP);
 					ArrayList<String> down = Finder.getParamMethodNames(one.toString(), DataNode.PARAM_DOWN);
@@ -114,19 +116,20 @@ public class AnnotationManager implements ISelectionChangedListener {
 	 * @param node: Current node selected by the user
 	 * @returns String method name
 	 */
-	private String getMethod(ASTNode node) {
+	private String getMethod(DataNode one) {
 		//TODO Function that could come in handy later to get current method mouse is clicked in
-		ASTNode temp = node;
-		while(!(temp instanceof MethodDeclaration) && temp != null) {
-			temp = temp.getParent();
-		}
-		if(temp == null) {
-			return null;
-		}
-		return ((MethodDeclaration) temp).getName().getIdentifier();
+//		DataNode temp = one;
+//		while(!(temp instanceof MethodDeclaration) && temp != null) {
+//			temp = temp.getParent();
+//		}
+//		if(temp == null) {
+//			return null;
+//		}
+//		return ((MethodDeclaration) temp).getName().getIdentifier();
+		return one.getMethod().getName().toString();
 	}
 	
-	private void addAnnotation(ASTNode one) {
+	private void addAnnotation(DataNode one) {
 		int start = one.getStartPosition();
 		int end = one.getStartPosition() + one.getLength();
 
@@ -160,7 +163,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 		return false;
 	}
 
-	private ASTNode getNode(int position) {
+	private DataNode getNode(int position) {
 		return visitor.statementAt(position);
 	}
 

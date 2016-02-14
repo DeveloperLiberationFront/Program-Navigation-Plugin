@@ -67,7 +67,6 @@ public class DataNode implements Comparable {
 		} else {
 			signature = "null";
 		}
-		
 	}
 	
 	/**
