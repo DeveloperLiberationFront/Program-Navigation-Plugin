@@ -39,6 +39,8 @@ public class AnnotationManager implements ISelectionChangedListener {
 
 	// the visitor for the editor
 	private Visitor visitor;
+	
+	public static String currentSearch = null;
 
 	/**
 	 * Creates an annotation manager given an editor, containing a compilation
@@ -64,6 +66,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 			ASTNode one = getNode(selection.getOffset());
 			if(one != null) {
 				addAnnotation(one);
+				currentSearch = getMethod(one);
 				if(!isActive) {
 					NavigationUpBox.createInstance(sourceViewer.getTextWidget(), one.getStartPosition());
 					NavigationDownBox.createInstance(sourceViewer.getTextWidget(), one.getStartPosition());
@@ -76,7 +79,6 @@ public class AnnotationManager implements ISelectionChangedListener {
 					ArrayList<String> down = Finder.getParamMethodNames(one.toString(), DataNode.PARAM_DOWN);
 					if (up != null) {
 						searchUp = call.search(up.get(0), Finder.UP);
-						System.out.println(searchUp);
 					}
 					if (down != null) {
 						searchDown = new HashSet<IMethod>();
@@ -208,6 +210,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 		NavigationUpBox.dispose();
 		NavigationDownBox.dispose();
 		isActive = false;
+		currentSearch = null;
 	}
 
 	public void selectionChanged(SelectionChangedEvent event) {

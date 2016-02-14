@@ -62,7 +62,6 @@ class Visitor extends ASTVisitor {
 		parseData();
 	}
 
-
 	/**
 	 * Function that returns the source code
 	 * 
@@ -110,7 +109,9 @@ class Visitor extends ASTVisitor {
 					addedNode = new DataNode(svd.getName().toString(),
 											 svd.getName().getStartPosition(), 
 											 DataNode.PARAM_UP, null);
-					nodes.put(new Position(svd.getStartPosition(), svd.getLength()), svd.getName());
+					add(svd);
+					System.out.println(svd.toString());
+					System.out.println(svd.getName());
 					addOccurrences(addedNode );
 				}
 				return true;
@@ -143,7 +144,7 @@ class Visitor extends ASTVisitor {
 						addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, null);
 						addOccurrences(addedNode);
 					}
-					nodes.put(new Position(vdf.getName().getStartPosition(), vdf.getName().getLength()), vdf.getName());
+					add(vdf.getName());
 				} 
 				return true;
 			}
@@ -175,7 +176,7 @@ class Visitor extends ASTVisitor {
 						param = svd.getName().getIdentifier();
 						addedNode = new DataNode(param, svd.getName().getStartPosition(), DataNode.PARAM_UP,
 								method);
-						nodes.put(new Position(svd.getStartPosition(), svd.getLength()), svd.getName());
+						add(svd.getName());
 						addOccurrences(addedNode );
 						finder.addParameter(addedNode, methodName);
 					}
@@ -209,7 +210,7 @@ class Visitor extends ASTVisitor {
 								addOccurrences(addedNode);
 							}
 							
-							nodes.put(new Position(vdf.getName().getStartPosition(), vdf.getName().getLength()), vdf.getName());
+							add(vdf.getName());
 							return true;
 						}
 						public boolean visit( ExpressionStatement a ) {
@@ -271,9 +272,7 @@ class Visitor extends ASTVisitor {
 													 	startPosition, 
 													 	DataNode.FOR_VAR,
 													 	method);
-							nodes.put(new Position(forThis.getStartPosition(), 
-														forThis.getLength()), 
-														forThis);
+							add(forThis);
 							Statement body = efs.getBody();
 							addOccurrences(addedNode );
 							return true;
@@ -292,9 +291,7 @@ class Visitor extends ASTVisitor {
 																startPosition, 
 																DataNode.FOR_VAR, 
 																method);
-									nodes.put(new Position(forThis.getStartPosition(),
-																forThis.getLength()), 
-																forThis);
+									add(forThis);
 									Statement body = fs.getBody();
 									addOccurrences(addedNode );
 								}
@@ -330,7 +327,7 @@ class Visitor extends ASTVisitor {
 										startPosition, 
 										DataNode.VAR, 
 										method);
-								nodes.put(new Position(e.getStartPosition(), e.getLength()), e);
+								add(e);
 								Statement errorCode = error.getBody();
 								addOccurrences(addedNode );
 							}
@@ -347,9 +344,7 @@ class Visitor extends ASTVisitor {
 											startPosition,
 											DataNode.PARAM_DOWN, 
 											method);
-									nodes.put(new Position(arg.getStartPosition(), 
-											arg.getLength()), 
-											arg);
+									add(arg);
 									addOccurrences(addedNode);
 									finder.addParameter(addedNode, mi.getName());
 							}

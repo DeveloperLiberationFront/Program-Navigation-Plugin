@@ -2,18 +2,33 @@ package dataTool.ui;
 
 import java.awt.MouseInfo;
 import java.awt.Toolkit;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.IType;
 import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
+import org.eclipse.jface.text.IRegion;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.custom.StyledText;
@@ -42,22 +57,29 @@ import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.texteditor.AbstractTextEditor;
+import org.eclipse.ui.texteditor.ITextEditor;
 
+import dataTool.AnnotationManager;
 import dataTool.EnableNavigationAction;
 import dataTool.Finder;
+import edu.pdx.cs.multiview.jdt.util.JDTUtils;
+import sun.misc.IOUtils;
 
 public class NavigationUpBox {
 	
 	private static Display display;
 	private static Shell shell;
 	private static StyledText widget;
-	private static Label label;
 	private int offset;
 	private static NavigationUpBox instance;
 	private static boolean resize = false;
+	private static ASTNode searchResult = null;
 	
 	private NavigationUpBox(StyledText text, int start) {
 		widget = text;
@@ -134,18 +156,21 @@ public class NavigationUpBox {
 		    		@Override
 					public void handleEvent(Event arg0) {
 		    			try {
-		    				if(i.getSource() == null) {
+							if(i.getSource() == null) {
 		    					JOptionPane.showMessageDialog(null, DataLink.INVALID, "Error",JOptionPane.ERROR_MESSAGE);
 		    				}
 		    				else {
 								setText(null);
-				    			NavigationUpBox.getInstance().setText(null);
-								JavaUI.openInEditor(i, true, true);
+				    			NavigationDownBox.getInstance().setText(null);
+								IEditorPart editor = JavaUI.openInEditor(i, true, true);
+								String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
+								lineSearch(code.toCharArray(), i);
+								goToLine(editor, 24);
 		    				}
 						} catch (JavaModelException | PartInitException e1) {
 							// Auto-generated catch block
 							e1.printStackTrace();
-						}
+						}		    			
 		    		    IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		    		    EnableNavigationAction plugin = new EnableNavigationAction();
 		    	        plugin.init(page.getWorkbenchWindow());
@@ -157,6 +182,52 @@ public class NavigationUpBox {
 		shell.pack();
 		setSize();
 	}
+	
+	private void lineSearch(char[] source, IMethod method) {
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		parser.setSource(source);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+		cu.accept(new ASTVisitor(){
+			public boolean visit(MethodDeclaration md) {
+				String methodName = md.getName().getIdentifier();
+				//System.out.println(md.getName()+" "+method.getElementName());
+				md.accept(new ASTVisitor() {
+				public boolean visit(MethodInvocation m) {
+					if(method.getElementName().equals(methodName)) {
+						if(AnnotationManager.currentSearch.equals(m.getName().getIdentifier()) && searchResult == null) {
+							searchResult = m;
+							
+						}
+					}
+					//System.out.println("  "+m.getName() +" " + AnnotationManager.currentSearch);
+					return true;
+				}
+				public boolean visit(ClassInstanceCreation c) {
+					//System.out.println("  "+c.getType().toString() +" " + AnnotationManager.currentSearch);
+					return true;
+				}
+			});
+				return true;
+		}
+		});
+	}	
+	/**
+	 * Opens the new class at the specific line
+	 * http://stackoverflow.com/questions/2873879/eclipe-pde-jump-to-line-x-and-highlight-it
+	 * @param editorPart: current editor
+	 * @param lineNumber: line number of method invocation
+	 */
+	private static void goToLine(IEditorPart editorPart, int lineNumber) {
+		  if (!(editorPart instanceof ITextEditor) || lineNumber <= 0) {
+		    return;
+		  }
+		  ITextEditor editor = (ITextEditor) editorPart;
+		  IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
+		  if (document != null) {
+		    	editor.selectAndReveal(searchResult.getStartPosition(), searchResult.getLength());
+		  }
+		}
 
 	/**
 	 * Removes the top navigation box from view.
