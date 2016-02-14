@@ -191,16 +191,13 @@ public class NavigationUpBox {
 		cu.accept(new ASTVisitor(){
 			public boolean visit(MethodDeclaration md) {
 				String methodName = md.getName().getIdentifier();
-				//System.out.println(md.getName()+" "+method.getElementName());
 				md.accept(new ASTVisitor() {
 				public boolean visit(MethodInvocation m) {
 					if(method.getElementName().equals(methodName)) {
-						if(AnnotationManager.currentSearch.equals(m.getName().getIdentifier()) && searchResult == null) {
+						if(AnnotationManager.currentSearch.equals(m.getName().getIdentifier())) {
 							searchResult = m;
-							
 						}
 					}
-					//System.out.println("  "+m.getName() +" " + AnnotationManager.currentSearch);
 					return true;
 				}
 				public boolean visit(ClassInstanceCreation c) {

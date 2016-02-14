@@ -64,7 +64,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 		painter.removeAllAnnotations();
 		try {
 			DataNode one = getNode(selection.getOffset());
-			System.out.println(selection.getOffset());
+			//System.out.println(selection.getOffset());
 			if(one != null) {
 				addAnnotation(one);
 				currentSearch = getMethod(one);
@@ -75,10 +75,10 @@ public class AnnotationManager implements ISelectionChangedListener {
 				DataCallHierarchy call = new DataCallHierarchy();
 				Set<IMethod> searchUp = null;
 				Set<IMethod> searchDown = null;
-				System.out.println(one.toString());
-				if(Finder.param_map.containsKey(one.toString())) {
-					ArrayList<String> up = Finder.getParamMethodNames(one.toString(), DataNode.PARAM_UP);
-					ArrayList<String> down = Finder.getParamMethodNames(one.toString(), DataNode.PARAM_DOWN);
+				//System.out.println(Finder.param_map.entrySet());
+				if(Finder.param_map.containsKey(one.getValue()) && currentSearch != null) {
+					ArrayList<String> up = Finder.getParamMethodNames(one.getValue(), DataNode.PARAM_UP);
+					ArrayList<String> down = Finder.getParamMethodNames(one.getValue(), DataNode.PARAM_DOWN);
 					if (up != null) {
 						searchUp = call.search(up.get(0), Finder.UP);
 					}
@@ -128,7 +128,11 @@ public class AnnotationManager implements ISelectionChangedListener {
 //			return null;
 //		}
 //		return ((MethodDeclaration) temp).getName().getIdentifier();
-		return one.getMethod().getName().toString();
+		//System.out.println(one.getValue()+" get "+one.getMethod().getName());
+		if(one.getMethod() != null) {
+			return one.getMethod().getName().toString();
+		}
+		return null;
 	}
 	
 	private void addAnnotation(DataNode one) {
