@@ -27,6 +27,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
@@ -34,6 +35,7 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
+import org.eclipse.jdt.internal.compiler.ast.Assignment;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.MethodRefParameter;
@@ -101,49 +103,47 @@ class Visitor extends ASTVisitor {
 		cu.accept(new ASTVisitor() {
 			DataNode addedNode = null;
 			SimpleName methodName = null;
-
+			public boolean visit(SingleVariableDeclaration svd ) {
+				//If a class variable
+				if( methodName == null ) {
+					addedNode = new DataNode(svd.getName().toString(),
+											 svd.getName().getStartPosition(), 
+											 DataNode.PARAM_UP, null);
+					nodes.put(new Position(svd.getStartPosition(), svd.getLength()), svd.getName());
+					addOccurrences(addedNode );
+				}
+				return true;
+			}
 			public boolean visit(VariableDeclarationFragment vdf) {
-				String var = vdf.toString();
-				String left, right;
-				if(var.contains("=")) {
-					left = var.substring( 0, var.indexOf("=") ).trim();
-					right = var.substring( var.indexOf("=") + 1).trim();
-				}
-				else {
-					left = var;
-					right = "";
-				}
-				int offset;
-				
-				if( methodName != null ) {
-					//If not a class variable.
+				//If a class variable
+				if( methodName == null ) {
+					String var = vdf.toString();
+					String left, right;
+					if(var.contains("=")) {
+						left = var.substring( 0, var.indexOf("=") ).trim();
+						right = var.substring( var.indexOf("=") + 1).trim();
+					}
+					else {
+						left = var;
+						right = "";
+					}
+					int offset;
 					if( isVariable(left) ) {
 						offset = vdf.getStartPosition();
-						System.out.println("L:--> " + left + " " + offset);
-						addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, methodName.toString());
+						System.out.println("L:--> " + left + " " + offset );
+						addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, null);
 						addOccurrences(addedNode);
 					}
 					if( isVariable(right) ) {
 						// Offset is calculated in bytes (I think) 
 						// Therefore, multiply it by 2 to get the correct offset
 						offset = vdf.getStartPosition() + ( vdf.toString().indexOf(right) * 2 );
-						System.out.println("R:--> " + right + " " + offset);
-						addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, methodName.toString());
-						addOccurrences(addedNode);
-					}
-				} else {
-					if( isVariable(left) ) {
-						offset = vdf.getStartPosition();
-						addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, null);
-						addOccurrences(addedNode);
-					}
-					if( isVariable(right) ) {
-						offset = vdf.getStartPosition() + vdf.toString().indexOf(right);
+						System.out.println("R:--> " + right + " " + offset );
 						addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, null);
 						addOccurrences(addedNode);
 					}
-				}
-				nodes.put(new Position(vdf.getName().getStartPosition(), vdf.getName().getLength()), vdf.getName());
+					nodes.put(new Position(vdf.getName().getStartPosition(), vdf.getName().getLength()), vdf.getName());
+				} 
 				return true;
 			}
 
@@ -172,17 +172,83 @@ class Visitor extends ASTVisitor {
 
 					md.accept(new ASTVisitor() {
 						public boolean visit(VariableDeclarationFragment vdf) {
-							String var = vdf.getName().getIdentifier();
-							addedNode = new DataNode(var.toString(), 
-														vdf.getName().getStartPosition(), 
-														DataNode.VAR,
-														methodName.toString());
-							nodes.put(new Position(vdf.getName().getStartPosition(), vdf.getName().getLength()),
-														vdf.getName());
-							addOccurrences(addedNode );
+							String var = vdf.toString();
+							String left, right;
+							if(var.contains("=")) {
+								left = var.substring( 0, var.indexOf("=") ).trim();
+								right = var.substring( var.indexOf("=") + 1).trim();
+							}
+							else {
+								left = var;
+								right = "";
+							}
+							int offset;
+							
+							if( isVariable(left) ) {
+								offset = vdf.getStartPosition();
+								System.out.println("L:--> " + left + " " + offset);
+								addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, methodName.toString());
+								addOccurrences(addedNode);
+							}
+							if( isVariable(right) ) {
+								// Offset is calculated in bytes (I think) 
+								// Therefore, multiply it by 2 to get the correct offset
+								offset = vdf.getStartPosition() + ( vdf.toString().indexOf(right) * 2 );
+								System.out.println("R:--> " + right + " " + offset);
+								addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, methodName.toString());
+								addOccurrences(addedNode);
+							}
+							
+							nodes.put(new Position(vdf.getName().getStartPosition(), vdf.getName().getLength()), vdf.getName());
 							return true;
 						}
-
+						public boolean visit( ExpressionStatement a ) {
+							String statement = a.toString();
+							String left, right, only;
+							if( statement.contains("=")) {
+								//Assignment
+								int offset;
+								left = statement.substring( 0, statement.indexOf("=") ).trim();
+								right = statement.substring( statement.indexOf("=") + 1).trim();
+								if( isVariable(left) ) {
+									offset = a.getStartPosition();
+									System.out.println("L:--> " + left + " " + offset);
+									addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, methodName.toString());
+									addOccurrences(addedNode);
+								}
+								if( isVariable(right) ) {
+									// Offset is calculated in bytes (I think) 
+									// Therefore, multiply it by 2 to get the correct offset
+									offset = a.getStartPosition() + ( a.toString().indexOf(right) * 2 );
+									System.out.println("R:--> " + right + " " + offset);
+									addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, methodName.toString());
+									addOccurrences(addedNode);
+								}
+							} else if (statement.contains("++") || statement.contains("--")) {
+								String expression;
+								int offset;
+								if( statement.contains("++")) {
+									expression = "++";
+								} else {
+									expression = "--";
+								}
+								
+								if( statement.trim().indexOf(expression) == 0 ) {
+									//Pre-ment
+									only = statement.substring(expression.length());
+									offset = a.getStartPosition() + ( expression.length() * 2);
+								} else {
+									//Post-ment
+									only = statement.substring(0, statement.indexOf(expression));
+									offset = a.getStartPosition(); 
+								}
+								addedNode = new DataNode(only, offset, DataNode.CLASS_VAR, methodName.toString());
+								addOccurrences(addedNode);
+							} else {
+								//method call such as System.out.println();
+							}
+							return true;
+						}
 						public boolean visit(EnhancedForStatement efs) {
 							SingleVariableDeclaration svd = efs.getParameter();
 
@@ -281,7 +347,7 @@ class Visitor extends ASTVisitor {
 					});
 				}
 				//Set to null so that class variables can have a null method name
-				//methodName = null;
+				methodName = null;
 				return true;
 			}
 		});

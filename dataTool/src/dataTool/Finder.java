@@ -185,7 +185,7 @@ public class Finder {
 		    		String signature = dn.getSignature();
 		    		if( signature.indexOf("." ) != -1) {
 		    			String newMethod = signature.substring( 0, signature.indexOf(".") );
-		    			if( dn.getValue().equals(key) && newMethod.equals(method) ) { 
+		    			if( dn.getValue().equals(key) && ( newMethod.equals(method) || newMethod.equals("null") ) ) { 
 		    				returnList.add(dn);
 		    			}
 		    		} else {

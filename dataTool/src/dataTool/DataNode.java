@@ -61,7 +61,12 @@ public class DataNode implements Comparable {
 		index = start;
 		length = val.length();
 		type = nodeType;
-		method = call;
+		if( call != null ) {
+			method = call;
+		} else {
+			method = "null";
+		}
+		
 		signature = method + "." + value;
 	}
 	
