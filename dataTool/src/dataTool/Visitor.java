@@ -103,7 +103,7 @@ class Visitor extends ASTVisitor {
 		cu.accept(new ASTVisitor() {
 			DataNode addedNode = null;
 			SimpleName methodName = null;
-			String methodString = null;
+			Method method = null;
 			public boolean visit(SingleVariableDeclaration svd ) {
 				//If a class variable
 				if( methodName == null ) {
@@ -155,11 +155,12 @@ class Visitor extends ASTVisitor {
 			public boolean visit(MethodDeclaration md) {
 				
 				methodName = md.getName();
-				methodString = methodName.toString() + "[";
+				List<String> args = new ArrayList<String>();
 				for (Object o : md.parameters()) {
 					SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
-					methodString = methodString + svd.getType().toString() + "]";
+					args.add(svd.getType().toString());
 				}
+				method = new Method( methodName, args );
 				if (!seenMethod.contains(methodName)) {
 					seenMethod.add(methodName);
 					String param = "";
@@ -173,7 +174,7 @@ class Visitor extends ASTVisitor {
 						i++;
 						param = svd.getName().getIdentifier();
 						addedNode = new DataNode(param, svd.getName().getStartPosition(), DataNode.PARAM_UP,
-								methodString);
+								method);
 						nodes.put(new Position(svd.getStartPosition(), svd.getLength()), svd.getName());
 						addOccurrences(addedNode );
 						finder.addParameter(addedNode, methodName);
@@ -196,7 +197,7 @@ class Visitor extends ASTVisitor {
 							if( isVariable(left) ) {
 								offset = vdf.getStartPosition();
 								System.out.println("L:--> " + left + " " + offset);
-								addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, methodString);
+								addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, method);
 								addOccurrences(addedNode);
 							}
 							if( isVariable(right) ) {
@@ -204,7 +205,7 @@ class Visitor extends ASTVisitor {
 								// Therefore, multiply it by 2 to get the correct offset
 								offset = vdf.getStartPosition() + ( vdf.toString().indexOf(right) * 2 );
 								System.out.println("R:--> " + right + " " + offset);
-								addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, methodString);
+								addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, method);
 								addOccurrences(addedNode);
 							}
 							
@@ -222,7 +223,7 @@ class Visitor extends ASTVisitor {
 								if( isVariable(left) ) {
 									offset = a.getStartPosition();
 									System.out.println("L:--> " + left + " " + offset);
-									addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, methodString);
+									addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, method);
 									addOccurrences(addedNode);
 								}
 								if( isVariable(right) ) {
@@ -230,7 +231,7 @@ class Visitor extends ASTVisitor {
 									// Therefore, multiply it by 2 to get the correct offset
 									offset = a.getStartPosition() + ( a.toString().indexOf(right) * 2 );
 									System.out.println("R:--> " + right + " " + offset);
-									addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, methodString);
+									addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, method);
 									addOccurrences(addedNode);
 								}
 							} else if (statement.contains("++") || statement.contains("--")) {
@@ -251,7 +252,7 @@ class Visitor extends ASTVisitor {
 									only = statement.substring(0, statement.indexOf(expression));
 									offset = a.getStartPosition(); 
 								}
-								addedNode = new DataNode(only, offset, DataNode.CLASS_VAR, methodString);
+								addedNode = new DataNode(only, offset, DataNode.CLASS_VAR, method);
 								addOccurrences(addedNode);
 							} else {
 								//method call such as System.out.println();
@@ -269,7 +270,7 @@ class Visitor extends ASTVisitor {
 							addedNode = new DataNode(forThis.getIdentifier(), 
 													 	startPosition, 
 													 	DataNode.FOR_VAR,
-													 	methodString);
+													 	method);
 							nodes.put(new Position(forThis.getStartPosition(), 
 														forThis.getLength()), 
 														forThis);
@@ -290,7 +291,7 @@ class Visitor extends ASTVisitor {
 									addedNode = new DataNode(forStr, 
 																startPosition, 
 																DataNode.FOR_VAR, 
-																methodString);
+																method);
 									nodes.put(new Position(forThis.getStartPosition(),
 																forThis.getLength()), 
 																forThis);
@@ -328,7 +329,7 @@ class Visitor extends ASTVisitor {
 								addedNode = new DataNode( e.toString(), 
 										startPosition, 
 										DataNode.VAR, 
-										methodString);
+										method);
 								nodes.put(new Position(e.getStartPosition(), e.getLength()), e);
 								Statement errorCode = error.getBody();
 								addOccurrences(addedNode );
@@ -337,6 +338,7 @@ class Visitor extends ASTVisitor {
 						}
 
 						public boolean visit(MethodInvocation mi) {
+							//TODO
 							List<ASTNode> args = mi.arguments();
 							for (ASTNode arg : args) {
 				
@@ -344,7 +346,7 @@ class Visitor extends ASTVisitor {
 									addedNode = new DataNode(arg.toString(), 
 											startPosition,
 											DataNode.PARAM_DOWN, 
-											mi.getName().toString());
+											method);
 									nodes.put(new Position(arg.getStartPosition(), 
 											arg.getLength()), 
 											arg);

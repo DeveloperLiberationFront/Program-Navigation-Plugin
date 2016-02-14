@@ -172,12 +172,12 @@ public class Finder {
 		    	TreeSet<DataNode> list = entry.getValue();
 		    	for( DataNode dn : list ) {
 			    	if( dn.getStartPosition() == p.offset ) {
-			    		method = dn.getMethod();
+			    		method = dn.getMethodSignature();
 				    }
 			    }
 		    	list = entry.getValue();
 		    	for( DataNode dn : list ) {
-	    			String newMethod = dn.getMethod();
+	    			String newMethod = dn.getMethodSignature();
 	    			//TODO distinguish between class and local variables of same name
 	    			if( dn.getValue().equals(key) && ( newMethod.equals(method) || newMethod.equals("null") ) ) { 
 	    				returnList.add(dn);

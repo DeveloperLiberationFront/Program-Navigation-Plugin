@@ -25,49 +25,49 @@ public class DataNode implements Comparable {
 	private String value;
 	private int index;
 	private int length;
-	private String method;
+	private Method method;
 	private String type;
 	private String signature;
-	
-	/**
-	 * Constructor to build DataNode with an ASTNode, used for UpFinder mostly
-	 * @param node: current SimpleName ASTNode selected
-	 */
-	public DataNode (ASTNode node, String nodeType) {
-		if (node instanceof SimpleName) {
-			value = ((SimpleName) node).getIdentifier();
-			length = value.length();
-			type = nodeType;
-			method = null;
-		}
-		else {
-			value = ((SingleVariableDeclaration) node).getName().getIdentifier();
-			length = node.getLength();
-			type = nodeType;
-			if(node.getParent() instanceof MethodDeclaration) {
-				method = ((MethodDeclaration) node.getParent()).getName().getIdentifier();
-			}
-		}
-		index = node.getStartPosition();
-	}
+//	
+//	/**
+//	 * Constructor to build DataNode with an ASTNode, used for UpFinder mostly
+//	 * @param node: current SimpleName ASTNode selected
+//	 */
+//	public DataNode (ASTNode node, String nodeType) {
+//		if (node instanceof SimpleName) {
+//			value = ((SimpleName) node).getIdentifier();
+//			length = value.length();
+//			type = nodeType;
+//			method = null;
+//		}
+//		else {
+//			value = ((SingleVariableDeclaration) node).getName().getIdentifier();
+//			length = node.getLength();
+//			type = nodeType;
+//			if(node.getParent() instanceof MethodDeclaration) {
+//				method = ((MethodDeclaration) node.getParent()).getName().getIdentifier();
+//			}
+//		}
+//		index = node.getStartPosition();
+//	}
 	
 	/**
 	 * Constructor to create DataNodes with just values, mainly for DownFinder
 	 * @param val= Current variable name
 	 * @param start= start position of the current variable
 	 */
-	public DataNode (String val, int start, String nodeType, String call) {
+	public DataNode (String val, int start, String nodeType, Method call) {
 		value = val;
 		index = start;
 		length = val.length();
 		type = nodeType;
-		if( call != null ) {
-			method = call;
+		method = call;
+		if( method != null ) {
+			signature = method.getSignature() + "." + value;
 		} else {
-			method = "null";
+			signature = "null";
 		}
 		
-		signature = method + "." + value;
 	}
 	
 	/**
@@ -106,7 +106,7 @@ public class DataNode implements Comparable {
 	 * Gets the name of the method of the node if one exists
 	 * @returns string method
 	 */
-	public String getMethod() {
+	public Method getMethod() {
 		return this.method;
 	}
 	
@@ -135,6 +135,13 @@ public class DataNode implements Comparable {
 			return 1;
 		}
 		return index - ( ( DataNode ) o ).getStartPosition();
+	}
+	
+	public String getMethodSignature() {
+		if( method != null ) {
+			return method.getSignature();
+		}
+		return "null";
 	}
 
 }
