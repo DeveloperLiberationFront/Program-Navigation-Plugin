@@ -172,26 +172,17 @@ public class Finder {
 		    	TreeSet<DataNode> list = entry.getValue();
 		    	for( DataNode dn : list ) {
 			    	if( dn.getStartPosition() == p.offset ) {
-			    		String signature = dn.getSignature();
-			    		if( signature.indexOf("." ) != -1) {
-			    			method = signature.substring( 0, signature.indexOf(".") );
-			    		} else {
-			    			//figure out what to do about class variables.
-			    		}
+			    		method = dn.getMethod();
 				    }
 			    }
 		    	list = entry.getValue();
 		    	for( DataNode dn : list ) {
-		    		String signature = dn.getSignature();
-		    		if( signature.indexOf("." ) != -1) {
-		    			String newMethod = signature.substring( 0, signature.indexOf(".") );
-		    			if( dn.getValue().equals(key) && ( newMethod.equals(method) || newMethod.equals("null") ) ) { 
-		    				returnList.add(dn);
-		    			}
-		    		} else {
-		    			//figure out what to do about class variables.
-		    		}
-		    	}
+	    			String newMethod = dn.getMethod();
+	    			//TODO distinguish between class and local variables of same name
+	    			if( dn.getValue().equals(key) && ( newMethod.equals(method) || newMethod.equals("null") ) ) { 
+	    				returnList.add(dn);
+	    			}
+		    	} 
 		    }
 		}
 		return returnList;	
