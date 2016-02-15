@@ -59,6 +59,37 @@ public class DataCallHierarchy {
 	}	
 	
 	/**
+	 * Function to search the project for instances of methods
+	 * @param node: Current DataNode selected by user
+	 * @param direction: String of data flow from current node
+	 * @returns Set of methods
+	 * @throws JavaModelException
+	 */
+	public Set<IMethod> searchProject(DataNode node, String direction) throws JavaModelException {
+		Set<IMethod> results = null;
+		//TODO Probably don't need to perform the search again, need to find a way to get results from previous search here.
+		if (direction.equals(DataNode.PARAM_UP)) {
+			ArrayList<String> up = Finder.getParamMethodNames(node.getValue(), DataNode.PARAM_UP);
+			if(up != null) {
+				results = search(up.get(0), Finder.UP);
+			}
+		}
+		else if (direction.equals(DataNode.PARAM_DOWN)) {
+			ArrayList<String> down = Finder.getParamMethodNames(node.getValue(), DataNode.PARAM_DOWN);
+			if(down != null) {
+				Set<IMethod> searchDown = new HashSet<IMethod>();
+				Set<IMethod> temp = search(node.getMethod().getName().toString(), Finder.DOWN);
+				for(IMethod i: temp) {
+					if(down.contains(i.getElementName())) {
+						searchDown.add(i);
+					}
+				}
+				results = searchDown;
+			}
+		}
+		return results;
+	}
+	/**
 	 * Searches project for given method name
 	 * @param methodName: String of current method name
 	 * @param direction: String we are searching (Finder.UP or Finder.DOWN)

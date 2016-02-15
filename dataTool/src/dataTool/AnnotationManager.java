@@ -75,22 +75,9 @@ public class AnnotationManager implements ISelectionChangedListener {
 				DataCallHierarchy call = new DataCallHierarchy();
 				Set<IMethod> searchUp = null;
 				Set<IMethod> searchDown = null;
-				//System.out.println(Finder.param_map.entrySet());
 				if(Finder.param_map.containsKey(one.getValue()) && currentSearch != null) {
-					ArrayList<String> up = Finder.getParamMethodNames(one.getValue(), DataNode.PARAM_UP);
-					ArrayList<String> down = Finder.getParamMethodNames(one.getValue(), DataNode.PARAM_DOWN);
-					if (up != null) {
-						searchUp = call.search(up.get(0), Finder.UP);
-					}
-					if (down != null) {
-						searchDown = new HashSet<IMethod>();
-						Set<IMethod> temp = call.search(getMethod(one), Finder.DOWN);
-						for(IMethod i: temp) {
-							if(down.contains(i.getElementName())) {
-								searchDown.add(i);
-							}
-						}
-					}
+					searchUp = call.searchProject(one, DataNode.PARAM_UP);
+					searchDown = call.searchProject(one, DataNode.PARAM_DOWN);
 				}
 				NavigationUpBox.getInstance().setText(searchUp);
 				NavigationDownBox.getInstance().setText(searchDown);

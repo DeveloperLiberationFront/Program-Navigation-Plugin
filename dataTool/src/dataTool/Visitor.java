@@ -173,7 +173,8 @@ class Visitor extends ASTVisitor {
 						addedNode = new DataNode(param, svd.getName().getStartPosition(), DataNode.PARAM_UP,
 								method);
 						addOccurrences(addedNode );
-						finder.addParameter(addedNode, methodName);
+						finder.addParameter(addedNode, method);
+						addedNode.setParameterMethod(method);
 					}
 
 					md.accept(new ASTVisitor() {
@@ -324,6 +325,8 @@ class Visitor extends ASTVisitor {
 						public boolean visit(MethodInvocation mi) {
 							//TODO
 							List<ASTNode> args = mi.arguments();
+							List<String> stringArgs = new ArrayList<String>();
+							List<DataNode> nodes = new ArrayList<DataNode>();
 							for (ASTNode arg : args) {
 				
 									int startPosition = arg.getStartPosition();
@@ -332,7 +335,13 @@ class Visitor extends ASTVisitor {
 											DataNode.PARAM_DOWN, 
 											method);
 									addOccurrences(addedNode);
-									finder.addParameter(addedNode, mi.getName());
+									stringArgs.add(arg.toString());
+									nodes.add(addedNode);
+							}
+							for(DataNode dn: nodes) {
+								Method m = new Method(mi.getName(), stringArgs);
+								finder.addParameter(dn, m);
+								dn.setParameterMethod(m);
 							}
 							return true;
 						}

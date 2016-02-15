@@ -165,7 +165,7 @@ public class NavigationUpBox {
 								IEditorPart editor = JavaUI.openInEditor(i, true, true);
 								String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
 								lineSearch(code.toCharArray(), i);
-								goToLine(editor, 24);
+								goToLine(editor);
 		    				}
 						} catch (JavaModelException | PartInitException e1) {
 							// Auto-generated catch block
@@ -215,8 +215,8 @@ public class NavigationUpBox {
 	 * @param editorPart: current editor
 	 * @param lineNumber: line number of method invocation
 	 */
-	private static void goToLine(IEditorPart editorPart, int lineNumber) {
-		  if (!(editorPart instanceof ITextEditor) || lineNumber <= 0) {
+	private static void goToLine(IEditorPart editorPart) {
+		  if (!(editorPart instanceof ITextEditor)) {
 		    return;
 		  }
 		  ITextEditor editor = (ITextEditor) editorPart;

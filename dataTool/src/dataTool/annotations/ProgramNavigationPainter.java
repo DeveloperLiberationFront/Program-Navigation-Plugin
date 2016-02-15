@@ -12,6 +12,7 @@ import java.util.Set;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.internal.ui.search.IOccurrencesFinder.OccurrenceLocation;
 import org.eclipse.jface.text.IPaintPositionManager;
 import org.eclipse.jface.text.IPainter;
@@ -27,6 +28,8 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.ui.PlatformUI;
@@ -59,6 +62,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	private Set<ISelectionChangedListener> listeners = new HashSet<ISelectionChangedListener>();
 	private SourceViewer viewer;
 	private Map<ISelfDrawingAnnotation, Position> anns = new HashMap<ISelfDrawingAnnotation, Position>();
+	private Map<ISelfDrawingAnnotation, Position> linkAnns = new HashMap<ISelfDrawingAnnotation, Position>();
 	private boolean isActive = false;
 	private boolean painted = false;
 
@@ -148,7 +152,9 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 
 	public void removeAllAnnotations() {
 		Collection<Position> positions = new ArrayList<Position>(anns.values());
+		positions.addAll(linkAnns.values());
 		anns.clear();
+		linkAnns.clear();
 		fireAnnotationChangedEvent(positions);
 	}
 
@@ -170,6 +176,12 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 		start = widgetIndex(start);
 		end = widgetIndex(end);
 		viewer.getTextWidget().redrawRange(start, end - start, false);
+		for(StyleRange style: viewer.getTextWidget().getStyleRanges()) {
+			if(style.underline && style.underlineStyle == SWT.UNDERLINE_LINK) {
+				StyleRange s = LinkAnnotation.removeAnnotation(style);
+				viewer.getTextWidget().setStyleRange(s);
+			}
+		}
 	}
 
 	public void deactivate(boolean redraw) {
@@ -222,16 +234,9 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 				// Highlight all instances in class
 				for (DataNode node : finder.getOccurrences(word, p)) {
 					if (node.isParameterSelected(r.getOffset())) {
-						// Only display pop-up if selected text is a parameter
-						/*try {
-							map = call.searchProject(node.getMethod());
-							if (!map.isEmpty()) {
-								// box.setText(map);
-							}
-						} catch (CoreException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}*/
+						ISelfDrawingAnnotation link = new LinkAnnotation(node);
+						SimpleName method = node.getParameterMethod().getName();
+						link.draw(e.gc, viewer.getTextWidget(), method.getStartPosition(), method.getLength());
 					}
 					ann.draw(e.gc, viewer.getTextWidget(), node.getStartPosition(), node.getLength());
 				}

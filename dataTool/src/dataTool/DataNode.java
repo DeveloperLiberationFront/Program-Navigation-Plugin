@@ -28,6 +28,7 @@ public class DataNode implements Comparable {
 	private Method method;
 	private String type;
 	private String signature;
+	private Method parameterMethod;
 //	
 //	/**
 //	 * Constructor to build DataNode with an ASTNode, used for UpFinder mostly
@@ -142,6 +143,14 @@ public class DataNode implements Comparable {
 			return method.getSignature();
 		}
 		return "null";
+	}
+	
+	public void setParameterMethod(Method m) {
+		this.parameterMethod = m;
+	}
+	
+	public Method getParameterMethod() {
+		return this.parameterMethod;
 	}
 
 }

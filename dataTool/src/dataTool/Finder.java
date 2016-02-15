@@ -19,7 +19,7 @@ import dataTool.annotations.SuggestedSelectionAnnotation;
 
 public class Finder {
 	protected static Map<String, TreeSet<DataNode>> map; // contains name and first node for all data
-	protected static Map<String, Map> param_map;
+	protected static Map<String, Map<String, HashSet<Method>>> param_map;
 	final public static String UP = "up";
 	final public static String DOWN = "down";
 	
@@ -29,7 +29,7 @@ public class Finder {
 	
 	private Finder () {
 		map = new HashMap<String, TreeSet<DataNode>>();
-		param_map = new HashMap<String, Map>();
+		param_map = new HashMap<String, Map<String, HashSet<Method>>>();
 	}
 	
 	public static Finder getInstance() {
@@ -77,27 +77,27 @@ public class Finder {
 		}
 	}
 	
-	public void addParameter(DataNode dn, SimpleName name) {
+	public void addParameter(DataNode dn, Method method) {
 		//System.out.println(dn.getValue()+" "+name.getIdentifier()+" "+dn.getType());
-		ArrayList<SimpleName> list;
-		Map<String, ArrayList<SimpleName>> items;
+		HashSet<Method> list;
+		Map<String, HashSet<Method>> items;
 		String key = dn.getValue();
 		if (!param_map.containsKey(key)) {
-			items = new HashMap<String, ArrayList<SimpleName>>();
-			list = new ArrayList<SimpleName>();
-			list.add(name);
+			items = new HashMap<String, HashSet<Method>>();
+			list = new HashSet<Method>();
+			list.add(method);
 			items.put(dn.getType(), list);
 			param_map.put(key, items);
 		}
 		else {
 			items = param_map.get(key);
 			if(!items.containsKey(dn.getType())) {
-				list = new ArrayList<SimpleName>();
+				list = new HashSet<Method>();
 			}
 			else {
 				list = items.get(dn.getType());
 			}
-			list.add(name);
+			list.add(method);
 			items.put(dn.getType(), list);
 			param_map.put(key, items);
 		}
@@ -112,9 +112,9 @@ public class Finder {
 			return null;
 		}
 		else {
-			ArrayList<SimpleName> methods = (ArrayList<SimpleName>) param_map.get(key).get(direction);
-			for(SimpleName s: methods) {
-				list.add(s.getIdentifier());
+			HashSet<Method> methods = param_map.get(key).get(direction);
+			for(Method m: methods) {
+				list.add(m.getName().getIdentifier());
 			}
 			return list;
 		}
