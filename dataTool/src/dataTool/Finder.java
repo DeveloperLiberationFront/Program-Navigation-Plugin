@@ -3,6 +3,7 @@ package dataTool;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
@@ -20,6 +21,8 @@ import dataTool.annotations.SuggestedSelectionAnnotation;
 public class Finder {
 	protected static Map<String, TreeSet<DataNode>> map; // contains name and first node for all data
 	protected static Map<String, Map<String, HashSet<Method>>> param_map;
+	protected static Map<Method, Method> transitionUpMap;
+	protected static Map<Method, Method> transitionDownMap;
 	final public static String UP = "up";
 	final public static String DOWN = "down";
 	
@@ -30,6 +33,8 @@ public class Finder {
 	private Finder () {
 		map = new HashMap<String, TreeSet<DataNode>>();
 		param_map = new HashMap<String, Map<String, HashSet<Method>>>();
+		transitionUpMap = new HashMap<Method, Method>();
+		transitionDownMap = new HashMap<Method, Method>();
 	}
 	
 	public static Finder getInstance() {
@@ -165,26 +170,93 @@ public class Finder {
 	public TreeSet<DataNode> getOccurrences(String s, Position p) {
 		//System.out.println(s + " !!! " + p.toString());
 		TreeSet<DataNode> returnList = new TreeSet<DataNode>();
-		String method = null;
-		for(Entry<String, TreeSet<DataNode>> entry : map.entrySet()) {
-		    String key = entry.getKey();
-		    if( key.equals(s )) {
-		    	TreeSet<DataNode> list = entry.getValue();
-		    	for( DataNode dn : list ) {
-			    	if( dn.getStartPosition() == p.offset ) {
-			    		method = dn.getMethodSignature();
-				    }
-			    }
-		    	list = entry.getValue();
-		    	for( DataNode dn : list ) {
-	    			String newMethod = dn.getMethodSignature();
-	    			//TODO distinguish between class and local variables of same name
-	    			if( dn.getValue().equals(key) && ( newMethod.equals(method) || newMethod.equals("null") ) ) { 
-	    				returnList.add(dn);
-	    			}
-		    	} 
+		DataNode currentDataNode = null;
+		TreeSet<DataNode> list = map.get(s);
+    	// Determine the signature of the method currently in
+		// Takes care of overloaded variable names
+    	for( DataNode dn : list ) {
+	    	if( dn.getStartPosition() == p.offset ) {
+	    		currentDataNode = dn;
+	    		break;
 		    }
-		}
+	    }
+    	if( currentDataNode != null ) {
+    		// Add all nodes in current method to return list
+    		String key = currentDataNode.getValue();
+    		String method = currentDataNode.getMethodSignature();
+    		// The list of nodes in this method with that variable name
+        	for( DataNode dn : list ) {
+    			String newMethod = dn.getMethodSignature();
+    			//To distinguish between class and local variables of same name
+    			if( dn.getValue().equals(key) && ( newMethod.equals(method) || newMethod.equals("null") ) ) { 
+    				returnList.add(dn);
+    			}
+        	} 
+        	Method currentMethod = currentDataNode.getMethod();
+        	List<DataNode> args= currentMethod.getArgs();
+        	int argIndex = -1;
+        	for( DataNode arg: args) {
+        		argIndex++;
+        		if( arg.getValue().equals(s) ) {
+        			// The provided variable is a parameter of the method it is in
+        			// I'm sure there is a better way to do this.
+        			break;
+        		}
+        	}
+        	// At this point, the desired node is a parameter of the method
+        	// Need to search up.
+        	if( currentMethod != null && argIndex > -1) {
+        		Method searchMethod = null;
+        		searchMethod = transitionDownMap.get(currentMethod);
+        		System.out.println(currentMethod.getSignature());
+        		DataNode newDataNode = searchMethod.getArgs().get(argIndex);
+        		returnList.addAll( this.getOccurrences(newDataNode));
+        	}
+    	}
+    	
 		return returnList;	
+		
+	}
+	
+	private TreeSet<DataNode> getOccurrences( DataNode currentDataNode ) {
+		TreeSet<DataNode> returnList = new TreeSet<DataNode>();
+		TreeSet<DataNode> list = map.get(currentDataNode.getValue());
+		String key = currentDataNode.getValue();
+		String method = currentDataNode.getMethodSignature();
+		// The list of nodes in this method with that variable name
+    	for( DataNode dn : list ) {
+			String newMethod = dn.getMethodSignature();
+			//To distinguish between class and local variables of same name
+			if( dn.getValue().equals(key) && ( newMethod.equals(method) || newMethod.equals("null") ) ) { 
+				returnList.add(dn);
+			}
+    	} 
+    	Method currentMethod = currentDataNode.getMethod();
+    	List<DataNode> args= currentMethod.getArgs();
+    	int argIndex = -1;
+    	for( DataNode arg: args) {
+    		argIndex++;
+    		if( arg.getValue().equals(currentDataNode.getValue()) ) {
+    			// The provided variable is a parameter of the method it is in
+    			// I'm sure there is a better way to do this.
+    			break;
+    		}
+    	}
+    	// At this point, the desired node is a parameter of the method
+    	// Need to search up.
+    	if( currentMethod != null && argIndex > -1) {
+    		Method searchMethod = null;
+    		searchMethod = transitionDownMap.get(currentMethod);
+    		DataNode newDataNode = searchMethod.getArgs().get(argIndex);
+    		returnList.addAll( this.getOccurrences(newDataNode ));
+    	}
+		return returnList;
+	}
+	public void addDownTransition(Method method, Method invoked) {
+		transitionDownMap.put( method, invoked);
+	}
+
+	public void addUpTransition(Method invoked, Method method) {
+		transitionUpMap.put( invoked, method );
 	}
 }

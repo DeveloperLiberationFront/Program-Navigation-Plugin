@@ -53,7 +53,7 @@ import edu.pdx.cs.multiview.jdt.util.JDTUtils;
 class Visitor extends ASTVisitor {
 
 	private StackMap<Position, DataNode> nodes = new StackMap<Position, DataNode>();
-	private static ArrayList<SimpleName> seenMethod = new ArrayList<SimpleName>();
+	private static ArrayList<String> seenMethod = new ArrayList<String>();
 	private Finder finder;
 
 	private static String source;
@@ -153,31 +153,30 @@ class Visitor extends ASTVisitor {
 			public boolean visit(MethodDeclaration md) {
 				
 				methodName = md.getName();
-				List<String> args = new ArrayList<String>();
+				List<String> argTypes = new ArrayList<String>();
+				List<DataNode> args = new ArrayList<DataNode>();
 				for (Object o : md.parameters()) {
 					SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
-					args.add(svd.getType().toString());
+					argTypes.add(svd.getType().toString() + " " + svd.getName().toString());
 				}
-				method = new Method( methodName, args );
-				if (!seenMethod.contains(methodName)) {
-					seenMethod.add(methodName);
+				method = new Method( methodName, argTypes, null );
+				if (!seenMethod.contains(method.getSignature())) {
+					seenMethod.add(method.getSignature());
 					String param = "";
-					String[] array = new String[md.parameters().size()];
-					
-					int i = 0;
 					
 					for (Object o : md.parameters()) {
 						SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
-						array[i] = svd.toString();
-						i++;
+						
 						param = svd.getName().getIdentifier();
 						addedNode = new DataNode(param, svd.getName().getStartPosition(), DataNode.PARAM_UP,
 								method);
+						args.add(addedNode);
 						addOccurrences(addedNode );
-						finder.addParameter(addedNode, method);
-						addedNode.setParameterMethod(method);
 					}
-
+					finder.addParameter(addedNode, method);
+					method.setArgs( args );
+					addedNode.setParameterMethod(method);
+					
 					md.accept(new ASTVisitor() {
 						public boolean visit(VariableDeclarationFragment vdf) {
 							String var = vdf.toString();
@@ -326,26 +325,39 @@ class Visitor extends ASTVisitor {
 						}
 
 						public boolean visit(MethodInvocation mi) {
-							//TODO
-							List<ASTNode> args = mi.arguments();
-							List<String> stringArgs = new ArrayList<String>();
-							List<DataNode> nodes = new ArrayList<DataNode>();
-							for (ASTNode arg : args) {
-				
-									int startPosition = arg.getStartPosition();
-									addedNode = new DataNode(arg.toString(), 
+							List<String> argTypes = new ArrayList<String>();
+							List<DataNode> args = new ArrayList<DataNode>();
+							for (Object o : mi.arguments()) {
+								if( o instanceof SingleVariableDeclaration ) {
+									SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
+									argTypes.add(svd.getType().toString());
+								} else {
+									// TODO does not work for nested method invocations yet
+									// This is a space holder for other variables
+									System.out.println(o.getClass());
+									argTypes.add("null");
+								}
+							}
+							Method invoked = new Method( mi.getName(), argTypes, null);
+							for (Object o : mi.arguments()) {
+								if( o instanceof SingleVariableDeclaration ) {
+									SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
+									argTypes.add(svd.getType().toString() + " " + svd.getName().toString());
+									int startPosition = svd.getStartPosition();
+									addedNode = new DataNode(svd.toString(), 
 											startPosition,
 											DataNode.PARAM_DOWN, 
 											method);
+									args.add(addedNode);
 									addOccurrences(addedNode);
-									stringArgs.add(arg.toString());
-									nodes.add(addedNode);
+									argTypes.add(svd.getType().toString() + " " + svd.getName().toString());
+									
+								}
 							}
-							for(DataNode dn: nodes) {
-								Method m = new Method(mi.getName(), stringArgs);
-								finder.addParameter(dn, m);
-								dn.setParameterMethod(m);
-							}
+							invoked.setArgs(args);
+							System.out.println("Method: " + method.getSignature() + " Invoked: " + invoked.getSignature());
+							finder.addDownTransition(method, invoked);
+							finder.addUpTransition(invoked, method);
 							return true;
 						}
 						private int computeOffset( String token, int currentOffset ) {
@@ -411,7 +423,7 @@ class Visitor extends ASTVisitor {
 	}
 	public DataNode statementAt(int index) {
 		for (Position p : nodes.keyStack()) {
-			System.out.println(p.getOffset());
+			//System.out.println(p.getOffset());
 			boolean isContained = p.offset <= index && index < p.offset + p.length;
 			if (isContained) {
 				return nodes.get(p);
