@@ -7,6 +7,7 @@ import org.eclipse.ui.IPageListener;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
 /**
@@ -100,5 +101,11 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	public void selectionChanged(IAction action, ISelection selection) {
 		//do nothing
 	}
-
+	
+	public void reset() {
+		dispose();
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+        init(page.getWorkbenchWindow());
+        run(null);
+	}
 }

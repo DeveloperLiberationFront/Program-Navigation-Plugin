@@ -80,6 +80,7 @@ public class NavigationUpBox {
 	private static NavigationUpBox instance;
 	private static boolean resize = false;
 	private static ASTNode searchResult = null;
+	public String searchMethod = "";
 	
 	private NavigationUpBox(StyledText text, int start) {
 		widget = text;
@@ -160,27 +161,42 @@ public class NavigationUpBox {
 		    					JOptionPane.showMessageDialog(null, DataLink.INVALID, "Error",JOptionPane.ERROR_MESSAGE);
 		    				}
 		    				else {
-								setText(null);
-				    			NavigationDownBox.getInstance().setText(null);
-								IEditorPart editor = JavaUI.openInEditor(i, true, true);
-								String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
-								lineSearch(code.toCharArray(), i);
-								goToLine(editor);
+		    					searchMethod = AnnotationManager.currentSearch;
+								openLink(i);
+								//EnableNavigationAction plugin = new EnableNavigationAction();
+				    			//plugin.reset();
 		    				}
-						} catch (JavaModelException | PartInitException e1) {
+						} catch (JavaModelException e1) {
 							// Auto-generated catch block
 							e1.printStackTrace();
 						}		    			
-		    		    IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-		    		    EnableNavigationAction plugin = new EnableNavigationAction();
-		    	        plugin.init(page.getWorkbenchWindow());
-		    	        plugin.run(null);
 					}			    	
 		    	});
 		    }
 	    }
 		shell.pack();
 		setSize();
+	}
+	
+	/**
+	 * Opens invocation of new method in the editor and clears navigation box links
+	 * @param i: IMethod to open
+	 */
+	public void openLink(IMethod i) {
+		IEditorPart editor = null;
+		try {
+			setText(null);
+			NavigationDownBox.getInstance().setText(null);
+			editor = JavaUI.openInEditor(i, true, true);
+		} catch (JavaModelException | PartInitException e) {
+			// Auto-generated catch block
+			e.printStackTrace();
+		}
+		if(editor != null) {
+			String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
+			lineSearch(code.toCharArray(), i);
+			goToLine(editor);
+		}
 	}
 	
 	private void lineSearch(char[] source, IMethod method) {
@@ -194,7 +210,7 @@ public class NavigationUpBox {
 				md.accept(new ASTVisitor() {
 				public boolean visit(MethodInvocation m) {
 					if(method.getElementName().equals(methodName)) {
-						if(AnnotationManager.currentSearch.equals(m.getName().getIdentifier())) {
+						if(m.getName().getIdentifier().equals(searchMethod)) {
 							searchResult = m;
 						}
 					}
@@ -221,6 +237,7 @@ public class NavigationUpBox {
 		  }
 		  ITextEditor editor = (ITextEditor) editorPart;
 		  IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
+		  System.out.println("goto "+searchResult.toString()+" "+editor);
 		  if (document != null) {
 		    	editor.selectAndReveal(searchResult.getStartPosition(), searchResult.getLength());
 		  }

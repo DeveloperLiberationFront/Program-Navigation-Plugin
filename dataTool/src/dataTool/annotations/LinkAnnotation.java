@@ -19,6 +19,7 @@ import org.eclipse.jdt.ui.JavaUI;
 
 import dataTool.DataCallHierarchy;
 import dataTool.DataNode;
+import dataTool.EnableNavigationAction;
 import dataTool.Finder;
 import dataTool.ui.NavigationDownBox;
 import dataTool.ui.NavigationUpBox;
@@ -46,25 +47,25 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 
 			@Override
 			public void mouseDoubleClick(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 				mouseDown(arg0);
 			}
 
 			@Override
 			public void mouseDown(MouseEvent arg0) {
-				// TODO Auto-generated method stub
 				int click = textWidget.getOffsetAtLocation(new Point(arg0.x,arg0.y));
 				if(click >= style.start && click <= style.start+style.length){
 					DataCallHierarchy call = new DataCallHierarchy();
 					Object[] search;
+					IMethod im;
 					if(linkNode.getType().equals(DataNode.PARAM_UP)) {
 						try {
 							search = call.searchProject(linkNode, DataNode.PARAM_UP).toArray();
-							IMethod method = (IMethod)search[0];
-							System.out.println(search);
-							JavaUI.openInEditor(method, true, true);
+							im = (IMethod)search[0];
+							NavigationUpBox up = NavigationUpBox.getInstance();
+							up.searchMethod = linkNode.getMethod().getName().getIdentifier();
+							up.openLink(im);
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
+							// Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
@@ -72,30 +73,24 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 						try {
 							search = call.searchProject(linkNode, DataNode.PARAM_DOWN).toArray();
 							for(Object o: search) {
-								IMethod im = (IMethod) o;
+								im = (IMethod) o;
 								if(im.getElementName().equals(linkNode.getParameterMethod().getName().getIdentifier())) {
-									JavaUI.openInEditor(im, true, true);
+									NavigationDownBox.getInstance().openLink(im);
 								}
 							}
 						} catch (Exception e) {
-							// TODO Auto-generated catch block
+							// Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
-					//Clear navigation box links
-					try {
-						NavigationUpBox.getInstance().setText(null);
-						NavigationDownBox.getInstance().setText(null);
-					} catch (JavaModelException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+					//EnableNavigationAction plugin = new EnableNavigationAction();
+	    			//plugin.reset();
 				}
 			}
 
 			@Override
 			public void mouseUp(MouseEvent arg0) {
-				// TODO Auto-generated method stub
+				// Do nothing
 				
 			}
 			

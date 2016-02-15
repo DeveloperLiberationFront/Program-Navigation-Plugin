@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
+import dataTool.EnableNavigationAction;
 import dataTool.Finder;
 
 public class NavigationDownBox {
@@ -132,11 +133,11 @@ public class NavigationDownBox {
 		    					JOptionPane.showMessageDialog(null, DataLink.INVALID, "Error",JOptionPane.ERROR_MESSAGE);
 		    				}
 		    				else {
-								setText(null);
-				    			NavigationUpBox.getInstance().setText(null);
-								JavaUI.openInEditor(i, true, true);
+								openLink(i);
+								//EnableNavigationAction plugin = new EnableNavigationAction();
+				    			//plugin.reset();
 		    				}
-						} catch (JavaModelException | PartInitException e1) {
+						} catch (JavaModelException e1) {
 							// Auto-generated catch block
 							e1.printStackTrace();
 						}
@@ -148,6 +149,21 @@ public class NavigationDownBox {
 		setSize();
 	}
 	
+	/**
+	 * Opens declaration of new method in the editor and clears navigation box links
+	 * @param i: IMethod to open
+	 */
+	public void openLink(IMethod i) {
+		try {
+			this.setText(null);
+			NavigationUpBox.getInstance().setText(null);
+			JavaUI.openInEditor(i, true, true);
+		} catch (JavaModelException | PartInitException e) {
+			// Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Removes the bottom navigation box from view.
 	 */
