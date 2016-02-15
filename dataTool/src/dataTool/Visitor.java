@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Stack;
 
 import javax.xml.transform.Source;
@@ -208,24 +209,26 @@ class Visitor extends ASTVisitor {
 						public boolean visit( ExpressionStatement a ) {
 							String statement = a.toString();
 							String left, right, only;
-							if( statement.contains("=")) {
-								//Assignment
-								int offset;
-								left = statement.substring( 0, statement.indexOf("=") ).trim();
-								right = statement.substring( statement.indexOf("=") + 1, statement.indexOf(";")).trim();
-								if( isVariable(left) ) {
-									offset = a.getStartPosition();
-									System.out.println("L:--> " + left + " " + offset);
-									addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, method);
-									addOccurrences(addedNode);
-								}
-								if( isVariable(right) ) {
-									offset = source.indexOf(right, cu.getExtendedStartPosition(a));
-									System.out.println("R:--> " + right + " " + a.getStartPosition() + " " + offset);
-									addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, method);
-									addOccurrences(addedNode);
-								}
-							} else if (statement.contains("++") || statement.contains("--")) {
+							parseExpression(a.getExpression());
+//							if( statement.contains("=")) {
+//								//Assignment
+//								int offset;
+//								left = statement.substring( 0, statement.indexOf("=") ).trim();
+//								right = statement.substring( statement.indexOf("=") + 1, statement.indexOf(";")).trim();
+//								if( isVariable(left) ) {
+//									offset = a.getStartPosition();
+//									System.out.println("L:--> " + left + " " + offset);
+//									addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, method);
+//									addOccurrences(addedNode);
+//								}
+//								if( isVariable(right) ) {
+//									offset = source.indexOf(right, cu.getExtendedStartPosition(a));
+//									System.out.println("R:--> " + right + " " + a.getStartPosition() + " " + offset);
+//									addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, method);
+//									addOccurrences(addedNode);
+//								}
+//							} else 
+							if (statement.contains("++") || statement.contains("--")) {
 								String expression;
 								int offset;
 								if( statement.contains("++")) {
@@ -344,6 +347,44 @@ class Visitor extends ASTVisitor {
 								dn.setParameterMethod(m);
 							}
 							return true;
+						}
+						private int computeOffset( String token, int currentOffset ) {
+							String shortName;
+							if( token.contains("(")) {
+								shortName = token.substring(0, token.indexOf("(" ));
+							} else {
+								shortName = token;
+							}
+							return source.indexOf(shortName, currentOffset);
+						}
+						private boolean notOperator( String token ) {
+							return !token.matches("\\+|" +
+												  "\\-|" +
+												  "\\*|" +
+												  "\\/|" +
+												  "\\%|" +
+												  "\\=");
+						}
+						private void parseExpression(Expression expression) {
+							
+							Scanner expressionScanner = new Scanner(expression.toString());
+							expressionScanner.useDelimiter("\\=| ");
+							int offset = cu.getExtendedStartPosition(expression);
+							
+							while( expressionScanner.hasNext() ) {
+								String token = expressionScanner.next();
+								
+								if( notOperator( token ) ) {
+									if( isVariable( token )) {
+										offset = source.indexOf(token, offset);
+										System.out.println("|" + token + "|" + offset);
+										addedNode = new DataNode(token, offset, DataNode.VAR, method );
+										addOccurrences(addedNode);
+									}
+									//methods and literals
+								}
+								offset++; //move to next set of tokens
+							}
 						}
 					});
 				}
