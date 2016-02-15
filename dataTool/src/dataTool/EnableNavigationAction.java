@@ -44,10 +44,6 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	 * @param activeEditor
 	 */
 	private void enable(IEditorPart activeEditor) {
-		String[] path = activeEditor.getTitleToolTip().split("/");
-		project = path[0];
-		file = activeEditor.getTitle();
-		this.path = activeEditor.getEditorInput().toString().replace("org.eclipse.ui.part.FileEditorInput(", "").replace(")","");
 		if(page.getActiveEditor()!=null) {
 			annotationManager = new AnnotationManager((AbstractDecoratedTextEditor)activeEditor);
 		}
@@ -103,7 +99,7 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	}
 	
 	public void reset() {
-		dispose();
+		//dispose();
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         init(page.getWorkbenchWindow());
         run(null);

@@ -64,10 +64,11 @@ public class AnnotationManager implements ISelectionChangedListener {
 		painter.removeAllAnnotations();
 		try {
 			DataNode one = getNode(selection.getOffset());
-			//System.out.println(selection.getOffset());
+			System.out.println(selection.getOffset());
 			if(one != null) {
 				addAnnotation(one);
 				currentSearch = getMethod(one);
+				System.out.println(currentSearch);
 				if(!isActive) {
 					NavigationUpBox.createInstance(sourceViewer.getTextWidget(), one.getStartPosition());
 					NavigationDownBox.createInstance(sourceViewer.getTextWidget(), one.getStartPosition());

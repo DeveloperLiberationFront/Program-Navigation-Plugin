@@ -58,6 +58,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 					DataCallHierarchy call = new DataCallHierarchy();
 					Object[] search;
 					IMethod im;
+					//TODO Don't want to perform the search again, need to find a way to get results from previous search here.
 					if(linkNode.getType().equals(DataNode.PARAM_UP)) {
 						try {
 							search = call.searchProject(linkNode, DataNode.PARAM_UP).toArray();

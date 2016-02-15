@@ -134,8 +134,8 @@ public class NavigationDownBox {
 		    				}
 		    				else {
 								openLink(i);
-								//EnableNavigationAction plugin = new EnableNavigationAction();
-				    			//plugin.reset();
+								EnableNavigationAction plugin = new EnableNavigationAction();
+				    			plugin.reset();
 		    				}
 						} catch (JavaModelException e1) {
 							// Auto-generated catch block

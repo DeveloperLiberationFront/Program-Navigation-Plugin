@@ -233,7 +233,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 				ann.draw(e.gc, viewer.getTextWidget(), r.getOffset(), r.getLength());
 				// Highlight all instances in class
 				for (DataNode node : finder.getOccurrences(word, p)) {
-					if (node.isParameterSelected(r.getOffset())) {
+					if (node.isParameterSelected(r.getOffset()) && node.getMethod() != null) {
 						ISelfDrawingAnnotation link = new LinkAnnotation(node);
 						SimpleName method = node.getParameterMethod().getName();
 						link.draw(e.gc, viewer.getTextWidget(), method.getStartPosition(), method.getLength());

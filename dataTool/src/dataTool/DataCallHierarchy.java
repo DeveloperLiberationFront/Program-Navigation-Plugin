@@ -32,6 +32,8 @@ import org.eclipse.jdt.core.search.SearchPattern;
 import org.eclipse.jdt.core.search.SearchRequestor;
 import org.eclipse.jdt.internal.corext.callhierarchy.CallHierarchy;
 import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
 
 import dataTool.ui.DataLink;
 
@@ -67,7 +69,6 @@ public class DataCallHierarchy {
 	 */
 	public Set<IMethod> searchProject(DataNode node, String direction) throws JavaModelException {
 		Set<IMethod> results = null;
-		//TODO Probably don't need to perform the search again, need to find a way to get results from previous search here.
 		if (direction.equals(DataNode.PARAM_UP)) {
 			ArrayList<String> up = Finder.getParamMethodNames(node.getValue(), DataNode.PARAM_UP);
 			if(up != null) {
@@ -98,25 +99,33 @@ public class DataCallHierarchy {
 	 */
 	public Set<IMethod> search(String methodName, String direction) throws JavaModelException {
 	    CallHierarchyGenerator callGen = new CallHierarchyGenerator();
-	    projectName = EnableNavigationAction.project;
 		String path = EnableNavigationAction.path;
+		IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		String[] pathArray = activeEditor.getTitleToolTip().split("/");
+		projectName = pathArray[0];
+		path = activeEditor.getEditorInput().toString().replace("org.eclipse.ui.part.FileEditorInput(", "").replace(")","");
+		String projectFile = activeEditor.getTitle();
 		String projectPath;
+		String src;
 		if(path.contains("/src/")) {
 			projectPath = path.substring(path.indexOf("/src/")+5,path.lastIndexOf("/")).replace("/", ".");
+			src = "src";
 		}
 		else {
-			projectPath = path;
+			projectPath = path.substring(1,path.lastIndexOf("/")).replace("/", ".").replace(projectName+".", "");
+			src = projectPath.substring(0,projectPath.indexOf("."));
+			projectPath = projectPath.replace(src+".", "");
 		}
-		String projectFile = EnableNavigationAction.file;
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 	    IProject project = root.getProject(projectName);
-	    IFolder folder = project.getFolder("src");
+	    IFolder folder = project.getFolder(src);
 	    IJavaProject javaProject = JavaCore.create(project);
-	    IPackageFragmentRoot ipf = javaProject.getPackageFragmentRoot(folder);
-	    ipf.createPackageFragment(projectPath, true, null);
+    	IPackageFragmentRoot ipf = javaProject.getPackageFragmentRoot(folder);
+    	ipf.createPackageFragment(projectPath, true, null);
 	    IPackageFragment frag = ipf.getPackageFragment(projectPath);
 	    cUnit = frag.getCompilationUnit(projectFile);
-	    IType type = cUnit.getType(projectFile.replace(".java", ""));
+    	IType type = cUnit.getType(projectFile.replace(".java", ""));
+	    System.out.println(methodName);
 		IMethod m = findMethod(type, methodName);
 	    Set<IMethod> methods = new HashSet<IMethod>();
 	    if(direction.equals(Finder.UP)) {
