@@ -34,14 +34,15 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 		linkNode = node;
 	}
 
-	@Override
+	/**
+	 * Function to add link annotations to methods of parameters
+	 */
 	public void draw(GC gc, StyledText textWidget, int offset, int length) {		
-		NavigationStyleRange style = new NavigationStyleRange();
+		StyleRange style = new StyleRange();
 		style.start = offset;
 		style.length = length;
 		style.underline = true;
 		style.underlineStyle = SWT.UNDERLINE_LINK;
-		style.direction = linkNode.getType();
 		textWidget.setStyleRange(style);
 		textWidget.addMouseListener(new MouseListener(){
 
@@ -103,11 +104,10 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	 * @returns StyleRange removing the link from method
 	 */
 	public static StyleRange removeAnnotation(StyleRange old) {
-		NavigationStyleRange clear = new NavigationStyleRange();
+		StyleRange clear = new StyleRange();
 		clear.start = old.start;
 		clear.length = old.length;
 		clear.underline = false;
-		clear.direction = null;
 		return clear;
 	}
 
