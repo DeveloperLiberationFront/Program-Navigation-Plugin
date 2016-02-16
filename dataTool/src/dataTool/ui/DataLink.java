@@ -24,6 +24,11 @@ import org.eclipse.ui.texteditor.ITextEditor;
 
 import dataTool.EnableNavigationAction;
 
+/**
+ * Probably don't need this class anymore going forward
+ * @author Chris
+ *
+ */
 public class DataLink {
 	private String name;
 	private String location;

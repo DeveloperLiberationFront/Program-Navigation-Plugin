@@ -38,9 +38,12 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Monitor;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.texteditor.ITextEditor;
 
+import dataTool.DataNode;
 import dataTool.EnableNavigationAction;
 import dataTool.Finder;
 
@@ -145,6 +148,26 @@ public class NavigationDownBox {
 		    	});
 		    }
 	    }
+		shell.pack();
+		setSize();
+	}
+	
+	/**
+	 * Method to add text to navigation box for instances of data off-screen
+	 * @param node: DataNode currently out of view
+	 */
+	public void addOffScreen(DataNode node) {
+		Link link = new Link(shell, SWT.NULL);
+		link.setText("<a>line "+widget.getLineAtOffset(node.getStartPosition())+"</a>");
+		link.addListener(SWT.Selection, new Listener(){
+
+			@Override
+			public void handleEvent(Event arg0) {
+				IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		    	((ITextEditor) editor).selectAndReveal(node.getStartPosition(), node.getLength());
+			}
+			
+		});
 		shell.pack();
 		setSize();
 	}

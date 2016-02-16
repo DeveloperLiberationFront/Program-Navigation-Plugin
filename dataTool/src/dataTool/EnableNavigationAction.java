@@ -88,9 +88,7 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 			@Override
 			public void partOpened(IWorkbenchPart arg0) {
 				// TODO Auto-generated method stub
-				System.out.println("part open "+arg0.getTitle());
 				arg0.getSite().getPage().activate(arg0);
-				System.out.println("part open "+arg0.getSite().getPage().getActiveEditor().getTitle());
 				try {
 					dispose();
 					isEnabled = false;

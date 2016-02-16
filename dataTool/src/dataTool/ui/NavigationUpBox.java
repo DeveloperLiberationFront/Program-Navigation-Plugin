@@ -66,6 +66,7 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import dataTool.AnnotationManager;
+import dataTool.DataNode;
 import dataTool.EnableNavigationAction;
 import dataTool.Finder;
 import edu.pdx.cs.multiview.jdt.util.JDTUtils;
@@ -178,6 +179,25 @@ public class NavigationUpBox {
 		setSize();
 	}
 	
+	/**
+	 * Method to add text to navigation box for instances of data off-screen
+	 * @param node: DataNode currently out of view
+	 */
+	public void addOffScreen(DataNode node) {
+		Link link = new Link(shell, SWT.NULL);
+		link.setText("<a>line "+widget.getLineAtOffset(node.getStartPosition())+"</a>");
+		link.addListener(SWT.Selection, new Listener(){
+
+			@Override
+			public void handleEvent(Event arg0) {
+				IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		    	((ITextEditor) editor).selectAndReveal(node.getStartPosition(), node.getLength());
+			}
+			
+		});
+		shell.pack();
+		setSize();
+	}
 	/**
 	 * Opens invocation of new method in the editor and clears navigation box links
 	 * @param i: IMethod to open

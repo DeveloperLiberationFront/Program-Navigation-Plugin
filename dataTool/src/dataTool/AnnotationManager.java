@@ -64,7 +64,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 		painter.removeAllAnnotations();
 		try {
 			DataNode one = getNode(selection.getOffset());
-			System.out.println(selection.getOffset());
+			//System.out.println(selection.getOffset());
 			if(one != null) {
 				addAnnotation(one);
 				currentSearch = getMethod(one);
@@ -80,11 +80,23 @@ public class AnnotationManager implements ISelectionChangedListener {
 					searchUp = call.searchProject(one, DataNode.PARAM_UP);
 					searchDown = call.searchProject(one, DataNode.PARAM_DOWN);
 				}
-				System.out.println(one.getValue()+" one");
-				System.out.println(NavigationDownBox.getInstance()+" "+isActive);
 				if(NavigationDownBox.getInstance() != null && NavigationUpBox.getInstance() != null) {
 					NavigationUpBox.getInstance().setText(searchUp);
 					NavigationDownBox.getInstance().setText(searchDown);
+				}
+				//TODO Add all occurrences of data node off screen
+				Finder finder = Finder.getInstance();
+				for(DataNode dn: finder.getOccurrences(one.getValue(), new Position(one.getStartPosition(), one.getLength()))) {
+					System.out.println(dn.getValue() + " "+sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition()));
+					if(dn.getStartPosition() < sourceViewer.getTopIndexStartOffset()) {
+						String line = "line "+Integer.toString(sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1);
+						NavigationUpBox.getInstance().addOffScreen(dn);
+					}
+					else if(dn.getStartPosition() > sourceViewer.getBottomIndexEndOffset()) {
+						String line = "line "+Integer.toString(sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1);
+						NavigationDownBox.getInstance().addOffScreen(dn);
+					}
+					
 				}
 			}
 			else {
