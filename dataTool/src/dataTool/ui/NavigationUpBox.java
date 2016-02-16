@@ -164,7 +164,7 @@ public class NavigationUpBox {
 		    					searchMethod = AnnotationManager.currentSearch;
 								openLink(i);
 								EnableNavigationAction plugin = new EnableNavigationAction();
-				    			plugin.reset();
+				    			plugin.reset(null);
 		    				}
 						} catch (JavaModelException e1) {
 							// Auto-generated catch block
@@ -237,8 +237,7 @@ public class NavigationUpBox {
 		  }
 		  ITextEditor editor = (ITextEditor) editorPart;
 		  IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
-		  System.out.println("goto "+searchResult.toString()+" "+editor);
-		  if (document != null) {
+		  if (document != null && searchResult != null) {
 		    	editor.selectAndReveal(searchResult.getStartPosition(), searchResult.getLength());
 		  }
 		}

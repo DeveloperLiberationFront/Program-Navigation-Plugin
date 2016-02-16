@@ -1,14 +1,21 @@
 package dataTool;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPageListener;
+import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
+
+import dataTool.ui.NavigationDownBox;
+import dataTool.ui.NavigationUpBox;
 
 /**
  * An action that enables the statement helper
@@ -44,31 +51,54 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	 * @param activeEditor
 	 */
 	private void enable(IEditorPart activeEditor) {
+		System.out.println("activeEditor "+activeEditor.getTitle());
 		if(page.getActiveEditor()!=null) {
 			annotationManager = new AnnotationManager((AbstractDecoratedTextEditor)activeEditor);
 		}
+		
 	}
 
 	public void init(IWorkbenchWindow window) {
 		this.page = window.getActivePage();
-		window.addPageListener(new IPageListener() {
+		page.addPartListener(new IPartListener(){
 
 			@Override
-			public void pageActivated(IWorkbenchPage arg0) {
-				// TODO Auto-generated method stub
-				init(arg0.getWorkbenchWindow());
+			public void partActivated(IWorkbenchPart arg0) {
+				// Auto-generated method stub
 			}
 
 			@Override
-			public void pageClosed(IWorkbenchPage arg0) {
-				// TODO Auto-generated method stub
+			public void partBroughtToTop(IWorkbenchPart arg0) {
+				// Auto-generated method stub
+
+			}
+
+			@Override
+			public void partClosed(IWorkbenchPart arg0) {
+				// Auto-generated method stub
+
+			}
+
+			@Override
+			public void partDeactivated(IWorkbenchPart arg0) {
+				// Auto-generated method stub
 				
 			}
 
 			@Override
-			public void pageOpened(IWorkbenchPage arg0) {
+			public void partOpened(IWorkbenchPart arg0) {
 				// TODO Auto-generated method stub
-				init(arg0.getWorkbenchWindow());
+				System.out.println("part open "+arg0.getTitle());
+				arg0.getSite().getPage().activate(arg0);
+				System.out.println("part open "+arg0.getSite().getPage().getActiveEditor().getTitle());
+				try {
+					dispose();
+					isEnabled = false;
+					reset(arg0.getSite().getPage());
+				} catch (JavaModelException e) {
+					// Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 			
 		});
@@ -98,10 +128,22 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 		//do nothing
 	}
 	
-	public void reset() {
-		//dispose();
-		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-        init(page.getWorkbenchWindow());
+	public void reset(IWorkbenchPage workbench) throws JavaModelException {
+		try {
+			NavigationUpBox.getInstance().setText(null);
+			NavigationDownBox.getInstance().setText(null);
+		}
+		catch (NullPointerException e) {
+			// Navigation boxes aren't active
+		}
+		IWorkbenchPage newPage;
+		if(workbench == null) {
+			newPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		}
+		else {
+			newPage = workbench;
+		}
+        init(newPage.getWorkbenchWindow());
         run(null);
 	}
 }

@@ -34,7 +34,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 
 	private SuggestedSelectionAnnotation currentAnnotation = new SuggestedSelectionAnnotation();
 	private SourceViewer sourceViewer;
-	private AnnotationPainter painter;
+	private ProgramNavigationPainter painter;
 	private boolean isActive;
 
 	// the visitor for the editor
@@ -56,7 +56,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 		painter = new ProgramNavigationPainter(sourceViewer);
 		painter.addSelectionChangedListener(this);
 		sourceViewer.addPainter(painter);
-		
+		isActive = false;
 		selectionChanged((ITextSelection) painter.getSelection());
 	}
 
@@ -68,8 +68,8 @@ public class AnnotationManager implements ISelectionChangedListener {
 			if(one != null) {
 				addAnnotation(one);
 				currentSearch = getMethod(one);
-				System.out.println(currentSearch);
 				if(!isActive) {
+					isActive = true;
 					NavigationUpBox.createInstance(sourceViewer.getTextWidget(), one.getStartPosition());
 					NavigationDownBox.createInstance(sourceViewer.getTextWidget(), one.getStartPosition());
 				}
@@ -80,8 +80,12 @@ public class AnnotationManager implements ISelectionChangedListener {
 					searchUp = call.searchProject(one, DataNode.PARAM_UP);
 					searchDown = call.searchProject(one, DataNode.PARAM_DOWN);
 				}
-				NavigationUpBox.getInstance().setText(searchUp);
-				NavigationDownBox.getInstance().setText(searchDown);
+				System.out.println(one.getValue()+" one");
+				System.out.println(NavigationDownBox.getInstance()+" "+isActive);
+				if(NavigationDownBox.getInstance() != null && NavigationUpBox.getInstance() != null) {
+					NavigationUpBox.getInstance().setText(searchUp);
+					NavigationDownBox.getInstance().setText(searchDown);
+				}
 			}
 			else {
 				removeAnnotations();
@@ -92,9 +96,9 @@ public class AnnotationManager implements ISelectionChangedListener {
 				try {
 					NavigationUpBox.getInstance().setText(null);
 					NavigationDownBox.getInstance().setText(null);
-				} catch (JavaModelException e1) {
+				} catch (Exception e1) {
 					// Auto-generated catch block
-					e1.printStackTrace();
+					//e.printStackTrace();
 				}
 			}
 			removeAnnotations();
@@ -202,8 +206,8 @@ public class AnnotationManager implements ISelectionChangedListener {
 
 	public void dispose() {
 		painter.dispose();
-		NavigationUpBox.dispose();
-		NavigationDownBox.dispose();
+		//NavigationUpBox.dispose();
+		//NavigationDownBox.dispose();
 		isActive = false;
 		currentSearch = null;
 	}

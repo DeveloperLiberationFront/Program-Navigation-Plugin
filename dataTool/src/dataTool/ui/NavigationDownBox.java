@@ -135,7 +135,7 @@ public class NavigationDownBox {
 		    				else {
 								openLink(i);
 								EnableNavigationAction plugin = new EnableNavigationAction();
-				    			plugin.reset();
+				    			plugin.reset(null);
 		    				}
 						} catch (JavaModelException e1) {
 							// Auto-generated catch block

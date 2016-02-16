@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.SimpleName;
@@ -66,12 +67,13 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	private boolean isActive = false;
 	private boolean painted = false;
 
+
 	public ProgramNavigationPainter(SourceViewer v) {
 		super(v);
 		viewer = v;
 		viewer.getTextWidget().addPaintListener(this);
 	}
-
+	
 	public void addSelectionChangedListener(ISelectionChangedListener listener) {
 		listeners.add(listener);
 	}

@@ -85,8 +85,13 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 							e.printStackTrace();
 						}
 					}
-					//EnableNavigationAction plugin = new EnableNavigationAction();
-	    			//plugin.reset();
+					EnableNavigationAction plugin = new EnableNavigationAction();
+	    			try {
+						plugin.reset(null);
+					} catch (JavaModelException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 
