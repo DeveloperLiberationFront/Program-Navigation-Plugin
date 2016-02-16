@@ -60,22 +60,29 @@ Based on a preliminary evaluation, our tool is awesome!
 \section{Introduction}
 Modern software systems contain millions of lines of source code. 
 As software grows in size and complexity, developers increasingly rely on tools to help them navigate the programs they create. 
-Program navigation is a central task tied to many critical activities, including exploring new code bases, debugging, and assessing security vulnerabilities.
+Program navigation is a central task tied to many critical activities, including exploring new code bases, debugging, and assessing security vulnerabilities. 
 
+While navigating programs, developers ask questions about control flow and data flow throughout the program~\cite{latoza2010hard, Smith2015}. We will refer to these two concepts together as \textit{program flow}. Developers are interested in navigating program flow to trace how data is modified across multiple method invocations.
 
-Code navigation is a critical task for software developers. 
+Integrated development environments (IDEs) present code linearly in the order methods are defined. However, successful developers do not navigate source code linearly (line by line starting at the top of the file). Instead, they methodically navigate the code's hierarchical semantic structures~\cite{robillard2004investigate}. To resovle this conflict and realize their ideal navigation strategies, developers rely on program navigation tools. 
 
-Successful developers do not investigate source code line by line starting at the top of the file. Instead, they navigate the code's hierarchical semantic structures ~\cite{robillard2004investigate}. Methodical and structured
-Developers ask questions about control flow and data flow~\cite{latoza2010hard, Smith2015}. 
+% Probably more to come in here? What are some current tools and why are they limited.
+% Discuss program visualization tools vs navigation tools.
 
-Typically source code is presented to developers linearly. However, effective developers navigate   
+In this work we will design, implement, and evaluate a program navigation tool.
+To address the limitations of existing program navigation tools, our tool will embody five key design principles (Section \ref{DesignPrinciples}). We will implement our tool as a plugin to the Eclipse IDE. 
 
 \section{Design Principles}
-Derived these design principles by evaluating the limitations of existing program navigation tools. 
+\label{DesignPrinciples}
+In this section we describe the design principles that we used to shape our tool. We derived these design principles by evaluating the limitations of existing program navigation tools.
+ 
 \subsection{Powerful Program Analysis}
-Program navigation tools should leverage powerful program analysis techniques. 
+By leveraging powerful program analysis techniques, navigation tools can provide more accurate information.
+For example, by analyzing abstract syntax trees (ASTs) and call graphs, tools can make proper references to variables and methods. 
+Simple textual analysis may lead to inaccurate results, especially when programs include inheritance and duplicate variable names.
 
 \subsection{Low Barriers to Invocation}
+
 
 \subsection{Full Program Navigation}
 Something that says the same tool allows users to analyze data flow \textit{across} methods upstream and downstream.
@@ -86,36 +93,30 @@ Something that says the same tool allows users to analyze data flow \textit{acro
 
 
 \section{Related Work}
-Summary of related work. Possibly a table evaluating existing tools on various design principles.
+Summary of related work, including a table evaluating existing tools on various design principles.
+Spoiler alert, none of the tools satisfy all of the principles.
 
 
 \section{[Name of Tool]}
-We implemented 
+We implemented our tool as a plugin to the Eclipse IDE [cite]. We chose Eclipse because of its popularity and extensibility. Eclipse is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. 
 
 \section{Preliminary Evaluation}
-Same tasks as from: \cite{Smith2015}
-Administered a post-test questionnaire. 
+We plan to perform a preliminary evaluation of our tool with approximately five to ten developers.
+Our goals are to get some initial feedback on the usability of our tool and evaluate whether our approach shows promise in enabling developers to efficiently navigate program flow. 
+
+We will ask developers to perform two tasks that involve program flow navigation (Task 1 and Task 3 from \cite{Smith2015}).
+We will measure their accuracy, speed, and administer a post-test usability questionnaire. 
 
 \section{Results}
 Hopefully, participants are faster/more accurate with the tool. Rate positive experience on the questionnaire.
 
 \section{Discussion}
+
 \section{Limitations}
 
-
-
 \section{Conclusion}
-The conclusion goes here.
 
-
-
-
-% conference papers do not normally have an appendix
-
-
-% use section* for acknowledgment
 \section*{Acknowledgment}
-
 
 The authors would like to thank...
 
