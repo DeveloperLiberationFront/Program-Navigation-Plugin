@@ -8,5 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src_tests"/>
+	<classpathentry kind="lib" path="C:/Users/Chris/Documents/Classes/NC State/research/Program-Navigation-Plugin/org.eclipse.jdt.ui_3.7.1.r371_v20110824-0800.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

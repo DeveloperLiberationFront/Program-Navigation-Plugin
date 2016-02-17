@@ -125,7 +125,6 @@ public class DataCallHierarchy {
 	    IPackageFragment frag = ipf.getPackageFragment(projectPath);
 	    cUnit = frag.getCompilationUnit(projectFile);
     	IType type = cUnit.getType(projectFile.replace(".java", ""));
-	    System.out.println(methodName);
 		IMethod m = findMethod(type, methodName);
 	    Set<IMethod> methods = new HashSet<IMethod>();
 	    if(direction.equals(Finder.UP)) {

@@ -21,6 +21,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
+import dataTool.annotations.LinkAnnotation;
 import dataTool.annotations.ProgramNavigationPainter;
 import dataTool.annotations.SuggestedSelectionAnnotation;
 import dataTool.ui.NavigationDownBox;
@@ -28,11 +29,13 @@ import dataTool.ui.NavigationUpBox;
 import edu.pdx.cs.multiview.jdt.util.JDTUtils;
 import edu.pdx.cs.multiview.jface.annotation.AnnTransaction;
 import edu.pdx.cs.multiview.jface.annotation.AnnotationPainter;
+import edu.pdx.cs.multiview.jface.annotation.ISelfDrawingAnnotation;
 import edu.pdx.cs.multiview.util.eclipse.EclipseHacks;
 
 public class AnnotationManager implements ISelectionChangedListener {
 
-	private SuggestedSelectionAnnotation currentAnnotation = new SuggestedSelectionAnnotation();
+	private SuggestedSelectionAnnotation highlightAnnotation = new SuggestedSelectionAnnotation();
+	private LinkAnnotation linkAnnotation = new LinkAnnotation();
 	private SourceViewer sourceViewer;
 	private ProgramNavigationPainter painter;
 	private boolean isActive;
@@ -87,16 +90,20 @@ public class AnnotationManager implements ISelectionChangedListener {
 				//TODO Add all occurrences of data node off screen
 				Finder finder = Finder.getInstance();
 				for(DataNode dn: finder.getOccurrences(one.getValue(), new Position(one.getStartPosition(), one.getLength()))) {
-					System.out.println(dn.getValue() + " "+sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition()));
 					if(dn.getStartPosition() < sourceViewer.getTopIndexStartOffset()) {
-						String line = "line "+Integer.toString(sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1);
-						NavigationUpBox.getInstance().addOffScreen(dn);
+						int line = sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1;
+						NavigationUpBox.getInstance().addOffScreen(dn, line);
 					}
 					else if(dn.getStartPosition() > sourceViewer.getBottomIndexEndOffset()) {
-						String line = "line "+Integer.toString(sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1);
-						NavigationDownBox.getInstance().addOffScreen(dn);
+						int line = sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1;
+						NavigationDownBox.getInstance().addOffScreen(dn, line);
 					}
-					
+				}
+				if (one.isParameterSelected(selection.getOffset()) && one.getMethod() != null) {
+					linkAnnotation.searchResultsDown = searchDown;
+					linkAnnotation.searchResultsUp = searchUp;
+					linkAnnotation.setDataNode(one);
+					addLinkAnnotation(one);
 				}
 			}
 			else {
@@ -139,12 +146,21 @@ public class AnnotationManager implements ISelectionChangedListener {
 		return null;
 	}
 	
-	private void addAnnotation(DataNode one) {
-		int start = one.getStartPosition();
-		int end = one.getStartPosition() + one.getLength();
+	private void addAnnotation(DataNode node) {
+		int start = node.getStartPosition();
+		int end = node.getStartPosition() + node.getLength();
 
 		if (!isAlreadyAnnotated(start, end))
-			addAnnotationsAt(start, end - start);
+			addAnnotationsAt(start, end - start, true);
+	}
+	
+	private void addLinkAnnotation(DataNode node) {
+		SimpleName method = node.getParameterMethod().getName();
+		int start = method.getStartPosition();
+		int end = method.getStartPosition() + method.getLength();
+		if(!isAlreadyAnnotated(start, end)) {
+			addAnnotationsAt(start, end - start, false);
+		}
 	}
 
 	private boolean areSiblings(ASTNode one, ASTNode two) {
@@ -165,7 +181,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 
 	private boolean isAlreadyAnnotated(int start, int end) {
 
-		Position headPosition = painter.getPosition(currentAnnotation);
+		Position headPosition = painter.getPosition(highlightAnnotation);
 
 		if (headPosition != null)
 			return headPosition.getOffset() == start && headPosition.getOffset() + headPosition.getLength() == end;
@@ -197,19 +213,24 @@ public class AnnotationManager implements ISelectionChangedListener {
 		return visitor;
 	}
 
-	private void addAnnotationsAt(int statementStart, int length) {
+	private void addAnnotationsAt(int statementStart, int length, boolean isHighlight) {
 
 		AnnTransaction anns = new AnnTransaction();
-		anns.remove(currentAnnotation);
-		anns.add(currentAnnotation, new Position(statementStart, length));
-
+		if(isHighlight) {
+			anns.remove(highlightAnnotation);
+			anns.add(highlightAnnotation, new Position(statementStart, length));
+		}
+		else {
+			anns.remove(linkAnnotation);
+			anns.add(linkAnnotation, new Position(statementStart, length));
+		}
 		painter.replaceAnnotations(anns);
 	}
 
 	public void removeAnnotations() {
 		try {
-			if (currentAnnotation != null) {
-				// painter.removeAnnotation(currentAnnotation);
+			if (highlightAnnotation != null) {
+				// painter.removeAnnotation(highlightAnnotation);
 				painter.removeAllAnnotations();
 			}
 		} catch (Exception ignore) {

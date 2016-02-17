@@ -1,7 +1,9 @@
 package dataTool.annotations;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.jface.text.source.Annotation;
 import org.eclipse.swt.SWT;
@@ -28,11 +30,8 @@ import edu.pdx.cs.multiview.jface.annotation.ISelfDrawingAnnotation;
 public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation {
 	
 	private DataNode linkNode;
-	
-	public LinkAnnotation(DataNode node) {
-		super();
-		linkNode = node;
-	}
+	public static Set<IMethod> searchResultsUp;
+	public static Set<IMethod> searchResultsDown;
 
 	/**
 	 * Function to add link annotations to methods of parameters
@@ -55,13 +54,12 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 			public void mouseDown(MouseEvent arg0) {
 				int click = textWidget.getOffsetAtLocation(new Point(arg0.x,arg0.y));
 				if(click >= style.start && click <= style.start+style.length){
-					DataCallHierarchy call = new DataCallHierarchy();
 					Object[] search;
 					IMethod im;
-					//TODO Don't want to perform the search again, need to find a way to get results from previous search here.
+					// Don't want to perform the search again, need to find a way to get results from previous search here.
 					if(linkNode.getType().equals(DataNode.PARAM_UP)) {
 						try {
-							search = call.searchProject(linkNode, DataNode.PARAM_UP).toArray();
+							search = searchResultsUp.toArray();
 							im = (IMethod)search[0];
 							NavigationUpBox up = NavigationUpBox.getInstance();
 							up.searchMethod = linkNode.getMethod().getName().getIdentifier();
@@ -73,11 +71,12 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 					}
 					else if(linkNode.getType().equals(DataNode.PARAM_DOWN)) {
 						try {
-							search = call.searchProject(linkNode, DataNode.PARAM_DOWN).toArray();
+							search = searchResultsDown.toArray();
 							for(Object o: search) {
 								im = (IMethod) o;
 								if(im.getElementName().equals(linkNode.getParameterMethod().getName().getIdentifier())) {
 									NavigationDownBox.getInstance().openLink(im);
+									break;
 								}
 							}
 						} catch (Exception e) {
@@ -89,7 +88,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	    			try {
 						plugin.reset(null);
 					} catch (JavaModelException e) {
-						// TODO Auto-generated catch block
+						// Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -115,6 +114,10 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 		clear.length = old.length;
 		clear.underline = false;
 		return clear;
+	}
+	
+	public void setDataNode(DataNode node) {
+		linkNode = node;
 	}
 
 }

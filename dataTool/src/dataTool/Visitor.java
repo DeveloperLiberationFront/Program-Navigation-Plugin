@@ -107,7 +107,7 @@ class Visitor extends ASTVisitor {
 			Method method = null;
 			public boolean visit(SingleVariableDeclaration svd ) {
 				//If a class variable
-				if( methodName == null ) {
+				if( methodName == null && svd.getParent().getNodeType() != 31) {
 					addedNode = new DataNode(svd.getName().toString(),
 											 svd.getName().getStartPosition(), 
 											 DataNode.PARAM_UP, null);

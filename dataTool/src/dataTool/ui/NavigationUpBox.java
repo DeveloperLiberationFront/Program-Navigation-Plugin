@@ -183,9 +183,9 @@ public class NavigationUpBox {
 	 * Method to add text to navigation box for instances of data off-screen
 	 * @param node: DataNode currently out of view
 	 */
-	public void addOffScreen(DataNode node) {
+	public void addOffScreen(DataNode node, int line) {
 		Link link = new Link(shell, SWT.NULL);
-		link.setText("<a>line "+widget.getLineAtOffset(node.getStartPosition())+"</a>");
+		link.setText("<a>line "+line+"</a>");
 		link.addListener(SWT.Selection, new Listener(){
 
 			@Override

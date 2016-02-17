@@ -528,6 +528,7 @@ public class JavaEditorBreadcrumb extends EditorBreadcrumb {
 
 	public JavaEditorBreadcrumb(JavaEditor javaEditor) {
 		super(javaEditor);
+		System.out.println("JAVA EDITOR BREADCRUMB!!!");
 		setTextViewer(javaEditor.getViewer());
 	}
 
