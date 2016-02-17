@@ -82,15 +82,22 @@ For example, by analyzing abstract syntax trees (ASTs) and call graphs, tools ca
 Simple textual analysis may lead to inaccurate results, especially when programs include inheritance and duplicate variable names.
 
 \subsection{Low Barriers to Invocation}
-
+Barriers to invocation may inhibit adoption. 
+As developers may wish to navigate multiple program paths concurrently, repetitively invoking the tool may be cumbersome, especially if barriers are high. 
 
 \subsection{Full Program Navigation}
-Something that says the same tool allows users to analyze data flow \textit{across} methods upstream and downstream.
+Developers are not only interested in traversing programs' call graph, but also how data flows through the call graph.
+To do so, developers must inspect the relationship between methods as well as the methods themselves.
+Often the methods of interest span across multiple source files.
+Furthermore, program navigation tools should support this traversal both upstream and downstream. 
+That is, tools should highlight variable assignments and also subsequent variable uses. 
 
-\subsection{Enables Systematic and Complete Evaluation}
+\subsection{Enables Systematic Evaluation}
+Program navigation tools should help developers keep track of where they have been and where they are going. Especially while attempting to resolve complex defects, developers may want to thoroughly explore all program paths. Their navigation tools should help them keep track of their progress.
 
 \subsection{In Situ Results}  
-
+Switching between views in the IDE can cause disorientation [Cite]. As developers navigate through code, navigation tools should present their results in that context. 
+When navigation tools present results outside the code, developers are burdened with the cognitive load of translating those results back to the code.
 
 \section{Related Work}
 Summary of related work, including a table evaluating existing tools on various design principles.
@@ -98,7 +105,8 @@ Spoiler alert, none of the tools satisfy all of the principles.
 
 
 \section{[Name of Tool]}
-We implemented our tool as a plugin to the Eclipse IDE [cite]. We chose Eclipse because of its popularity and extensibility. Eclipse is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. 
+We implemented our tool as a plugin to the Eclipse IDE [cite]. We chose Eclipse because of its popularity and extensibility. 
+Eclipse is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. 
 
 \section{Preliminary Evaluation}
 We plan to perform a preliminary evaluation of our tool with approximately five to ten developers.
