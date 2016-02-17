@@ -79,7 +79,7 @@ public class DataCallHierarchy {
 			ArrayList<String> down = Finder.getParamMethodNames(node.getValue(), DataNode.PARAM_DOWN);
 			if(down != null) {
 				Set<IMethod> searchDown = new HashSet<IMethod>();
-				Set<IMethod> temp = search(node.getMethod().getName().toString(), Finder.DOWN);
+				Set<IMethod> temp = search(node.getMethod().toString(), Finder.DOWN);
 				for(IMethod i: temp) {
 					if(down.contains(i.getElementName())) {
 						searchDown.add(i);

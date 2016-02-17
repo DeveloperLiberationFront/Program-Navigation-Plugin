@@ -1,8 +1,10 @@
 package dataTool;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
@@ -18,6 +20,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import dataTool.annotations.SuggestedSelectionAnnotation;
 
 public class Finder {
+	private HashMap<String, List<List<SimpleName>>> methodArgsVSInvokedArgs = 
+			new HashMap<String, List<List<SimpleName>>>();
 	protected static Map<String, TreeSet<DataNode>> map; // contains name and first node for all data
 	protected static Map<String, Map<String, HashSet<Method>>> param_map;
 	final public static String UP = "up";
@@ -61,11 +65,9 @@ public class Finder {
 		return null;
 	}
 	public static void add( DataNode dn ) {
-		//System.out.println(dn.getSignature() + " " + dn.getStartPosition());
 		TreeSet<DataNode> list;
-		String key = dn.getValue();
+		String key = dn.getBinding();
 		if (!map.containsKey(key)) {
-			//System.out.println(dn.getSignature() + " " + dn.getStartPosition());
 			list = new TreeSet<DataNode>();
 			list.add(dn);
 			map.put(key, list);
@@ -156,6 +158,9 @@ public class Finder {
 		return false;
 	}
 	
+	public void setMethodArgsVSInvokedArgs( HashMap<String, List<List<SimpleName>>> methodArgsVSInvokedArgs) {
+		this.methodArgsVSInvokedArgs = methodArgsVSInvokedArgs;
+	}
 	/**
 	 * This function returns a list of all the places where the current variable is 
 	 * initialized which will determine where to highlight in the file.
@@ -163,28 +168,141 @@ public class Finder {
 	 * @return ArrayList<ASTNode> of "up" occurrences for current variable name
 	 */
 	public TreeSet<DataNode> getOccurrences(String s, Position p) {
-		//System.out.println(s + " !!! " + p.toString());
 		TreeSet<DataNode> returnList = new TreeSet<DataNode>();
-		String method = null;
+		String binding = null;
+		String key = null;
+		
 		for(Entry<String, TreeSet<DataNode>> entry : map.entrySet()) {
-		    String key = entry.getKey();
-		    if( key.equals(s )) {
+		    key = entry.getKey();
+		    // Gets rid of the type declaration
+		    key = key.substring(key.indexOf(" ") + 1);
+		    DataNode foundNode = null;
+		    //For regular fields
+		    if( key.startsWith( s )) {
 		    	TreeSet<DataNode> list = entry.getValue();
 		    	for( DataNode dn : list ) {
-			    	if( dn.getStartPosition() == p.offset ) {
-			    		method = dn.getMethodSignature();
+			    	if( !dn.isHighlighted() && dn.getStartPosition() == p.offset ) {
+			    		foundNode = dn;
+			    		binding = dn.getBinding();
+			    		break;
 				    }
 			    }
 		    	list = entry.getValue();
 		    	for( DataNode dn : list ) {
-	    			String newMethod = dn.getMethodSignature();
 	    			//TODO distinguish between class and local variables of same name
-	    			if( dn.getValue().equals(key) && ( newMethod.equals(method) || newMethod.equals("null") ) ) { 
+	    			if( !dn.isHighlighted() && dn.getBinding().equals(binding) ) { 
+	    				dn.highLight();
+	    				returnList.add(dn);
+	    			}
+		    	} 
+		    // For class variables
+		    } else if( key.endsWith( s ) ) {
+		    	TreeSet<DataNode> list = entry.getValue();
+		    	for( DataNode dn : list ) {
+			    	if( !dn.isHighlighted() && dn.getStartPosition() == p.offset ) {
+			    		binding = dn.getBinding();
+			    		break;
+				    }
+			    }
+		    	list = entry.getValue();
+		    	for( DataNode dn : list ) {
+	    			//TODO distinguish between class and local variables of same name
+	    			if( !dn.isHighlighted() && dn.getBinding().equals(binding) ) { 
+	    				dn.highLight();
 	    				returnList.add(dn);
 	    			}
 		    	} 
 		    }
-		}
-		return returnList;	
+		    System.out.println(1);
+		    if( foundNode != null && foundNode.getMethod() != null) {
+		    	System.out.println(2);
+		    	 String methodBinding = foundNode.getMethod().resolveBinding().toString();
+				 String foundBinding = foundNode.getBinding();
+				 List argLists = methodArgsVSInvokedArgs.get(methodBinding);
+				   
+				 List argList = (List) argLists.get(1);
+				 List paramList = (List) argLists.get(0);
+				 String paramBinding = null;
+				 boolean found = false;
+				 int i = -1;
+				 for( Object o: paramList ) {
+				  	paramBinding = ( ( SimpleName)o).resolveBinding().toString();
+				   	i++;
+				   	if( paramBinding.equals(foundBinding ) ) {
+				   		found = true;
+				   		break;
+				   	}
+				 }
+				 if( found ) {
+				  	String transferBinding = ((SimpleName)argList.get(i)).resolveBinding().toString();
+				   	returnList.addAll(getOccurrences(transferBinding));
+				 } else {
+				   	i = -1;
+				   	String argBinding = null;
+				   	for( Object o: argList ) {
+				    	argBinding = ( ( SimpleName)o).resolveBinding().toString();
+				    	i++;
+				    	if( argBinding.equals(foundBinding ) ) {
+				    		found = true;
+				    		break;
+				    	}
+				    }
+				   	if( found ) {
+				   		String transferBinding = ((SimpleName)paramList.get(i)).resolveBinding().toString();
+				    	returnList.addAll(getOccurrences(transferBinding));
+				   	}
+				  }
+		    	}	
+		    }
+			return returnList;	
+	}
+
+	private TreeSet<DataNode> getOccurrences(String currentBinding) {
+		TreeSet<DataNode> returnList = new TreeSet<DataNode>();
+		TreeSet<DataNode> list = map.get(currentBinding);
+		String methodBinding = null;
+		for( DataNode dn : list ) {
+			//TODO distinguish between class and local variables of same name
+			if( !dn.isHighlighted() && dn.getBinding().equals(currentBinding) ) { 
+				dn.highLight();
+				methodBinding = dn.getMethod().resolveBinding().toString();
+				returnList.add(dn);
+			}
+    	} 
+		List argLists = methodArgsVSInvokedArgs.get(methodBinding);
+	    
+	    List argList = (List) argLists.get(1);
+	    List paramList = (List) argLists.get(0);
+	    String paramBinding = null;
+	    boolean found = false;
+	    int i = -1;
+	    for( Object o: paramList ) {
+	    	paramBinding = ( ( SimpleName)o).resolveBinding().toString();
+	    	i++;
+	    	if( paramBinding.equals(currentBinding ) ) {
+	    		found = true;
+	    		break;
+	    	}
+	    }
+	    if( found ) {
+	    	String transferBinding = ((SimpleName)argList.get(i)).resolveBinding().toString();
+	    	returnList.addAll(getOccurrences(transferBinding));
+	    } else {
+	    	i = -1;
+	    	String argBinding = null;
+	    	for( Object o: argList ) {
+		    	argBinding = ( ( SimpleName)o).resolveBinding().toString();
+		    	i++;
+		    	if( argBinding.equals(currentBinding ) ) {
+		    		found = true;
+		    		break;
+		    	}
+		    }
+	    	if( found ) {
+	    		String transferBinding = ((SimpleName)paramList.get(i)).resolveBinding().toString();
+		    	returnList.addAll(getOccurrences(transferBinding));
+	    	}
+	    }
+	    return returnList;
 	}
 }

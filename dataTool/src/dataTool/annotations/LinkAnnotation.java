@@ -62,7 +62,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 							search = searchResultsUp.toArray();
 							im = (IMethod)search[0];
 							NavigationUpBox up = NavigationUpBox.getInstance();
-							up.searchMethod = linkNode.getMethod().getName().getIdentifier();
+							up.searchMethod = linkNode.getMethod().getIdentifier();
 							up.openLink(im);
 						} catch (Exception e) {
 							// Auto-generated catch block
