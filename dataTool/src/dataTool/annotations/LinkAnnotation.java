@@ -57,7 +57,8 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 					Object[] search;
 					IMethod im;
 					// Don't want to perform the search again, need to find a way to get results from previous search here.
-					if(linkNode.getType().equals(DataNode.PARAM_UP)) {
+//					if(linkNode.getType().equals(DataNode.PARAM_UP)) {
+					if( linkNode != null && searchResultsUp != null) {
 						try {
 							search = searchResultsUp.toArray();
 							im = (IMethod)search[0];
@@ -69,7 +70,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 							e.printStackTrace();
 						}
 					}
-					else if(linkNode.getType().equals(DataNode.PARAM_DOWN)) {
+					else if(linkNode != null && searchResultsDown != null) {
 						try {
 							search = searchResultsDown.toArray();
 							for(Object o: search) {

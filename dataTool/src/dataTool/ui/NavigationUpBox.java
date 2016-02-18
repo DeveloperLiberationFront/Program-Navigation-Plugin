@@ -207,6 +207,7 @@ public class NavigationUpBox {
 		try {
 			setText(null);
 			NavigationDownBox.getInstance().setText(null);
+			System.out.println("-------------" + i.getSignature());
 			editor = JavaUI.openInEditor(i, true, true);
 		} catch (JavaModelException | PartInitException e) {
 			// Auto-generated catch block

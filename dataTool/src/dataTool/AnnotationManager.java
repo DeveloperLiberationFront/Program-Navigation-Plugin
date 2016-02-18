@@ -66,22 +66,24 @@ public class AnnotationManager implements ISelectionChangedListener {
 	public void selectionChanged(ITextSelection selection) {
 		painter.removeAllAnnotations();
 		try {
-			DataNode one = getNode(selection.getOffset());
+			DataNode currentNode = getNode(selection.getOffset());
 			//System.out.println(selection.getOffset());
-			if(one != null) {
-				addAnnotation(one);
-				currentSearch = getMethod(one);
+			if(currentNode != null) {
+				addAnnotation(currentNode);
+				currentSearch = getMethod(currentNode);
 				if(!isActive) {
 					isActive = true;
-					NavigationUpBox.createInstance(sourceViewer.getTextWidget(), one.getStartPosition());
-					NavigationDownBox.createInstance(sourceViewer.getTextWidget(), one.getStartPosition());
+					NavigationUpBox.createInstance(sourceViewer.getTextWidget(), currentNode.getStartPosition());
+					NavigationDownBox.createInstance(sourceViewer.getTextWidget(), currentNode.getStartPosition());
 				}
 				DataCallHierarchy call = new DataCallHierarchy();
 				Set<IMethod> searchUp = null;
 				Set<IMethod> searchDown = null;
-				if(Finder.param_map.containsKey(one.getValue()) && currentSearch != null) {
-					searchUp = call.searchProject(one, DataNode.PARAM_UP);
-					searchDown = call.searchProject(one, DataNode.PARAM_DOWN);
+				if(Finder.param_map.containsKey(currentNode.getValue()) && currentSearch != null) {
+					searchUp = call.searchProject(currentNode, DataNode.PARAM_UP);
+					searchDown = call.searchProject(currentNode, DataNode.PARAM_DOWN);
+					System.out.println(searchUp);
+					System.out.println(searchDown);
 				}
 				if(NavigationDownBox.getInstance() != null && NavigationUpBox.getInstance() != null) {
 					NavigationUpBox.getInstance().setText(searchUp);
@@ -89,7 +91,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 				}
 				// TODO Add all occurrences of data node off screen
 				Finder finder = Finder.getInstance();
-				for(DataNode dn: finder.getOccurrences(one.getValue(), new Position(one.getStartPosition(), one.getLength()))) {
+				for(DataNode dn: finder.getOccurrences(currentNode.getValue(), new Position(currentNode.getStartPosition(), currentNode.getLength()))) {
 					if(dn.getStartPosition() < sourceViewer.getTopIndexStartOffset()) {
 						int line = sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1;
 						NavigationUpBox.getInstance().addOffScreen(dn, line);
@@ -99,11 +101,11 @@ public class AnnotationManager implements ISelectionChangedListener {
 						NavigationDownBox.getInstance().addOffScreen(dn, line);
 					}
 				}
-				if (one.isParameterSelected(selection.getOffset()) && one.getMethod() != null) {
+				if (currentNode.isParameterSelected(selection.getOffset()) && currentNode.getMethod() != null) {
 					linkAnnotation.searchResultsDown = searchDown;
 					linkAnnotation.searchResultsUp = searchUp;
-					linkAnnotation.setDataNode(one);
-					addLinkAnnotation(one);
+					linkAnnotation.setDataNode(currentNode);
+					addLinkAnnotation(currentNode);
 				}
 			}
 			else {
@@ -130,16 +132,6 @@ public class AnnotationManager implements ISelectionChangedListener {
 	 * @returns String method name
 	 */
 	private String getMethod(DataNode one) {
-		//TODO Function that could come in handy later to get current method mouse is clicked in
-//		DataNode temp = one;
-//		while(!(temp instanceof MethodDeclaration) && temp != null) {
-//			temp = temp.getParent();
-//		}
-//		if(temp == null) {
-//			return null;
-//		}
-//		return ((MethodDeclaration) temp).getName().getIdentifier();
-		//System.out.println(one.getValue()+" get "+one.getMethod().getName());
 		if(one.getMethod() != null) {
 			return one.getMethod().toString();
 		}

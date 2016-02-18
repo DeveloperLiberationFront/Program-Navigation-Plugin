@@ -117,13 +117,16 @@ class Visitor extends ASTVisitor {
 		parser.setResolveBindings(true);
 		parser.setProject(thisProject);
 		
+		
 		parser.setUnitName(thisProject.getElementName());
 		
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+		
 		cu.accept(new ASTVisitor() {
 			DataNode addedNode = null;
 			SimpleName method = null;
 			public boolean visit( SimpleName sn ) {
+				
 				if( sn.resolveTypeBinding() != null ) {
 					
 					String binding = sn.resolveBinding().toString();
