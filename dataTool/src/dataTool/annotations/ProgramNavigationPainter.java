@@ -229,7 +229,6 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 			p = entry.getValue();
 			r = viewer.modelRange2WidgetRange(new Region(p.offset, p.length));
 			word = viewer.getTextWidget().getText(r.getOffset(), r.getOffset() + r.getLength() - 1);
-			//System.out.println("---------" + word);
 			// draw the annotation only if it's visible
 			if (r != null) {
 				ann.draw(e.gc, viewer.getTextWidget(), r.getOffset(), r.getLength());

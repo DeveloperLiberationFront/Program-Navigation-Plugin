@@ -70,10 +70,13 @@ public class DataCallHierarchy {
 	public Set<IMethod> searchProject(DataNode node, String direction) throws JavaModelException {
 		Set<IMethod> results = null;
 		if (direction.equals(DataNode.PARAM_UP)) {
-			ArrayList<String> up = Finder.getParamMethodNames(node.getValue(), DataNode.PARAM_UP);
-			if(up != null) {
-				results = search(up.get(0), Finder.UP);
-			}
+//			ArrayList<String> up = Finder.getParamMethodNames(node.getValue(), DataNode.PARAM_UP);
+//			if(up != null) {
+//				results = search(up.get(0), Finder.UP);
+//			}
+			
+			results = search(node.getMethod().getIdentifier(), Finder.UP);
+			System.out.println("HERE");
 		}
 		else if (direction.equals(DataNode.PARAM_DOWN)) {
 			ArrayList<String> down = Finder.getParamMethodNames(node.getValue(), DataNode.PARAM_DOWN);
@@ -133,6 +136,7 @@ public class DataCallHierarchy {
 	    else {
 		    Set<IMethod> temp = callGen.getCalleesOf(m);
 		    for(IMethod i: temp) {
+		    	
 		    	methods.add(i);
 		    }
 	    }
