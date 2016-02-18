@@ -1,0 +1,20 @@
+/AbstractTypeVariable.java/1.7/Wed Dec 31 21:13:19 2008/-ko/Tr351_v20090821-0800
+/ArrayType.java/1.12/Wed Dec 31 21:13:19 2008//Tr351_v20090821-0800
+/CaptureType.java/1.7/Wed Dec 31 21:13:19 2008/-ko/Tr351_v20090821-0800
+/ExtendsWildcardType.java/1.11/Wed Dec 31 21:13:19 2008//Tr351_v20090821-0800
+/GenericType.java/1.10/Wed Dec 31 21:13:18 2008//Tr351_v20090821-0800
+/HierarchyType.java/1.8/Wed Dec 31 21:13:19 2008//Tr351_v20090821-0800
+/NullType.java/1.9/Thu Nov 20 17:22:11 2008//Tr351_v20090821-0800
+/ParameterizedType.java/1.14/Wed Dec 31 21:13:18 2008//Tr351_v20090821-0800
+/PrimitiveType.java/1.8/Thu Nov 20 17:22:11 2008//Tr351_v20090821-0800
+/RawType.java/1.12/Wed Dec 31 21:13:18 2008//Tr351_v20090821-0800
+/StandardType.java/1.10/Wed Dec 31 21:13:18 2008//Tr351_v20090821-0800
+/SuperWildcardType.java/1.9/Wed Dec 31 21:13:18 2008//Tr351_v20090821-0800
+/TType.java/1.20/Thu Nov 20 17:22:11 2008//Tr351_v20090821-0800
+/TypeEnvironment.java/1.20/Wed Dec 31 21:13:19 2008//Tr351_v20090821-0800
+/TypeTuple.java/1.5/Wed Dec 31 21:13:19 2008//Tr351_v20090821-0800
+/TypeVariable.java/1.10/Wed Dec 31 21:13:18 2008//Tr351_v20090821-0800
+/UnboundWildcardType.java/1.8/Wed Dec 31 21:13:18 2008//Tr351_v20090821-0800
+/VoidType.java/1.7/Thu Nov 20 17:22:11 2008//Tr351_v20090821-0800
+/WildcardType.java/1.9/Thu Nov 20 17:22:11 2008//Tr351_v20090821-0800
+D

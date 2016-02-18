@@ -1,0 +1,24 @@
+/AddWordProposal.java/1.15/Wed Dec 31 21:13:29 2008//Tr351_v20090821-0800
+/ChangeCaseProposal.java/1.6/Fri Jun 17 15:51:54 2005//Tr351_v20090821-0800
+/CoreSpellingProblem.java/1.9/Thu Sep 11 11:59:52 2008//Tr351_v20090821-0800
+/DefaultSpellingEngine.java/1.9/Fri Nov 17 11:49:06 2006//Tr351_v20090821-0800
+/DisableSpellCheckingProposal.java/1.3/Wed Dec 31 21:13:29 2008/-ko/Tr351_v20090821-0800
+/HtmlTagDictionary.java/1.11/Wed Dec 31 21:13:29 2008//Tr351_v20090821-0800
+/IJavaDocTagConstants.java/1.4/Thu Apr 17 12:50:49 2008/-ko/Tr351_v20090821-0800
+/JavaDocTagDictionary.java/1.10/Thu Sep 11 11:59:51 2008//Tr351_v20090821-0800
+/JavaSpellingEngine.java/1.13/Thu Sep 11 11:59:51 2008//Tr351_v20090821-0800
+/JavaSpellingProblem.java/1.18/Thu Sep 11 11:59:51 2008//Tr351_v20090821-0800
+/JavaSpellingReconcileStrategy.java/1.18/Wed Dec 31 21:13:29 2008//Tr351_v20090821-0800
+/PropertiesFileSpellCheckIterator.java/1.4/Wed Dec 31 21:13:29 2008/-ko/Tr351_v20090821-0800
+/PropertiesFileSpellingEngine.java/1.12/Thu Sep 11 11:59:52 2008//Tr351_v20090821-0800
+/SpellCheckEngine.java/1.26/Wed Dec 31 21:13:29 2008//Tr351_v20090821-0800
+/SpellCheckIterator.java/1.17/Thu Sep 11 11:59:51 2008//Tr351_v20090821-0800
+/SpellingEngine.java/1.13/Wed Dec 31 21:13:29 2008//Tr351_v20090821-0800
+/TaskTagDictionary.java/1.11/Wed Dec 31 21:13:29 2008//Tr351_v20090821-0800
+/TextSpellingEngine.java/1.9/Mon Apr 21 10:04:50 2008//Tr351_v20090821-0800
+/WordCompletionProposalComputer.java/1.9/Wed Dec 31 21:13:29 2008/-kk/Tr351_v20090821-0800
+/WordCorrectionProposal.java/1.11/Tue Nov 21 10:00:17 2006//Tr351_v20090821-0800
+/WordIgnoreProposal.java/1.12/Wed Jun 27 09:34:11 2007//Tr351_v20090821-0800
+/WordQuickFixProcessor.java/1.13/Mon Apr  7 11:16:35 2008//Tr351_v20090821-0800
+/package.html/1.1/Mon Feb  9 03:20:10 2004//Tr351_v20090821-0800
+D

@@ -1,0 +1,24 @@
+/IPackagesViewViewer.java/1.6/Fri Jun 17 15:51:52 2005//Tr351_v20090821-0800
+/JavaBrowsingContentProvider.java/1.39/Wed Dec 31 21:13:18 2008/-ko/Tr351_v20090821-0800
+/JavaBrowsingMessages.java/1.8/Tue Apr 19 13:29:11 2005/-ko/Tr351_v20090821-0800
+/JavaBrowsingMessages.properties/1.28/Fri May 12 13:40:52 2006/-ko/Tr351_v20090821-0800
+/JavaBrowsingPart.java/1.187/Wed Apr  1 16:15:21 2009/-ko/Tr351_v20090821-0800
+/JavaBrowsingPerspectiveFactory.java/1.41/Thu Sep 11 11:59:25 2008/-ko/Tr351_v20090821-0800
+/JavaElementTypeComparator.java/1.8/Fri Jun 17 15:51:52 2005/-ko/Tr351_v20090821-0800
+/LogicalPackage.java/1.16/Wed Dec 31 21:13:18 2008//Tr351_v20090821-0800
+/LogicalPackagesProvider.java/1.15/Wed Dec 31 21:13:18 2008//Tr351_v20090821-0800
+/MembersView.java/1.64/Thu Sep 11 11:59:25 2008/-ko/Tr351_v20090821-0800
+/PackageViewerWrapper.java/1.18/Wed Dec 31 21:13:18 2008//Tr351_v20090821-0800
+/PackagesView.java/1.69/Mon Feb 16 10:23:34 2009/-ko/Tr351_v20090821-0800
+/PackagesViewFlatContentProvider.java/1.22/Thu Sep 11 11:59:25 2008//Tr351_v20090821-0800
+/PackagesViewHierarchicalContentProvider.java/1.26/Thu Sep 11 11:59:25 2008//Tr351_v20090821-0800
+/PackagesViewLabelProvider.java/1.28/Thu Sep 11 11:59:25 2008//Tr351_v20090821-0800
+/PackagesViewTableViewer.java/1.12/Tue Apr 15 07:46:34 2008//Tr351_v20090821-0800
+/PackagesViewTreeViewer.java/1.17/Thu Sep 11 11:59:25 2008//Tr351_v20090821-0800
+/PatchedOpenInNewWindowAction.java/1.9/Wed Dec 31 21:13:18 2008/-ko/Tr351_v20090821-0800
+/ProjectAndSourceFolderContentProvider.java/1.14/Wed Dec 31 21:13:18 2008/-ko/Tr351_v20090821-0800
+/ProjectsView.java/1.39/Thu Sep 11 11:59:25 2008/-ko/Tr351_v20090821-0800
+/ToggleLinkingAction.java/1.8/Fri Nov  9 13:51:07 2007//Tr351_v20090821-0800
+/TopLevelTypeProblemsLabelDecorator.java/1.10/Fri Jun 17 15:51:52 2005/-ko/Tr351_v20090821-0800
+/TypesView.java/1.41/Thu Sep 11 11:59:25 2008/-ko/Tr351_v20090821-0800
+D
