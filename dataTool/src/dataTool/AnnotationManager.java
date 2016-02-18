@@ -13,11 +13,16 @@ import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
+import org.eclipse.jdt.internal.ui.javaeditor.ShowDataInBreadcrumbAction;
 import org.eclipse.jface.text.ITextSelection;
 import org.eclipse.jface.text.Position;
 import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 
@@ -73,8 +78,11 @@ public class AnnotationManager implements ISelectionChangedListener {
 				currentSearch = getMethod(one);
 				if(!isActive) {
 					isActive = true;
-					NavigationUpBox.createInstance(sourceViewer.getTextWidget(), one.getStartPosition());
-					NavigationDownBox.createInstance(sourceViewer.getTextWidget(), one.getStartPosition());
+					IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+					IEditorPart activeEditor = activePage.getActiveEditor();
+					JavaEditor j = (JavaEditor) activeEditor;
+					ShowDataInBreadcrumbAction crumbs = new ShowDataInBreadcrumbAction(j, activePage);
+					crumbs.run();	
 				}
 				DataCallHierarchy call = new DataCallHierarchy();
 				Set<IMethod> searchUp = null;
@@ -83,20 +91,16 @@ public class AnnotationManager implements ISelectionChangedListener {
 					searchUp = call.searchProject(one, DataNode.PARAM_UP);
 					searchDown = call.searchProject(one, DataNode.PARAM_DOWN);
 				}
-				if(NavigationDownBox.getInstance() != null && NavigationUpBox.getInstance() != null) {
-					NavigationUpBox.getInstance().setText(searchUp);
-					NavigationDownBox.getInstance().setText(searchDown);
-				}
-				//TODO Add all occurrences of data node off screen
+				//Adds all occurrences of data node off screen
 				Finder finder = Finder.getInstance();
 				for(DataNode dn: finder.getOccurrences(one.getValue(), new Position(one.getStartPosition(), one.getLength()))) {
 					if(dn.getStartPosition() < sourceViewer.getTopIndexStartOffset()) {
 						int line = sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1;
-						NavigationUpBox.getInstance().addOffScreen(dn, line);
+						//NavigationUpBox.getInstance().addOffScreen(dn, line);
 					}
 					else if(dn.getStartPosition() > sourceViewer.getBottomIndexEndOffset()) {
 						int line = sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1;
-						NavigationDownBox.getInstance().addOffScreen(dn, line);
+						//NavigationDownBox.getInstance().addOffScreen(dn, line);
 					}
 				}
 				if (one.isParameterSelected(selection.getOffset()) && one.getMethod() != null) {

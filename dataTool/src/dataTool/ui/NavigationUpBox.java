@@ -38,6 +38,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
@@ -157,6 +158,7 @@ public class NavigationUpBox {
 		    	link.addListener(SWT.Selection, new Listener() {
 		    		@Override
 					public void handleEvent(Event arg0) {
+						link.setForeground(new Color(null, 128,0,128));
 		    			try {
 							if(i.getSource() == null) {
 		    					JOptionPane.showMessageDialog(null, DataLink.INVALID, "Error",JOptionPane.ERROR_MESSAGE);
@@ -190,6 +192,7 @@ public class NavigationUpBox {
 
 			@Override
 			public void handleEvent(Event arg0) {
+				link.setForeground(new Color(null, 128,0,128));
 				IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		    	((ITextEditor) editor).selectAndReveal(node.getStartPosition(), node.getLength());
 			}
