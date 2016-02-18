@@ -120,17 +120,17 @@ public class DataNode implements Comparable {
 	public String getSignature() {
 		return this.signature;
 	}
-//	/**
-//	 * Checks to see if current node is a parameter, only want to display box when actual
-//	 * param is selected
-//	 * @returns true if node is a parameter, else false
-//	 */
-//	public boolean isParameterSelected(int pos) {
-//		if(pos < index || pos > index+length) {
-//			return false;
-//		}
-//		return (type.equals(PARAM_UP) || (type.equals(PARAM_DOWN)));
-//	}
+	/**
+	 * Checks to see if current node is a parameter, only want to display box when actual
+	 * param is selected
+	 * @returns true if node is a parameter, else false
+	 */
+	public boolean isParameterSelected(int pos) {
+		if(pos < index || pos > index+length) {
+			return false;
+		}
+		return true;
+	}
 	
 	public boolean isParameter() {
 		return type.equals(PARAM_UP) || type.equals(PARAM_DOWN);

@@ -20,67 +20,70 @@ import org.eclipse.ui.IWorkbenchWindow;
 import dataTool.annotations.SuggestedSelectionAnnotation;
 
 public class Finder {
-	private HashMap<String, List<List<SimpleName>>> methodArgsVSInvokedArgs = 
-			new HashMap<String, List<List<SimpleName>>>();
-	protected static Map<String, TreeSet<DataNode>> map; // contains name and first node for all data
+	private HashMap<String, List<List<SimpleName>>> methodArgsVSInvokedArgs = new HashMap<String, List<List<SimpleName>>>();
+	protected static Map<String, TreeSet<DataNode>> map; // contains name and
+															// first node for
+															// all data
 	protected static Map<String, Map<String, HashSet<Method>>> param_map;
 	final public static String UP = "up";
 	final public static String DOWN = "down";
-	
+
 	private static Finder currentFinder;
 	private String goToName = null;
 	private int goToOffset = -1;
-	
-	private Finder () {
+
+	private Finder() {
 		map = new HashMap<String, TreeSet<DataNode>>();
 		param_map = new HashMap<String, Map<String, HashSet<Method>>>();
 	}
-	
+
 	public static Finder getInstance() {
-		if( currentFinder != null ) {
+		if (currentFinder != null) {
 			return currentFinder;
 		}
 		currentFinder = new Finder();
 		return currentFinder;
 	}
+
 	public void setGoToIndex(int offset) {
 		goToOffset = offset;
 	}
-	
+
 	public void setGoToFunc(String name) {
 		goToName = name;
 	}
-	
+
 	public int getGoToIndex() {
-		if(goToOffset > 0) {
+		if (goToOffset > 0) {
 			return goToOffset;
 		}
 		return -1;
 	}
-		
+
 	public String getGoToFunc() {
-		if(goToName != null) {
+		if (goToName != null) {
 			return goToName;
 		}
 		return null;
 	}
-	public static void add( DataNode dn ) {
+
+	public static void add(DataNode dn) {
 		TreeSet<DataNode> list;
 		String key = dn.getBinding();
 		if (!map.containsKey(key)) {
 			list = new TreeSet<DataNode>();
 			list.add(dn);
 			map.put(key, list);
-		}
-		else {
+		} else {
 			list = map.get(key);
 			list.add(dn);
 			map.put(key, list);
 		}
 	}
-	
+
 	public void addParameter(DataNode dn, Method method) {
-		//System.out.println(dn.getValue()+" "+name.getIdentifier()+" "+dn.getType());
+		// System.out.println(dn.getValue()+" "+name.getIdentifier()+"
+		// "+dn.getType());
 		HashSet<Method> list;
 		Map<String, HashSet<Method>> items;
 		String key = dn.getValue();
@@ -90,13 +93,11 @@ public class Finder {
 			list.add(method);
 			items.put(dn.getType(), list);
 			param_map.put(key, items);
-		}
-		else {
+		} else {
 			items = param_map.get(key);
-			if(!items.containsKey(dn.getType())) {
+			if (!items.containsKey(dn.getType())) {
 				list = new HashSet<Method>();
-			}
-			else {
+			} else {
 				list = items.get(dn.getType());
 			}
 			list.add(method);
@@ -104,26 +105,25 @@ public class Finder {
 			param_map.put(key, items);
 		}
 	}
-	
+
 	public static ArrayList<String> getParamMethodNames(String key, String direction) {
 		ArrayList<String> list = new ArrayList<String>();
-		if(!param_map.containsKey(key)) {
+		if (!param_map.containsKey(key)) {
 			return null;
-		}
-		else if(!param_map.get(key).containsKey(direction)) {
+		} else if (!param_map.get(key).containsKey(direction)) {
 			return null;
-		}
-		else {
+		} else {
 			HashSet<Method> methods = param_map.get(key).get(direction);
-			for(Method m: methods) {
+			for (Method m : methods) {
 				list.add(m.getName().getIdentifier());
 			}
 			return list;
 		}
 	}
-	
+
 	/**
 	 * Function to check if selected text is actually a variable.
+	 * 
 	 * @param var
 	 * @param index
 	 * @param sourceCode
@@ -131,178 +131,99 @@ public class Finder {
 	 */
 	public boolean isVariable(String var, int index, String sourceCode) {
 		boolean check = false;
-		if(sourceCode.substring(index+var.length(),index+var.length()+1).matches("[a-zA-Z0-9]") || sourceCode.substring(index-1,index).matches("[a-zA-Z0-9]")) {
+		if (sourceCode.substring(index + var.length(), index + var.length() + 1).matches("[a-zA-Z0-9]")
+				|| sourceCode.substring(index - 1, index).matches("[a-zA-Z0-9]")) {
 			return false;
 		}
-		if(isComment(var, index, sourceCode)) {
+		if (isComment(var, index, sourceCode)) {
 			return false;
 		}
 		return true;
 	}
-	
+
 	/**
-	 * Checks to see if the visited variable name is inside a comment so we don't highlight it.
-	 * Kind of a hack
-	 * @param var: String name of the data
-	 * @param index: int start position of the data
-	 * @param sourceCode: String of the entire code
+	 * Checks to see if the visited variable name is inside a comment so we
+	 * don't highlight it. Kind of a hack
+	 * 
+	 * @param var:
+	 *            String name of the data
+	 * @param index:
+	 *            int start position of the data
+	 * @param sourceCode:
+	 *            String of the entire code
 	 * @returns true if name is within a comment, else false
 	 */
 	private boolean isComment(String var, int index, String sourceCode) {
-		//Check if line starts with //, /*, /**, or *
+		// Check if line starts with //, /*, /**, or *
 		String temp = sourceCode.substring(0, index);
-		if(temp.lastIndexOf("/**") > temp.lastIndexOf("*/") || temp.lastIndexOf("/*") > temp.lastIndexOf("*/")
+		if (temp.lastIndexOf("/**") > temp.lastIndexOf("*/") || temp.lastIndexOf("/*") > temp.lastIndexOf("*/")
 				|| temp.lastIndexOf("//") > temp.lastIndexOf("\n")) {
 			return true;
 		}
 		return false;
 	}
-	
-	public void setMethodArgsVSInvokedArgs( HashMap<String, List<List<SimpleName>>> methodArgsVSInvokedArgs) {
+
+	public void setMethodArgsVSInvokedArgs(HashMap<String, List<List<SimpleName>>> methodArgsVSInvokedArgs) {
 		this.methodArgsVSInvokedArgs = methodArgsVSInvokedArgs;
 	}
+
 	/**
-	 * This function returns a list of all the places where the current variable is 
-	 * initialized which will determine where to highlight in the file.
-	 * @param s: Current String
+	 * This function returns a list of all the places where the current variable
+	 * is initialized which will determine where to highlight in the file.
+	 * 
+	 * @param s:
+	 *            Current String
 	 * @return ArrayList<ASTNode> of "up" occurrences for current variable name
 	 */
 	public TreeSet<DataNode> getOccurrences(String s, Position p) {
 		TreeSet<DataNode> returnList = new TreeSet<DataNode>();
 		String binding = null;
 		String key = null;
-		
-		for(Entry<String, TreeSet<DataNode>> entry : map.entrySet()) {
-		    key = entry.getKey();
-		    // Gets rid of the type declaration
-		    key = key.substring(key.indexOf(" ") + 1);
-		    DataNode foundNode = null;
-		    //For regular fields
-		    if( key.startsWith( s )) {
-		    	TreeSet<DataNode> list = entry.getValue();
-		    	for( DataNode dn : list ) {
-			    	if( !dn.isHighlighted() && dn.getStartPosition() == p.offset ) {
-			    		foundNode = dn;
-			    		binding = dn.getBinding();
-			    		break;
-				    }
-			    }
-		    	list = entry.getValue();
-		    	for( DataNode dn : list ) {
-	    			//TODO distinguish between class and local variables of same name
-	    			if( !dn.isHighlighted() && dn.getBinding().equals(binding) ) { 
-	    				dn.highLight();
-	    				returnList.add(dn);
-	    			}
-		    	} 
-		    // For class variables
-		    } else if( key.endsWith( s ) ) {
-		    	TreeSet<DataNode> list = entry.getValue();
-		    	for( DataNode dn : list ) {
-			    	if( !dn.isHighlighted() && dn.getStartPosition() == p.offset ) {
-			    		binding = dn.getBinding();
-			    		break;
-				    }
-			    }
-		    	list = entry.getValue();
-		    	for( DataNode dn : list ) {
-	    			//TODO distinguish between class and local variables of same name
-	    			if( !dn.isHighlighted() && dn.getBinding().equals(binding) ) { 
-	    				dn.highLight();
-	    				returnList.add(dn);
-	    			}
-		    	} 
-		    }
-		    System.out.println(1);
-		    if( foundNode != null && foundNode.getMethod() != null) {
-		    	System.out.println(2);
-		    	 String methodBinding = foundNode.getMethod().resolveBinding().toString();
-				 String foundBinding = foundNode.getBinding();
-				 List argLists = methodArgsVSInvokedArgs.get(methodBinding);
-				   
-				 List argList = (List) argLists.get(1);
-				 List paramList = (List) argLists.get(0);
-				 String paramBinding = null;
-				 boolean found = false;
-				 int i = -1;
-				 for( Object o: paramList ) {
-				  	paramBinding = ( ( SimpleName)o).resolveBinding().toString();
-				   	i++;
-				   	if( paramBinding.equals(foundBinding ) ) {
-				   		found = true;
-				   		break;
-				   	}
-				 }
-				 if( found ) {
-				  	String transferBinding = ((SimpleName)argList.get(i)).resolveBinding().toString();
-				   	returnList.addAll(getOccurrences(transferBinding));
-				 } else {
-				   	i = -1;
-				   	String argBinding = null;
-				   	for( Object o: argList ) {
-				    	argBinding = ( ( SimpleName)o).resolveBinding().toString();
-				    	i++;
-				    	if( argBinding.equals(foundBinding ) ) {
-				    		found = true;
-				    		break;
-				    	}
-				    }
-				   	if( found ) {
-				   		String transferBinding = ((SimpleName)paramList.get(i)).resolveBinding().toString();
-				    	returnList.addAll(getOccurrences(transferBinding));
-				   	}
-				  }
-		    	}	
-		    }
-			return returnList;	
-	}
 
-	private TreeSet<DataNode> getOccurrences(String currentBinding) {
-		TreeSet<DataNode> returnList = new TreeSet<DataNode>();
-		TreeSet<DataNode> list = map.get(currentBinding);
-		String methodBinding = null;
-		for( DataNode dn : list ) {
-			//TODO distinguish between class and local variables of same name
-			if( !dn.isHighlighted() && dn.getBinding().equals(currentBinding) ) { 
-				dn.highLight();
-				methodBinding = dn.getMethod().resolveBinding().toString();
-				returnList.add(dn);
+		for (Entry<String, TreeSet<DataNode>> entry : map.entrySet()) {
+			key = entry.getKey();
+			// Gets rid of the type declaration
+			key = key.substring(key.indexOf(" ") + 1);
+			DataNode foundNode = null;
+			// For regular fields
+			if (key.startsWith(s)) {
+				TreeSet<DataNode> list = entry.getValue();
+				for (DataNode dn : list) {
+					if (!dn.isHighlighted() && dn.getStartPosition() == p.offset) {
+						foundNode = dn;
+						binding = dn.getBinding();
+						break;
+					}
+				}
+				list = entry.getValue();
+				for (DataNode dn : list) {
+					// TODO distinguish between class and local variables of
+					// same name
+					if (!dn.isHighlighted() && dn.getBinding().equals(binding)) {
+						dn.highLight();
+						returnList.add(dn);
+					}
+				}
+				// For class variables
+			} else if (key.endsWith(s)) {
+				TreeSet<DataNode> list = entry.getValue();
+				for (DataNode dn : list) {
+					if (!dn.isHighlighted() && dn.getStartPosition() == p.offset) {
+						binding = dn.getBinding();
+						break;
+					}
+				}
+				list = entry.getValue();
+				for (DataNode dn : list) {
+					// TODO distinguish between class and local variables of
+					// same name
+					if (!dn.isHighlighted() && dn.getBinding().equals(binding)) {
+						dn.highLight();
+						returnList.add(dn);
+					}
+				}
 			}
-    	} 
-		List argLists = methodArgsVSInvokedArgs.get(methodBinding);
-	    
-	    List argList = (List) argLists.get(1);
-	    List paramList = (List) argLists.get(0);
-	    String paramBinding = null;
-	    boolean found = false;
-	    int i = -1;
-	    for( Object o: paramList ) {
-	    	paramBinding = ( ( SimpleName)o).resolveBinding().toString();
-	    	i++;
-	    	if( paramBinding.equals(currentBinding ) ) {
-	    		found = true;
-	    		break;
-	    	}
-	    }
-	    if( found ) {
-	    	String transferBinding = ((SimpleName)argList.get(i)).resolveBinding().toString();
-	    	returnList.addAll(getOccurrences(transferBinding));
-	    } else {
-	    	i = -1;
-	    	String argBinding = null;
-	    	for( Object o: argList ) {
-		    	argBinding = ( ( SimpleName)o).resolveBinding().toString();
-		    	i++;
-		    	if( argBinding.equals(currentBinding ) ) {
-		    		found = true;
-		    		break;
-		    	}
-		    }
-	    	if( found ) {
-	    		String transferBinding = ((SimpleName)paramList.get(i)).resolveBinding().toString();
-		    	returnList.addAll(getOccurrences(transferBinding));
-	    	}
-	    }
-	    return returnList;
+		}
+		return returnList;
 	}
 }

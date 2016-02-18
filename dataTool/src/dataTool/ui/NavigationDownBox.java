@@ -137,6 +137,7 @@ public class NavigationDownBox {
 		    				}
 		    				else {
 								openLink(i);
+								
 								EnableNavigationAction plugin = new EnableNavigationAction();
 				    			plugin.reset(null);
 		    				}

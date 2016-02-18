@@ -116,6 +116,7 @@ class Visitor extends ASTVisitor {
 		parser.setSource(code);
 		parser.setResolveBindings(true);
 		parser.setProject(thisProject);
+		
 		parser.setUnitName(thisProject.getElementName());
 		
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
@@ -126,14 +127,15 @@ class Visitor extends ASTVisitor {
 				if( sn.resolveTypeBinding() != null ) {
 					
 					String binding = sn.resolveBinding().toString();
-					
 //					if( binding.matches("^[a-zA-Z_$][a-zA-Z_$0-9]*$\\[pos: [0-9]*\\]\\[id:[0-9]*\\]\\[pc: [0-9]*-[0-9]*\\]")) {
 //					}
 					
 //					if( binding.contains("[pos:") && binding.contains("][id:") && binding.contains("][pc:" )) {
 					
 					// Filters out methods and Object type declarations
-					if( !binding.contains("class" ) && !binding.contains("(")) {	
+					if( sn.isDeclaration() && binding.contains("(")) {
+						method = sn;
+					} else if( !binding.contains("class" ) && !binding.contains("(")) {	
 						addedNode = new DataNode( sn, method );
 						addedNode.setStartPosition(cu.getExtendedStartPosition(sn) );
 						addOccurrences(addedNode);
