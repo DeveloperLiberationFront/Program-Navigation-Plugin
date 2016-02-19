@@ -16,6 +16,7 @@ import java.util.Stack;
 import javax.xml.transform.Source;
 
 import org.eclipse.jdt.core.IType;
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTNode;
@@ -45,17 +46,27 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jface.text.Position;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.IJavaProject;
 
 import edu.pdx.cs.multiview.jdt.util.JDTUtils;
 
 class Visitor extends ASTVisitor {
 
 	private StackMap<Position, DataNode> nodes = new StackMap<Position, DataNode>();
-	private static ArrayList<SimpleName> seenMethod = new ArrayList<SimpleName>();
+	/** Maps a method's declaration to the list of Methods invoked inside of its body. */
+	private HashMap<Method, ArrayList<Method>> declarationToInvocationMapDown = new HashMap<Method, ArrayList<Method>>();
+	/** 
+	 * Maps a method's invocation to the list of methods it is invoked in. 
+	 * 
+	 * Maps the method's SimpleName.resolveBinding().toString() to the list of Method Objects where that
+	 * method is invoked.
+	 */
+	private HashMap<String, ArrayList<Method>> invocationToDeclarationMapUp = new HashMap<String, ArrayList<Method>>();
+	private HashMap<SimpleName, DataNode> variableNameToNode = new HashMap<SimpleName, DataNode>();
 	private Finder finder;
 
 	private static String source;
@@ -96,305 +107,113 @@ class Visitor extends ASTVisitor {
 	 * @param str
 	 */
 	public void parseData() {
+		IProject [] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
+		IJavaProject thisProject = JavaCore.create(projects[0]);
 		char[] code = source.toCharArray();
 		finder = Finder.getInstance();
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
-		parser.setSource(code);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
-
+		parser.setSource(code);
+		parser.setResolveBindings(true);
+		parser.setProject(thisProject);
+		
+		
+		parser.setUnitName(thisProject.getElementName());
+		
 		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+		
 		cu.accept(new ASTVisitor() {
 			DataNode addedNode = null;
 			SimpleName methodName = null;
-			Method method = null;
-			public boolean visit(SingleVariableDeclaration svd ) {
-				//If a class variable
-				if( methodName == null && svd.getParent().getNodeType() != 31) {
-					addedNode = new DataNode(svd.getName().toString(),
-											 svd.getName().getStartPosition(), 
-											 DataNode.PARAM_UP, null);
-					nodes.put(new Position(addedNode.getStartPosition(), addedNode.getLength()), addedNode);
-					addOccurrences(addedNode );
+			public boolean visit( SimpleName sn ) {
+				
+				if( sn.resolveTypeBinding() != null ) {
+					
+					String binding = sn.resolveBinding().toString();
+//					if( binding.matches("^[a-zA-Z_$][a-zA-Z_$0-9]*$\\[pos: [0-9]*\\]\\[id:[0-9]*\\]\\[pc: [0-9]*-[0-9]*\\]")) {
+//					}
+					
+//					if( binding.contains("[pos:") && binding.contains("][id:") && binding.contains("][pc:" )) {
+					
+					// Filters out methods and Object type declarations
+					if( sn.isDeclaration() && binding.contains("(")) {
+						methodName = sn;
+					} else if( !binding.contains("class" ) && !binding.contains("(")) {	
+						
+						addedNode = new DataNode( sn );
+						if( !variableNameToNode.containsKey(sn ) ) {
+							addedNode.setStartPosition(cu.getExtendedStartPosition(sn) );
+							variableNameToNode.put(sn, addedNode);
+						} else {
+							variableNameToNode.get(sn).setStartPosition(cu.getExtendedStartPosition(sn) );
+						}
+						addOccurrences(addedNode);
+					}
 				}
 				return true;
-			}
-			public boolean visit(VariableDeclarationFragment vdf) {
-				//If a class variable
-				if( methodName == null ) {
-					String var = vdf.toString();
-					String left, right;
-					if(var.contains("=")) {
-						left = var.substring( 0, var.indexOf("=") ).trim();
-						right = var.substring( var.indexOf("=") + 1).trim();
-					}
-					else {
-						left = var;
-						right = "";
-					}
-					int offset;
-					if( isVariable(left) ) {
-						offset = vdf.getStartPosition();
-						System.out.println("L:--> " + left + " " + offset );
-						addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, null);
-						addOccurrences(addedNode);
-					}
-					if( isVariable(right) ) {
-						offset = source.indexOf(right, cu.getExtendedStartPosition(vdf));
-						System.out.println("R:--> " + right + " " + offset );
-						addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, null);
-						addOccurrences(addedNode);
-					}
-				} 
-				return true;
-			}
-
-			private boolean isVariable(String varName) {
-				return varName.matches( "^[_a-z]\\w*$" );
 			}
 
 			public boolean visit(MethodDeclaration md) {
-				
 				methodName = md.getName();
-				List<String> args = new ArrayList<String>();
-				for (Object o : md.parameters()) {
-					SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
-					args.add(svd.getType().toString());
-				}
-				method = new Method( methodName, args );
-				if (!seenMethod.contains(methodName)) {
-					seenMethod.add(methodName);
-					String param = "";
-					String[] array = new String[md.parameters().size()];
-					
-					int i = 0;
-					
-					for (Object o : md.parameters()) {
-						SingleVariableDeclaration svd = (SingleVariableDeclaration) o;
-						array[i] = svd.toString();
-						i++;
-						param = svd.getName().getIdentifier();
-						addedNode = new DataNode(param, svd.getName().getStartPosition(), DataNode.PARAM_UP,
-								method);
-						addOccurrences(addedNode );
-						finder.addParameter(addedNode, method);
-						addedNode.setParameterMethod(method);
-					}
-
-					md.accept(new ASTVisitor() {
-						public boolean visit(VariableDeclarationFragment vdf) {
-							String var = vdf.toString();
-							String left, right;
-							if(var.contains("=")) {
-								left = var.substring( 0, var.indexOf("=") ).trim();
-								right = var.substring( var.indexOf("=") + 1).trim();
-							}
-							else {
-								left = var;
-								right = "";
-							}
-							int offset;
-							
-							if( isVariable(left) ) {
-								offset = vdf.getStartPosition();
-								System.out.println("L:--> " + left + " " + offset);
-								addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, method);
-								addOccurrences(addedNode);
-							}
-							if( isVariable(right) ) {
-								offset = source.indexOf(right, cu.getExtendedStartPosition(vdf));
-								System.out.println("R:--> " + right + " " + vdf.getStartPosition() + " " + offset);
-								addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, method);
-								addOccurrences(addedNode);
-							}
-							return true;
-						}
-						public boolean visit( ExpressionStatement a ) {
-							String statement = a.toString();
-							String left, right, only;
-							parseExpression(a.getExpression());
-//							if( statement.contains("=")) {
-//								//Assignment
-//								int offset;
-//								left = statement.substring( 0, statement.indexOf("=") ).trim();
-//								right = statement.substring( statement.indexOf("=") + 1, statement.indexOf(";")).trim();
-//								if( isVariable(left) ) {
-//									offset = a.getStartPosition();
-//									System.out.println("L:--> " + left + " " + offset);
-//									addedNode = new DataNode(left, offset, DataNode.CLASS_VAR, method);
-//									addOccurrences(addedNode);
-//								}
-//								if( isVariable(right) ) {
-//									offset = source.indexOf(right, cu.getExtendedStartPosition(a));
-//									System.out.println("R:--> " + right + " " + a.getStartPosition() + " " + offset);
-//									addedNode = new DataNode(right, offset, DataNode.CLASS_VAR, method);
-//									addOccurrences(addedNode);
-//								}
-//							} else 
-							if (statement.contains("++") || statement.contains("--")) {
-								String expression;
-								int offset;
-								if( statement.contains("++")) {
-									expression = "++";
-								} else {
-									expression = "--";
-								}
-								
-								if( statement.trim().indexOf(expression) == 0 ) {
-									//Pre-ment
-									only = statement.substring(expression.length(), statement.indexOf(";"));
-									
-									offset = a.getStartPosition() + expression.length();
-								} else {
-									//Post-ment
-									only = statement.substring(0, statement.indexOf(expression));
-									offset = a.getStartPosition(); 
-								}
-								addedNode = new DataNode(only, offset, DataNode.CLASS_VAR, method);
-								addOccurrences(addedNode);
-							} else {
-								//method call such as System.out.println();
-							}
-							return true;
-						}
-						public boolean visit(EnhancedForStatement efs) {
-							SingleVariableDeclaration svd = efs.getParameter();
-
-							SimpleName forThis = svd.getName();
-							int startPosition = svd.getStartPosition();
-							String forStr = forThis.getIdentifier();
-
-							
-							addedNode = new DataNode(forThis.getIdentifier(), 
-													 	startPosition, 
-													 	DataNode.FOR_VAR,
-													 	method);
-							Statement body = efs.getBody();
-							addOccurrences(addedNode );
-							return true;
-						}
-
-						public boolean visit(ForStatement fs) {
-							List<Expression> conds = fs.initializers();
-							for (ASTNode e : conds) {
-								VariableDeclarationExpression temp = (VariableDeclarationExpression) e;
-								for (Object frag : temp.fragments()) {
-									SimpleName forThis = ((VariableDeclarationFragment) frag).getName();
-									String forStr = forThis.getIdentifier();
-									int startPosition = ((VariableDeclarationFragment) frag).getStartPosition();
-									
-									addedNode = new DataNode(forStr, 
-																startPosition, 
-																DataNode.FOR_VAR, 
-																method);
-									Statement body = fs.getBody();
-									addOccurrences(addedNode );
-								}
-							}
-							return true;
-						}
-
-						public boolean visit(WhileStatement ws) {
-							String cond = ws.getExpression().toString();
-							//TODO look into while loop parsing syntax
-//							for (String found : data) {
-//								if (cond.contains(found)) {
-//									int startPosition = ws.getExpression().getStartPosition() + cond.indexOf(found);
-//									addedNode = new DataNode( found, 
-//																startPosition, 
-//																DataNode.VAR, 
-//																methodName.toString());
-//									downFinder.add(addedNode);
-//								}
-//								Statement body = ws.getBody();
-//								addOccurrences(addedNode );
-//							}
-							return true;
-						}
-
-						public boolean visit(TryStatement ts) {
-							List<CatchClause> catches = ts.catchClauses();
-							SimpleName e;
-							for (CatchClause error : catches) {
-								e = error.getException().getName();
-								int startPosition = error.getException().getStartPosition();
-								addedNode = new DataNode( e.toString(), 
-										startPosition, 
-										DataNode.VAR, 
-										method);
-								Statement errorCode = error.getBody();
-								addOccurrences(addedNode );
-							}
-							return true;
-						}
-
-						public boolean visit(MethodInvocation mi) {
-							//TODO
-							List<ASTNode> args = mi.arguments();
-							List<String> stringArgs = new ArrayList<String>();
-							List<DataNode> nodes = new ArrayList<DataNode>();
-							for (ASTNode arg : args) {
+				String methodBinding = methodName.resolveBinding().toString();
+				Method methodDeclaration = new Method( methodName);
 				
-									int startPosition = arg.getStartPosition();
-									addedNode = new DataNode(arg.toString(), 
-											startPosition,
-											DataNode.PARAM_DOWN, 
-											method);
-									addOccurrences(addedNode);
-									stringArgs.add(arg.toString());
-									nodes.add(addedNode);
-							}
-							for(DataNode dn: nodes) {
-								Method m = new Method(mi.getName(), stringArgs);
-								finder.addParameter(dn, m);
-								dn.setParameterMethod(m);
-							}
-							return true;
-						}
-						private int computeOffset( String token, int currentOffset ) {
-							String shortName;
-							if( token.contains("(")) {
-								shortName = token.substring(0, token.indexOf("(" ));
-							} else {
-								shortName = token;
-							}
-							return source.indexOf(shortName, currentOffset);
-						}
-						private boolean notOperator( String token ) {
-							return !token.matches("\\+|" +
-												  "\\-|" +
-												  "\\*|" +
-												  "\\/|" +
-												  "\\%|" +
-												  "\\=");
-						}
-						private void parseExpression(Expression expression) {
-							
-							Scanner expressionScanner = new Scanner(expression.toString());
-							expressionScanner.useDelimiter("\\=| ");
-							int offset = cu.getExtendedStartPosition(expression);
-							
-							while( expressionScanner.hasNext() ) {
-								String token = expressionScanner.next();
-								
-								if( notOperator( token ) ) {
-									if( isVariable( token )) {
-										offset = source.indexOf(token, offset);
-										System.out.println("|" + token + "|" + offset);
-										addedNode = new DataNode(token, offset, DataNode.VAR, method );
-										addOccurrences(addedNode);
-									}
-									//methods and literals
-								}
-								offset++; //move to next set of tokens
-							}
-						}
-					});
+				List<SimpleName> args = new ArrayList<SimpleName>();
+				for (SingleVariableDeclaration svd : (List<SingleVariableDeclaration>)md.parameters()) {
+					SimpleName paramName = svd.getName();
+					args.add(paramName);
+					if( variableNameToNode.containsKey(paramName) ) {
+						variableNameToNode.get(svd.getName()).setDeclarationMethod(methodDeclaration);
+					} else {
+						addedNode = new DataNode( paramName );
+						addedNode.setDeclarationMethod(methodDeclaration);
+						variableNameToNode.put(paramName, addedNode);
+					}
 				}
+				methodDeclaration.setArgs(args);
+
+				declarationToInvocationMapDown.put( methodDeclaration, new ArrayList<Method>());
+				
+				md.accept(new ASTVisitor() {
+					
+					public boolean visit(MethodInvocation mi) {
+						
+						SimpleName invokedName = mi.getName();
+						if( !invocationToDeclarationMapUp.containsKey(invokedName.resolveBinding().toString()) ) {
+							System.out.println("---" + invokedName.resolveBinding().toString());
+							invocationToDeclarationMapUp.put(invokedName.resolveBinding().toString(), new ArrayList<Method>());
+						}
+						List<SimpleName> args = mi.arguments();
+						Method m = new Method( mi.getName());
+						m.setArgs(args);
+						invocationToDeclarationMapUp.get(invokedName.resolveBinding().toString()).add(m);
+						declarationToInvocationMapDown.get(methodDeclaration).add(m);
+						
+						
+						
+						for( Expression e : args ) {
+							if( e.getNodeType() == ASTNode.SIMPLE_NAME ) {
+								SimpleName n = (SimpleName) e;
+								if( variableNameToNode.containsKey(n) ) {
+									variableNameToNode.get(n).setInvocationMethod(m);
+								} else {
+									addedNode = new DataNode(n);
+									addedNode.setDeclarationMethod(methodDeclaration);
+									addedNode.setInvocationMethod(m);
+									variableNameToNode.put(n, addedNode);
+								} 
+							}
+						}
+						return true;
+					}
+				});
+				
 				//Set to null so that class variables can have a null method name
-				methodName = null;
 				return true;
 			}
 		});
+		finder.setInvocationToDeclarationMap(invocationToDeclarationMapUp);
+		finder.setDeclarationToInvocationMap(declarationToInvocationMapDown);
 	}
 
 
@@ -413,7 +232,6 @@ class Visitor extends ASTVisitor {
 	}
 	public DataNode statementAt(int index) {
 		for (Position p : nodes.keyStack()) {
-			System.out.println(p.getOffset());
 			boolean isContained = p.offset <= index && index < p.offset + p.length;
 			if (isContained) {
 				return nodes.get(p);

@@ -6,28 +6,24 @@ import org.eclipse.jdt.core.dom.SimpleName;
 
 public class Method {
 	SimpleName name;
-	List<String> args;
-	String signature;
-	public Method( SimpleName methodName, List<String> args ) {
+	List<SimpleName> args;
+	public Method( SimpleName methodName ) {
 		this.name = methodName;
-		this.args = args;
-		
-		signature = methodName.toString() + "[";
-		for( String s: args ) {
-			signature = signature + s + "]";
-		}
 	}
 	
-	public List<String> getArgs() {
+	public List<SimpleName> getArgs() {
 		return args;
+	}
+	public void setArgs( List<SimpleName> args) {
+		this.args = args;
 	}
 	
 	public SimpleName getName() {
 		return name;
 	}
-
-	public String getSignature() {
-		return signature;
+	@Override
+	public String toString() {
+		return name.resolveBinding().toString();
 	}
 	
 }

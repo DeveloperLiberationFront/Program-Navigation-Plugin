@@ -22,53 +22,47 @@ public class DataNode implements Comparable {
 	final public static String FOR_VAR = "variableFor";
 	final public static String VAR = "variable";
 	
+	private String binding;
 	private String value;
 	private int index;
 	private int length;
-	private Method method;
+	private SimpleName sn;
 	private String type;
 	private String signature;
-	private Method parameterMethod;
-//	
+	private Method declarationMethod;
+	private Method invocationMethod;
+	private boolean isHighlighted;
+
 //	/**
-//	 * Constructor to build DataNode with an ASTNode, used for UpFinder mostly
-//	 * @param node: current SimpleName ASTNode selected
+//	 * Constructor to create DataNodes with just values, mainly for DownFinder
+//	 * @param val= Current variable name
+//	 * @param start= start position of the current variable
 //	 */
-//	public DataNode (ASTNode node, String nodeType) {
-//		if (node instanceof SimpleName) {
-//			value = ((SimpleName) node).getIdentifier();
-//			length = value.length();
-//			type = nodeType;
-//			method = null;
+//	public DataNode (String val, int start, String nodeType, Method call) {
+//		
+//		
+//		value = val;
+//		index = start;
+//		length = val.length();
+//		type = nodeType;
+//		method = call;
+//		if( method != null ) {
+//			signature = method.getSignature() + "." + value;
+//		} else {
+//			signature = "null";
 //		}
-//		else {
-//			value = ((SingleVariableDeclaration) node).getName().getIdentifier();
-//			length = node.getLength();
-//			type = nodeType;
-//			if(node.getParent() instanceof MethodDeclaration) {
-//				method = ((MethodDeclaration) node.getParent()).getName().getIdentifier();
-//			}
-//		}
-//		index = node.getStartPosition();
 //	}
-	/**
-	 * Constructor to create DataNodes with just values, mainly for DownFinder
-	 * @param val= Current variable name
-	 * @param start= start position of the current variable
-	 */
-	public DataNode (String val, int start, String nodeType, Method call) {
-		
-		
-		value = val;
-		index = start;
-		length = val.length();
-		type = nodeType;
-		method = call;
-		if( method != null ) {
-			signature = method.getSignature() + "." + value;
-		} else {
-			signature = "null";
-		}
+	
+	public DataNode( SimpleName sn ) {
+		this.sn = sn;
+		value = sn.getFullyQualifiedName();
+		index = sn.getStartPosition();
+		length = value.length();
+		isHighlighted = false;
+		this.binding = sn.resolveBinding().toString();
+	}
+	public void setStartPosition( int i ) {
+		index = i;
 	}
 	
 	/**
@@ -77,6 +71,10 @@ public class DataNode implements Comparable {
 	 */
 	public String getValue() {
 		return this.value;
+	}
+	
+	public String getBinding() {
+		return binding;
 	}
 	
 	/**
@@ -94,23 +92,20 @@ public class DataNode implements Comparable {
 	public int getLength() {
 		return this.length;
 	}
-	
-	/**
-	 * Gets the type of the DataNode
-	 * @returns String of data type
-	 */
-	public String getType() {
-		return this.type;
+
+	public Method getDeclarationMethod() {
+		return declarationMethod;
+	}
+	public void setDeclarationMethod( Method m ) {
+		declarationMethod = m;
+	}
+	public Method getInvocationMethod() {
+		return invocationMethod;
 	}
 	
-	/**
-	 * Gets the name of the method of the node if one exists
-	 * @returns string method
-	 */
-	public Method getMethod() {
-		return this.method;
+	public void setInvocationMethod( Method m ) {
+		invocationMethod = m;
 	}
-	
 	public String getSignature() {
 		return this.signature;
 	}
@@ -123,11 +118,7 @@ public class DataNode implements Comparable {
 		if(pos < index || pos > index+length) {
 			return false;
 		}
-		return (type.equals(PARAM_UP) || (type.equals(PARAM_DOWN)));
-	}
-	
-	public boolean isParameter() {
-		return type.equals(PARAM_UP) || type.equals(PARAM_DOWN);
+		return true;
 	}
 
 	@Override
@@ -137,20 +128,9 @@ public class DataNode implements Comparable {
 		}
 		return index - ( ( DataNode ) o ).getStartPosition();
 	}
-	
-	public String getMethodSignature() {
-		if( method != null ) {
-			return method.getSignature();
-		}
-		return "null";
-	}
-	
-	public void setParameterMethod(Method m) {
-		this.parameterMethod = m;
-	}
-	
-	public Method getParameterMethod() {
-		return this.parameterMethod;
+	@Override
+	public String toString() {
+		return binding;
 	}
 
 }
