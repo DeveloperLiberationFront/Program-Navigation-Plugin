@@ -57,20 +57,20 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 					Object[] search;
 					IMethod im;
 					// Don't want to perform the search again, need to find a way to get results from previous search here.
-					if(linkNode.getType().equals(DataNode.PARAM_UP)) {
-						try {
+					if(linkNode.getDeclarationMethod() != null) {
+						/*try {
 							search = searchResultsUp.toArray();
 							im = (IMethod)search[0];
 							NavigationUpBox up = NavigationUpBox.getInstance();
-							up.searchMethod = linkNode.getMethod().getName().getIdentifier();
+							up.searchMethod = linkNode.getDeclarationMethod();
 							up.openLink(im);
 						} catch (Exception e) {
 							// Auto-generated catch block
 							e.printStackTrace();
-						}
+						}*/
 					}
-					else if(linkNode.getType().equals(DataNode.PARAM_DOWN)) {
-						try {
+					else if(linkNode.getInvocationMethod() != null) {
+						/*try {
 							search = searchResultsDown.toArray();
 							for(Object o: search) {
 								im = (IMethod) o;
@@ -82,7 +82,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 						} catch (Exception e) {
 							// Auto-generated catch block
 							e.printStackTrace();
-						}
+						}*/
 					}
 					EnableNavigationAction plugin = new EnableNavigationAction();
 	    			try {

@@ -38,6 +38,7 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 import org.eclipse.jdt.internal.compiler.ast.Assignment;
+import org.eclipse.jdt.internal.compiler.ast.ConstructorDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.MethodRefParameter;
@@ -46,7 +47,11 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.Statement;
 import org.eclipse.jdt.core.dom.TryStatement;
 import org.eclipse.jface.text.Position;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
@@ -109,14 +114,20 @@ class Visitor extends ASTVisitor {
 	public void parseData() {
 		IProject [] projects = ResourcesPlugin.getWorkspace().getRoot().getProjects();
 		IJavaProject thisProject = JavaCore.create(projects[0]);
+		IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		String[] pathArray = activeEditor.getTitleToolTip().split("/");
+		String projectName = pathArray[0];
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+	    IProject project = root.getProject(projectName);
+	    IJavaProject javaProject = JavaCore.create(project);
 		char[] code = source.toCharArray();
 		finder = Finder.getInstance();
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setSource(code);
 		parser.setResolveBindings(true);
-		parser.setProject(thisProject);
-		
+		parser.setProject(javaProject);
+		parser.setUnitName(projectName);
 		
 		parser.setUnitName(thisProject.getElementName());
 		
@@ -173,7 +184,6 @@ class Visitor extends ASTVisitor {
 				methodDeclaration.setArgs(args);
 
 				declarationToInvocationMapDown.put( methodDeclaration, new ArrayList<Method>());
-				
 				md.accept(new ASTVisitor() {
 					
 					public boolean visit(MethodInvocation mi) {

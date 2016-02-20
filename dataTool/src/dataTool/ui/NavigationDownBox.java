@@ -48,6 +48,7 @@ import dataTool.DataNode;
 import dataTool.EnableNavigationAction;
 import dataTool.Finder;
 
+@Deprecated
 public class NavigationDownBox {
 	
 	private static Display display;

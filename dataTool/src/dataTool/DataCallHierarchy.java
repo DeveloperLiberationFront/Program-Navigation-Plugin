@@ -70,17 +70,17 @@ public class DataCallHierarchy {
 	 */
 	public Set<IMethod> searchProject(DataNode node, String direction) throws JavaModelException {
 		Set<IMethod> results = null;
-		if (direction.equals(DataNode.PARAM_UP)) {
-			ArrayList<String> up = Finder.getParamMethodNames(node.getValue(), DataNode.PARAM_UP);
+		if (direction.equals(Finder.UP)) {
+			ArrayList<Method> up = Finder.getInstance().upSearch(node);
 			if(up != null) {
-				results = search(up.get(0), Finder.UP);
+				results = search(node.getDeclarationMethod().getName().getIdentifier(), Finder.UP);
 			}
 		}
-		else if (direction.equals(DataNode.PARAM_DOWN)) {
-			ArrayList<String> down = Finder.getParamMethodNames(node.getValue(), DataNode.PARAM_DOWN);
+		else if (direction.equals(Finder.DOWN)) {
+			ArrayList<Method> down = Finder.getInstance().downSearch(node);
 			if(down != null) {
 				Set<IMethod> searchDown = new HashSet<IMethod>();
-				Set<IMethod> temp = search(node.getMethod().getName().toString(), Finder.DOWN);
+				Set<IMethod> temp = search(node.getInvocationMethod().getName().getIdentifier(), Finder.DOWN);
 				for(IMethod i: temp) {
 					if(down.contains(i.getElementName())) {
 						searchDown.add(i);
@@ -100,11 +100,10 @@ public class DataCallHierarchy {
 	 */
 	public Set<IMethod> search(String methodName, String direction) throws JavaModelException {
 	    CallHierarchyGenerator callGen = new CallHierarchyGenerator();
-		String path = EnableNavigationAction.path;
 		IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		String[] pathArray = activeEditor.getTitleToolTip().split("/");
 		projectName = pathArray[0];
-		path = activeEditor.getEditorInput().toString().replace("org.eclipse.ui.part.FileEditorInput(", "").replace(")","");
+		String path = activeEditor.getEditorInput().toString().replace("org.eclipse.ui.part.FileEditorInput(", "").replace(")","");
 		String projectFile = activeEditor.getTitle();
 		String projectPath;
 		String src;

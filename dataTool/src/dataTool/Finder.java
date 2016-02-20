@@ -24,14 +24,14 @@ public class Finder {
 															// first node for
 															// all data
 	/** Maps a method's declaration to the list of Methods invoked inside of its body. */
-	private HashMap<Method, ArrayList<Method>> declarationToInvocationMapDown = new HashMap<Method, ArrayList<Method>>();
+	public HashMap<Method, ArrayList<Method>> declarationToInvocationMapDown = new HashMap<Method, ArrayList<Method>>();
 	/** 
 	 * Maps a method's invocation to the list of methods it is invoked in. 
 	 * 
 	 * Maps the method's SimpleName.resolveBinding().toString() to the list of Method Objects where that
 	 * method is invoked.
 	 */
-	private HashMap<String, ArrayList<Method>> invocationToDeclarationMapUp = new HashMap<String, ArrayList<Method>>();
+	public HashMap<String, ArrayList<Method>> invocationToDeclarationMapUp = new HashMap<String, ArrayList<Method>>();
 	final public static String UP = "up";
 	final public static String DOWN = "down";
 
@@ -228,8 +228,11 @@ public class Finder {
 	}
 	
 	public ArrayList<Method> upSearch( DataNode dn ) {
-		String declarationMethodBinding = dn.getDeclarationMethod().getName().resolveBinding().toString();
-		return invocationToDeclarationMapUp.get(declarationMethodBinding);
+		if(dn.getDeclarationMethod() != null) {
+			String declarationMethodBinding = dn.getDeclarationMethod().getName().resolveBinding().toString();
+			return invocationToDeclarationMapUp.get(declarationMethodBinding);
+		}
+		return null;
 	}
 	
 	public ArrayList<Method> downSearch( DataNode dn ) {

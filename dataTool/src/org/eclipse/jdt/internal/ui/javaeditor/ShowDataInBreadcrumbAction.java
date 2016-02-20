@@ -63,12 +63,6 @@ public class ShowDataInBreadcrumbAction extends ShowInBreadcrumbAction {
 
 		IPreferenceStore store= JavaPlugin.getDefault().getPreferenceStore();
 		store.setValue(getPreferenceKey(), true);
-		DataCallHierarchy call = new DataCallHierarchy();
-		Set<IMethod> searchUp = null;
-		Set<IMethod> searchDown = null;
-		Set<String> test = new HashSet<String>();
-		test.add("test");
-		test.add("setText");
 		breadcrumb.activate();
 	}
 

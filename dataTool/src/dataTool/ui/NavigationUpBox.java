@@ -73,6 +73,7 @@ import dataTool.Finder;
 import edu.pdx.cs.multiview.jdt.util.JDTUtils;
 import sun.misc.IOUtils;
 
+@Deprecated
 public class NavigationUpBox {
 	
 	private static Display display;

@@ -49,20 +49,12 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	
 	//whether the listener is currently enabled
 	private boolean isEnabled = false;
-	private static IBreadcrumb dataBreadcrumb;
 	
-	public static String project;
-	public static String file;
-	public static String path;
-
 	public void dispose() {
 		if(annotationManager!=null)
 			annotationManager.dispose();
 	}
 	
-	public static IBreadcrumb getBreadcrumb() {
-		return dataBreadcrumb;
-	}
 	/**
 	 * Enables the annotation manager
 	 * 

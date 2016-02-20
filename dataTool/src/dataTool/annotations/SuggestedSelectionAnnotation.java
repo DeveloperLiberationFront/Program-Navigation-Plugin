@@ -31,9 +31,6 @@ public class SuggestedSelectionAnnotation extends Annotation implements ISelfDra
 		Point nextLineStart = textWidget.getLocationAtOffset(nextLineOffset);
 		Point lastLineEnd = textWidget.getLocationAtOffset(offset+length);
 		
-		//NavigationBox box = new NavigationBox(textWidget);
-		//box.showLabel();
-		
 		//a single line is highlighted...
 		if(nextLineOffset>offset+length){
 			gc.fillRectangle(lineStart.x,lineStart.y,lastLineEnd.x-lineStart.x,textWidget.getLineHeight());
