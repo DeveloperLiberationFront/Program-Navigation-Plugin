@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.Stack;
 
@@ -151,14 +152,14 @@ class Visitor extends ASTVisitor {
 						methodName = sn;
 					} else if( !binding.contains("class" ) && !binding.contains("(")) {	
 						
-						addedNode = new DataNode( sn );
+						
 						if( !variableNameToNode.containsKey(sn ) ) {
+							addedNode = new DataNode( sn );
 							addedNode.setStartPosition(cu.getExtendedStartPosition(sn) );
 							variableNameToNode.put(sn, addedNode);
 						} else {
 							variableNameToNode.get(sn).setStartPosition(cu.getExtendedStartPosition(sn) );
 						}
-						addOccurrences(addedNode);
 					}
 				}
 				return true;
@@ -173,31 +174,35 @@ class Visitor extends ASTVisitor {
 				for (SingleVariableDeclaration svd : (List<SingleVariableDeclaration>)md.parameters()) {
 					SimpleName paramName = svd.getName();
 					args.add(paramName);
-					if( variableNameToNode.containsKey(paramName) ) {
-						variableNameToNode.get(svd.getName()).setDeclarationMethod(methodDeclaration);
-					} else {
-						addedNode = new DataNode( paramName );
-						addedNode.setDeclarationMethod(methodDeclaration);
-						variableNameToNode.put(paramName, addedNode);
-					}
+					
 				}
 				methodDeclaration.setArgs(args);
 
 				declarationToInvocationMapDown.put( methodDeclaration, new ArrayList<Method>());
 				md.accept(new ASTVisitor() {
+					public boolean visit( SimpleName sn ) {
+						if( variableNameToNode.containsKey(sn) ) {
+							variableNameToNode.get(sn).setDeclarationMethod(methodDeclaration);
+						} else {
+							addedNode = new DataNode( sn );
+							addedNode.setDeclarationMethod(methodDeclaration);
+							//addOccurrences(addedNode);
+							variableNameToNode.put(sn, addedNode);
+						}
+						return true;
+					}
 					
 					public boolean visit(MethodInvocation mi) {
 						
 						SimpleName invokedName = mi.getName();
 						if( !invocationToDeclarationMapUp.containsKey(invokedName.resolveBinding().toString()) ) {
-							System.out.println("---" + invokedName.resolveBinding().toString());
 							invocationToDeclarationMapUp.put(invokedName.resolveBinding().toString(), new ArrayList<Method>());
 						}
 						List<SimpleName> args = mi.arguments();
-						Method m = new Method( mi.getName());
-						m.setArgs(args);
-						invocationToDeclarationMapUp.get(invokedName.resolveBinding().toString()).add(m);
-						declarationToInvocationMapDown.get(methodDeclaration).add(m);
+						Method methodInvocation = new Method( mi.getName());
+						methodInvocation.setArgs(args);
+						invocationToDeclarationMapUp.get(invokedName.resolveBinding().toString()).add(methodInvocation);
+						declarationToInvocationMapDown.get(methodDeclaration).add(methodInvocation);
 						
 						
 						
@@ -205,11 +210,12 @@ class Visitor extends ASTVisitor {
 							if( e.getNodeType() == ASTNode.SIMPLE_NAME ) {
 								SimpleName n = (SimpleName) e;
 								if( variableNameToNode.containsKey(n) ) {
-									variableNameToNode.get(n).setInvocationMethod(m);
+									variableNameToNode.get(n).setInvocationMethod(methodInvocation);
 								} else {
 									addedNode = new DataNode(n);
 									addedNode.setDeclarationMethod(methodDeclaration);
-									addedNode.setInvocationMethod(m);
+									addedNode.setInvocationMethod(methodInvocation);
+									//addOccurrences(addedNode);
 									variableNameToNode.put(n, addedNode);
 								} 
 							}
@@ -222,25 +228,19 @@ class Visitor extends ASTVisitor {
 				return true;
 			}
 		});
+		synchronizeNodes();
+		
+	}
+	private void synchronizeNodes() {
+		for( Entry e: variableNameToNode.entrySet() ) {
+			addOccurrences(( DataNode ) e.getValue());
+		}
 		finder.setInvocationToDeclarationMap(invocationToDeclarationMapUp);
 		finder.setDeclarationToInvocationMap(declarationToInvocationMapDown);
 	}
 
-
-	/**
-	 * Adds the current node to list of nodes to be highlighted
-	 * 
-	 * @param node
-	 */
-	private void add(ASTNode node) {
-		int start = node.getStartPosition();
-		int length = node.getLength();
-	}
-
-	private void parseEquals( String statement ) {
-		
-	}
 	public DataNode statementAt(int index) {
+		System.out.println(index);
 		for (Position p : nodes.keyStack()) {
 			boolean isContained = p.offset <= index && index < p.offset + p.length;
 			if (isContained) {
