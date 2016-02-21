@@ -227,8 +227,10 @@ public class Finder {
 	}
 	
 	public ArrayList<Method> upSearch( DataNode dn ) {
+		System.out.println(dn.getDeclarationMethod());
 		if(dn.getDeclarationMethod() != null) {
 			String declarationMethodBinding = dn.getDeclarationMethod().getName().resolveBinding().toString();
+			System.out.println(invocationToDeclarationMapUp.entrySet());
 			return invocationToDeclarationMapUp.get(declarationMethodBinding);
 		}
 		return null;

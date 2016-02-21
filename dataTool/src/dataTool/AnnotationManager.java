@@ -31,8 +31,6 @@ import org.eclipse.ui.texteditor.AbstractTextEditor;
 import dataTool.annotations.LinkAnnotation;
 import dataTool.annotations.ProgramNavigationPainter;
 import dataTool.annotations.SuggestedSelectionAnnotation;
-import dataTool.ui.NavigationDownBox;
-import dataTool.ui.NavigationUpBox;
 import edu.pdx.cs.multiview.jdt.util.JDTUtils;
 import edu.pdx.cs.multiview.jface.annotation.AnnTransaction;
 import edu.pdx.cs.multiview.jface.annotation.AnnotationPainter;
@@ -45,7 +43,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 	private LinkAnnotation linkAnnotation = new LinkAnnotation();
 	private SourceViewer sourceViewer;
 	private ProgramNavigationPainter painter;
-	private boolean isActive;
+	private static boolean isActive = false;
 	private IBreadcrumb dataBreadcrumb;
 
 	// the visitor for the editor
@@ -67,7 +65,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 		painter = new ProgramNavigationPainter(sourceViewer);
 		painter.addSelectionChangedListener(this);
 		sourceViewer.addPainter(painter);
-		isActive = false;
+		//isActive = false;
 		selectionChanged((ITextSelection) painter.getSelection());
 	}
 
@@ -75,42 +73,32 @@ public class AnnotationManager implements ISelectionChangedListener {
 		painter.removeAllAnnotations();
 		try {
 			DataNode one = getNode(selection.getOffset());
+			System.out.println(one);
 			Finder finder = Finder.getInstance();
-//			System.out.println("myData2");
-//			System.out.println(one.getValue());
-//			System.out.println(one.getBinding());
-//			System.out.println(one.getSignature());
-//			System.out.println(one.getDeclarationMethod());
-//			System.out.println(one.getInvocationMethod());
-//			System.out.println(one.isParameterSelected(selection.getOffset()));
-//			System.out.println(finder.downSearch(one));
-//			System.out.println(finder.upSearch(one));
-//			System.out.println(finder.declarationToInvocationMapDown.entrySet());
-//			System.out.println(finder.invocationToDeclarationMapUp.entrySet());
-//			System.out.println(finder.map.entrySet());
 			if(one != null) {
 				addAnnotation(one);
 				currentSearch = one.getValue();
+				System.out.println(isActive+" isActive");
+				IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				IEditorPart activeEditor = activePage.getActiveEditor();
+				System.out.println(activeEditor.getTitle()+" tidal");
+				JavaEditor j = (JavaEditor) activeEditor;
+				dataBreadcrumb = j.getBreadcrumb();
 				if(!isActive) {
 					isActive = true;
-					IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-					IEditorPart activeEditor = activePage.getActiveEditor();
-					JavaEditor j = (JavaEditor) activeEditor;
-					dataBreadcrumb = j.getBreadcrumb();
 					ShowDataInBreadcrumbAction crumbs = new ShowDataInBreadcrumbAction(j, activePage);
 					crumbs.run();	
 				}
 				DataCallHierarchy call = new DataCallHierarchy();
 				Set<IMethod> searchUp = null;
-				Set<IMethod> searchDown = null;
-				System.out.println(one.getBinding()+" "+one.getDeclarationMethod() +" "+one.getInvocationMethod());
-				//System.out.println(one.getBinding());
+				//Set<IMethod> searchDown = null;
+				//System.out.println(one.getBinding()+" "+one.getDeclarationMethod() +" "+one.getInvocationMethod());
 				if((finder.upSearch(one) != null || finder.downSearch(one) != null) && currentSearch != null) {
 					searchUp = call.searchProject(one, Finder.UP);
-					searchDown = call.searchProject(one, Finder.DOWN);
-					System.out.println("search "+one.getValue());
+					//searchDown = call.searchProject(one, Finder.DOWN);
+					//System.out.println("search "+one.getValue()+" "+searchUp+" "+one.getDeclarationMethod());
 					if(one.isParameterSelected(selection.getOffset())) {
-						linkAnnotation.searchResultsDown = searchDown;
+						//linkAnnotation.searchResultsDown = searchDown;
 						linkAnnotation.searchResultsUp = searchUp;
 						linkAnnotation.setDataNode(one);
 						addLinkAnnotation(one);
@@ -118,7 +106,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 				}
 				Set<String> test = new HashSet<String>();
 				test.add(one.getValue());
-				//dataBreadcrumb.setText(test);
+				dataBreadcrumb.setText(searchUp);
 				//Adds all occurrences of data node off screen
 				for(DataNode dn: finder.getOccurrences(one.getValue(), new Position(one.getStartPosition(), one.getLength()))) {
 					if(dn.getStartPosition() < sourceViewer.getTopIndexStartOffset()) {
@@ -136,15 +124,6 @@ public class AnnotationManager implements ISelectionChangedListener {
 			}
 		} catch (Exception e) {
 			Activator.logError(e);
-			if(isActive) {
-				try {
-					NavigationUpBox.getInstance().setText(null);
-					NavigationDownBox.getInstance().setText(null);
-				} catch (Exception e1) {
-					// Auto-generated catch block
-					//e.printStackTrace();
-				}
-			}
 			removeAnnotations();
 		}
 	}
@@ -154,23 +133,24 @@ public class AnnotationManager implements ISelectionChangedListener {
 	 * @param node: Current node selected by the user
 	 * @returns String method name
 	 */
-	/*private String getMethod(DataNode one) {
+	private String getMethod(DataNode one) {
+		
 		//TODO Function that could come in handy later to get current method mouse is clicked in
-		ASTNode temp = one.;
+		/*ASTNode temp = one.;
 		while(!(temp instanceof MethodDeclaration) && temp != null) {
 			temp = temp.getParent();
 		}
 		if(temp == null) {
 			return null;
 		}
-		return ((MethodDeclaration) temp).getName().getIdentifier();
+		return ((MethodDeclaration) temp).getName().getIdentifier();*/
 		//System.out.println(one.getValue()+" get "+one.getMethod().getName());
 		//System.out.println(one.getBinding());
 		//if(one.getMethod() != null) {
 			//return one.getMethod().getName().toString();
 		//}
-		//return null;
-	}*/
+		return null;
+	}
 	
 	private void addAnnotation(DataNode node) {
 		int start = node.getStartPosition();
@@ -271,8 +251,8 @@ public class AnnotationManager implements ISelectionChangedListener {
 
 	public void dispose() {
 		painter.dispose();
-		dataBreadcrumb.dispose();
-		isActive = false;
+		//dataBreadcrumb.dispose();
+		//isActive = false;
 		currentSearch = null;
 	}
 
