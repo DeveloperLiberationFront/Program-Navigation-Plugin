@@ -73,6 +73,7 @@ class Visitor extends ASTVisitor {
 	 */
 	private HashMap<String, ArrayList<Method>> invocationToDeclarationMapUp = new HashMap<String, ArrayList<Method>>();
 	private HashMap<SimpleName, DataNode> variableNameToNode = new HashMap<SimpleName, DataNode>();
+	private HashSet<String> localVariableSet = new HashSet<String>();
 	private Finder finder;
 
 	private static String source;
@@ -138,56 +139,44 @@ class Visitor extends ASTVisitor {
 			DataNode addedNode = null;
 			SimpleName methodName = null;
 			public boolean visit( SimpleName sn ) {
-				
 				if( sn.resolveTypeBinding() != null ) {
-					
-					String binding = sn.resolveBinding().toString();
-//					if( binding.matches("^[a-zA-Z_$][a-zA-Z_$0-9]*$\\[pos: [0-9]*\\]\\[id:[0-9]*\\]\\[pc: [0-9]*-[0-9]*\\]")) {
-//					}
-					
-//					if( binding.contains("[pos:") && binding.contains("][id:") && binding.contains("][pc:" )) {
-					
-					// Filters out methods and Object type declarations
-					if( sn.isDeclaration() && binding.contains("(")) {
-						methodName = sn;
-					} else if( !binding.contains("class" ) && !binding.contains("(")) {	
-						
-						
-						if( !variableNameToNode.containsKey(sn ) ) {
-							addedNode = new DataNode( sn );
-							addedNode.setStartPosition(cu.getExtendedStartPosition(sn) );
-							variableNameToNode.put(sn, addedNode);
-						} else {
-							variableNameToNode.get(sn).setStartPosition(cu.getExtendedStartPosition(sn) );
-						}
-					}
+					// Add the node to the list
+					getNodeFromName( sn );
 				}
 				return true;
 			}
 
 			public boolean visit(MethodDeclaration md) {
+				localVariableSet = new HashSet<String>();
 				methodName = md.getName();
 				String methodBinding = methodName.resolveBinding().toString();
 				Method methodDeclaration = new Method( methodName);
 				
-				List<SimpleName> args = new ArrayList<SimpleName>();
+				List<DataNode> params = new ArrayList<DataNode>();
+				int i = -1;
 				for (SingleVariableDeclaration svd : (List<SingleVariableDeclaration>)md.parameters()) {
+					i++;
 					SimpleName paramName = svd.getName();
-					args.add(paramName);
-					
+					addedNode = getNodeFromName(paramName);
+					if( addedNode != null ) {
+						addedNode.setDeclarationMethod(methodDeclaration);
+						addedNode.setParameterIndex(i);
+						params.add(addedNode);
+					}
 				}
-				methodDeclaration.setArgs(args);
-
+				methodDeclaration.setArgs(params);
+				
 				declarationToInvocationMapDown.put( methodDeclaration, new ArrayList<Method>());
 				md.accept(new ASTVisitor() {
 					public boolean visit( SimpleName sn ) {
-						if( variableNameToNode.containsKey(sn) ) {
-							variableNameToNode.get(sn).setDeclarationMethod(methodDeclaration);
-						} else {
-							addedNode = new DataNode( sn );
-							addedNode.setDeclarationMethod(methodDeclaration);
-							//addOccurrences(addedNode);
-							variableNameToNode.put(sn, addedNode);
+						addedNode = getNodeFromName(sn);
+						if( addedNode != null ) {
+							for( DataNode dn : params ) {
+								if( addedNode.getBinding().equals(dn.getBinding() ) ) {
+									addedNode.setDeclarationMethod(methodDeclaration);
+									addedNode.setParameterIndex(dn.getParameterIndex());
+								}
+							}
 						}
 						return true;
 					}
@@ -198,40 +187,58 @@ class Visitor extends ASTVisitor {
 						if( !invocationToDeclarationMapUp.containsKey(invokedName.resolveBinding().toString()) ) {
 							invocationToDeclarationMapUp.put(invokedName.resolveBinding().toString(), new ArrayList<Method>());
 						}
-						List<SimpleName> args = mi.arguments();
+						List<Expression> args = mi.arguments();
 						Method methodInvocation = new Method( mi.getName());
-						methodInvocation.setArgs(args);
-						invocationToDeclarationMapUp.get(invokedName.resolveBinding().toString()).add(methodInvocation);
-						declarationToInvocationMapDown.get(methodDeclaration).add(methodInvocation);
 						
-						
-						
+						List<DataNode> nodeArgs = new ArrayList<DataNode>();
 						for( Expression e : args ) {
 							if( e.getNodeType() == ASTNode.SIMPLE_NAME ) {
 								SimpleName n = (SimpleName) e;
-								if( variableNameToNode.containsKey(n) ) {
-									variableNameToNode.get(n).setInvocationMethod(methodInvocation);
-								} else {
-									addedNode = new DataNode(n);
-									addedNode.setDeclarationMethod(methodDeclaration);
+								addedNode = getNodeFromName(n);
+								// TODO shouldn't need a check here
+								if( addedNode != null ) {
 									addedNode.setInvocationMethod(methodInvocation);
-									//addOccurrences(addedNode);
-									variableNameToNode.put(n, addedNode);
-								} 
+									nodeArgs.add( addedNode );
+								}
+							} else {
+								nodeArgs.add(null);
 							}
 						}
+						methodInvocation.setArgs(nodeArgs);
+						invocationToDeclarationMapUp.get(invokedName.resolveBinding().toString()).add(methodInvocation);
+						declarationToInvocationMapDown.get(methodDeclaration).add(methodInvocation);
+						
 						return true;
 					}
 				});
 				
+				
 				//Set to null so that class variables can have a null method name
 				return true;
+			}
+			private DataNode getNodeFromName( SimpleName sn ) {
+				if( sn.resolveBinding() != null ) {
+					String binding = sn.resolveBinding().toString();
+					if( !binding.contains("(") && !binding.contains("class" ) ) {	
+						if( variableNameToNode.containsKey(sn) ) {
+							return variableNameToNode.get(sn);
+						} else {
+							DataNode addedNode = new DataNode( sn );
+							addedNode.setStartPosition(cu.getExtendedStartPosition(sn) );
+							variableNameToNode.put(sn, addedNode);
+							return addedNode;
+						}
+					}
+				}
+				return null;
 			}
 		});
 		synchronizeNodes();
 		
 	}
+	
 	private void synchronizeNodes() {
+		
 		for( Entry e: variableNameToNode.entrySet() ) {
 			addOccurrences(( DataNode ) e.getValue());
 		}
@@ -240,7 +247,6 @@ class Visitor extends ASTVisitor {
 	}
 
 	public DataNode statementAt(int index) {
-		System.out.println(index);
 		for (Position p : nodes.keyStack()) {
 			boolean isContained = p.offset <= index && index < p.offset + p.length;
 			if (isContained) {

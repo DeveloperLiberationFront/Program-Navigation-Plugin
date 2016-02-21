@@ -76,18 +76,18 @@ public class AnnotationManager implements ISelectionChangedListener {
 		try {
 			DataNode one = getNode(selection.getOffset());
 			Finder finder = Finder.getInstance();
-			System.out.println("myData2");
-			System.out.println(one.getValue());
-			System.out.println(one.getBinding());
-			System.out.println(one.getSignature());
-			System.out.println(one.getDeclarationMethod());
-			System.out.println(one.getInvocationMethod());
-			System.out.println(one.isParameterSelected(selection.getOffset()));
-			System.out.println(finder.downSearch(one));
-			System.out.println(finder.upSearch(one));
-			System.out.println(finder.declarationToInvocationMapDown.entrySet());
-			System.out.println(finder.invocationToDeclarationMapUp.entrySet());
-			System.out.println(finder.map.entrySet());
+//			System.out.println("myData2");
+//			System.out.println(one.getValue());
+//			System.out.println(one.getBinding());
+//			System.out.println(one.getSignature());
+//			System.out.println(one.getDeclarationMethod());
+//			System.out.println(one.getInvocationMethod());
+//			System.out.println(one.isParameterSelected(selection.getOffset()));
+//			System.out.println(finder.downSearch(one));
+//			System.out.println(finder.upSearch(one));
+//			System.out.println(finder.declarationToInvocationMapDown.entrySet());
+//			System.out.println(finder.invocationToDeclarationMapUp.entrySet());
+//			System.out.println(finder.map.entrySet());
 			if(one != null) {
 				addAnnotation(one);
 				currentSearch = one.getValue();
@@ -103,7 +103,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 				DataCallHierarchy call = new DataCallHierarchy();
 				Set<IMethod> searchUp = null;
 				Set<IMethod> searchDown = null;
-				System.out.println(one.getValue()+" "+one.getDeclarationMethod() +" "+one.getInvocationMethod());
+				System.out.println(one.getBinding()+" "+one.getDeclarationMethod() +" "+one.getInvocationMethod());
 				//System.out.println(one.getBinding());
 				if((finder.upSearch(one) != null || finder.downSearch(one) != null) && currentSearch != null) {
 					searchUp = call.searchProject(one, Finder.UP);
@@ -118,7 +118,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 				}
 				Set<String> test = new HashSet<String>();
 				test.add(one.getValue());
-				dataBreadcrumb.setText(test);
+				//dataBreadcrumb.setText(test);
 				//Adds all occurrences of data node off screen
 				for(DataNode dn: finder.getOccurrences(one.getValue(), new Position(one.getStartPosition(), one.getLength()))) {
 					if(dn.getStartPosition() < sourceViewer.getTopIndexStartOffset()) {

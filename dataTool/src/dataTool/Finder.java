@@ -88,7 +88,6 @@ public class Finder {
 	}
 
 //	public void addParameter(DataNode dn, Method method) {
-//		// System.out.println(dn.getValue()+" "+name.getIdentifier()+"
 //		// "+dn.getType());
 //		HashSet<Method> list;
 //		Map<String, HashSet<Method>> items;

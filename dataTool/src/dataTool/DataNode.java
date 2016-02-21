@@ -26,6 +26,7 @@ public class DataNode implements Comparable {
 	private String value;
 	private int index;
 	private int length;
+	private int parameterIndex;
 	private SimpleName sn;
 	private String type;
 	private String signature;
@@ -59,6 +60,7 @@ public class DataNode implements Comparable {
 		index = sn.getStartPosition();
 		length = value.length();
 		isHighlighted = false;
+		parameterIndex = -1;
 		this.binding = sn.resolveBinding().toString();
 	}
 	public void setStartPosition( int i ) {
@@ -92,7 +94,12 @@ public class DataNode implements Comparable {
 	public int getLength() {
 		return this.length;
 	}
-
+	public int getParameterIndex() {
+		return parameterIndex;
+	}
+	public void setParameterIndex( int p ) {
+		parameterIndex = p;
+	}
 	public Method getDeclarationMethod() {
 		return declarationMethod;
 	}
@@ -126,7 +133,7 @@ public class DataNode implements Comparable {
 		if( o == null || !( o instanceof DataNode ) ) {
 			return 1;
 		}
-		return index - ( ( DataNode ) o ).getStartPosition();
+		return index - ((DataNode)o).getStartPosition();
 	}
 	@Override
 	public String toString() {

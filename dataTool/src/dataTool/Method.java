@@ -6,15 +6,15 @@ import org.eclipse.jdt.core.dom.SimpleName;
 
 public class Method {
 	SimpleName name;
-	List<SimpleName> args;
+	List<DataNode> args;
 	public Method( SimpleName methodName ) {
 		this.name = methodName;
 	}
 	
-	public List<SimpleName> getArgs() {
+	public List<DataNode> getArgs() {
 		return args;
 	}
-	public void setArgs( List<SimpleName> args) {
+	public void setArgs( List<DataNode> args) {
 		this.args = args;
 	}
 	
