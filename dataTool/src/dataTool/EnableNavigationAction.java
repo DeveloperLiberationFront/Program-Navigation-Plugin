@@ -93,7 +93,8 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 
 			@Override
 			public void partOpened(IWorkbenchPart arg0) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
+				System.out.println("file opened");
 				arg0.getSite().getPage().activate(arg0);
 				try {
 					dispose();
@@ -132,6 +133,11 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 		//do nothing
 	}
 	
+	/**
+	 * Resets the plugin when user opens a new page
+	 * @param workbench
+	 * @throws JavaModelException
+	 */
 	public void reset(IWorkbenchPage workbench) throws JavaModelException {
 		IWorkbenchPage newPage;
 		if(workbench == null) {
@@ -140,6 +146,13 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 		else {
 			newPage = workbench;
 		}
+		JavaEditor editor = (JavaEditor)newPage.getActiveEditor();
+		IBreadcrumb top = editor.getBreadcrumb();
+		IBreadcrumb bottom = editor.getBreadcrumb2();
+		editor.showBreadcrumbs();
+		System.out.println(editor.getTitle());
+		top.setText(null);
+		bottom.setText(null);
         init(newPage.getWorkbenchWindow());
         run(null);
 	}

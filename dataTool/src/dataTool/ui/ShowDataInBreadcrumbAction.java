@@ -59,12 +59,11 @@ public class ShowDataInBreadcrumbAction extends ShowInBreadcrumbAction {
 	public void run() {
 		IBreadcrumb breadcrumb = fEditor.getBreadcrumb();
 		JavaEditorBreadcrumb j = (JavaEditorBreadcrumb)breadcrumb;
-		if (breadcrumb == null)
-			return;
 		IBreadcrumb breadcrumb2 = fEditor.getBreadcrumb2();
 		JavaEditorBreadcrumb j2 = (JavaEditorBreadcrumb)breadcrumb2;
-		if (breadcrumb2 == null)
+		if (breadcrumb2 == null || breadcrumb2 == null) {
 			return;
+		}
 		
 		IPreferenceStore store= JavaPlugin.getDefault().getPreferenceStore();
 		store.setValue(getPreferenceKey(), true);

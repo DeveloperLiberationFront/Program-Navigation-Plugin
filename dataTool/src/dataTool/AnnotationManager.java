@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditorBreadcrumb;
 import org.eclipse.jdt.internal.ui.javaeditor.breadcrumb.EditorBreadcrumb;
 import org.eclipse.jdt.internal.ui.javaeditor.breadcrumb.IBreadcrumb;
 import org.eclipse.jface.action.Action;
@@ -71,24 +72,30 @@ public class AnnotationManager implements ISelectionChangedListener {
 	}
 
 	public void selectionChanged(ITextSelection selection) {
+		System.out.println("selectionChanged");
 		painter.removeAllAnnotations();
 		try {
 			DataNode one = getNode(selection.getOffset());
 			Finder finder = Finder.getInstance();
 			if(one != null) {
 				addAnnotation(one);
-				currentSearch = one.getValue();
+				currentSearch = one.getBinding();
 				IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 				IEditorPart activeEditor = activePage.getActiveEditor();
-				System.out.println("down "+ one.getDeclarationMethod());
 				JavaEditor j = (JavaEditor) activeEditor;
 				upBreadcrumb = j.getBreadcrumb();
 				downBreadcrumb = j.getBreadcrumb2();
+				System.out.println(isActive+ " is active");
+				System.out.println(upBreadcrumb.isActive());
+				System.out.println(downBreadcrumb.isActive());
+				System.out.println(j.areBreadcrumbsActive());
 				if(!isActive) {
 					isActive = true;
 					ShowDataInBreadcrumbAction crumbs = new ShowDataInBreadcrumbAction(j, activePage);
 					crumbs.run();	
 				}
+				upBreadcrumb.setText(null);
+				downBreadcrumb.setText(null);
 				DataCallHierarchy call = new DataCallHierarchy();
 				Set<IMethod> searchUp = null;
 				Set<IMethod> searchDown = null;
@@ -129,7 +136,6 @@ public class AnnotationManager implements ISelectionChangedListener {
 				}
 				upBreadcrumb.setText(textUp);
 				downBreadcrumb.setText(textDown);
-
 			}
 			else {
 				removeAnnotations();
@@ -230,7 +236,6 @@ public class AnnotationManager implements ISelectionChangedListener {
 	public void removeAnnotations() {
 		try {
 			if (highlightAnnotation != null) {
-				// painter.removeAnnotation(highlightAnnotation);
 				painter.removeAllAnnotations();
 			}
 		} catch (Exception ignore) {
@@ -239,13 +244,10 @@ public class AnnotationManager implements ISelectionChangedListener {
 
 	public void dispose() {
 		painter.dispose();
-		//dataBreadcrumb.dispose();
-		//isActive = false;
 		currentSearch = null;
 	}
 
 	public void selectionChanged(SelectionChangedEvent event) {
-		painter.removeAllAnnotations();
 		selectionChanged((ITextSelection) event.getSelection());
 	}
 }

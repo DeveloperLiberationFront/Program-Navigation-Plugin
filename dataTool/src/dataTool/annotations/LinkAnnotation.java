@@ -51,6 +51,8 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	public static Set<IMethod> searchResultsUp;
 	public static Set<IMethod> searchResultsDown;
 	public String searchMethod = "";
+	private IEditorPart editor = null;
+	private boolean load = true;
 	
 	public static final String INVALID = "Method not in scope of project.";
 
@@ -68,33 +70,29 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 
 			@Override
 			public void mouseDoubleClick(MouseEvent arg0) {
-				mouseDown(arg0);
+				//mouseDown(arg0);
 			}
 
 			@Override
 			public void mouseDown(MouseEvent arg0) {
+				
+			}
+
+			@Override
+			public void mouseUp(MouseEvent arg0) {
 				int click = textWidget.getOffsetAtLocation(new Point(arg0.x,arg0.y));
-				boolean load = true;
-				if(click >= style.start && click <= style.start+style.length){
+				if(click >= style.start && click <= style.start+style.length && load){
+					load = false;
 					Object[] search;
 					IMethod im;
-					System.out.println("clicked");
 					if(linkNode.getInvocationMethod() != null) {
 						search = searchResultsDown.toArray();
 						for(Object o: search) {
 							im = (IMethod) o;
-							try {
-								if(im.getSource() == null) {
-									load = false;
-									JOptionPane.showMessageDialog(null, INVALID, "Error",JOptionPane.ERROR_MESSAGE);
-								}
-							} catch (HeadlessException | JavaModelException e1) {
-								// Auto-generated catch block
-								e1.printStackTrace();
-							}
-							if(load && im.getElementName().equals(linkNode.getInvocationMethod().getName().getIdentifier())) {
+							if(im.getElementName().equals(linkNode.getInvocationMethod().getName().getIdentifier())) {
 								try {
 									JavaUI.openInEditor(im, true, true);
+									load = true;
 								} catch (PartInitException | JavaModelException e) {
 									// Auto-generated catch block
 									e.printStackTrace();
@@ -108,22 +106,21 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 							im = (IMethod)search[0];
 							try {
 								if(im.getSource() == null) {
-									load = false;
 									JOptionPane.showMessageDialog(null, INVALID, "Error",JOptionPane.ERROR_MESSAGE);
 								}
 							} catch (HeadlessException | JavaModelException e1) {
 								// Auto-generated catch block
 								e1.printStackTrace();
 							}
-							if(load) {
 								searchMethod = linkNode.getDeclarationMethod().getName().getIdentifier();
-								IEditorPart editor = JavaUI.openInEditor(im, true, true);
+								load = false;
+								editor = JavaUI.openInEditor(im, true, true);
 								if(editor != null) {
 									String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
 									lineSearch(code.toCharArray(), im);
 									goToLine(editor);
+									load = true;
 								}
-							}
 						} catch (Exception e) {
 							// Auto-generated catch block
 							e.printStackTrace();
@@ -131,13 +128,6 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 					}
 				}
 			}
-
-			@Override
-			public void mouseUp(MouseEvent arg0) {
-				// Do nothing
-				
-			}
-			
 		});
 	}
 	
