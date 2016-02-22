@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
+import org.eclipse.jdt.internal.ui.javaeditor.breadcrumb.EditorBreadcrumb;
 import org.eclipse.jdt.internal.ui.javaeditor.breadcrumb.IBreadcrumb;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.text.ITextSelection;
@@ -44,7 +45,8 @@ public class AnnotationManager implements ISelectionChangedListener {
 	private SourceViewer sourceViewer;
 	private ProgramNavigationPainter painter;
 	private static boolean isActive = false;
-	private IBreadcrumb dataBreadcrumb;
+	private IBreadcrumb upBreadcrumb;
+	private IBreadcrumb downBreadcrumb;
 
 	// the visitor for the editor
 	private Visitor visitor;
@@ -65,7 +67,6 @@ public class AnnotationManager implements ISelectionChangedListener {
 		painter = new ProgramNavigationPainter(sourceViewer);
 		painter.addSelectionChangedListener(this);
 		sourceViewer.addPainter(painter);
-		//isActive = false;
 		selectionChanged((ITextSelection) painter.getSelection());
 	}
 
@@ -73,7 +74,6 @@ public class AnnotationManager implements ISelectionChangedListener {
 		painter.removeAllAnnotations();
 		try {
 			DataNode one = getNode(selection.getOffset());
-			System.out.println(one.getValue()+" "+one.getDeclarationMethod());
 			Finder finder = Finder.getInstance();
 			if(one != null) {
 				addAnnotation(one);
@@ -82,7 +82,8 @@ public class AnnotationManager implements ISelectionChangedListener {
 				IEditorPart activeEditor = activePage.getActiveEditor();
 				System.out.println("down "+ one.getDeclarationMethod());
 				JavaEditor j = (JavaEditor) activeEditor;
-				dataBreadcrumb = j.getBreadcrumb();
+				upBreadcrumb = j.getBreadcrumb();
+				downBreadcrumb = j.getBreadcrumb2();
 				if(!isActive) {
 					isActive = true;
 					ShowDataInBreadcrumbAction crumbs = new ShowDataInBreadcrumbAction(j, activePage);
@@ -105,26 +106,29 @@ public class AnnotationManager implements ISelectionChangedListener {
 				test.add(one.getValue());
 				//Adds all occurrences of data node off screen
 				ArrayList<Object> textUp = new ArrayList<Object>();
+				ArrayList<Object> textDown = new ArrayList<Object>();
 				for(DataNode dn: finder.getOccurrences(one.getValue(), new Position(one.getStartPosition(), one.getLength()))) {
 					int[] offScreen = new int[3];
+					int line = sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1;
+					offScreen[0] = line;
+					offScreen[1] = dn.getStartPosition();
+					offScreen[2] = dn.getLength();
 					if(dn.getStartPosition() < sourceViewer.getTopIndexStartOffset()) {
-						int line = sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1;
-						offScreen[0] = line;
-						offScreen[1] = dn.getStartPosition();
-						offScreen[2] = dn.getLength();
 						textUp.add(offScreen);
-						System.out.println("line"+line);
-						//dataBreadcrumb.addOffScreen(dn.getStartPosition(), dn.getLength(), line);
 					}
 					else if(dn.getStartPosition() > sourceViewer.getBottomIndexEndOffset()) {
-						int line = sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1;
-						//NavigationDownBox.getInstance().addOffScreen(dn, line);
+						textDown.add(offScreen);
 					}
 				}
 				if(searchUp != null) {
 					textUp.addAll(searchUp);
+					((EditorBreadcrumb)upBreadcrumb).setSearchMethod(call.getCurrentMethod(one.getStartPosition()));
 				}
-				dataBreadcrumb.setText(textUp);
+				if(searchDown != null) {
+					textDown.addAll(searchDown);
+				}
+				upBreadcrumb.setText(textUp);
+				downBreadcrumb.setText(textDown);
 
 			}
 			else {

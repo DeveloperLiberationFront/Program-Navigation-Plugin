@@ -61,10 +61,16 @@ public class ShowDataInBreadcrumbAction extends ShowInBreadcrumbAction {
 		JavaEditorBreadcrumb j = (JavaEditorBreadcrumb)breadcrumb;
 		if (breadcrumb == null)
 			return;
-
+		IBreadcrumb breadcrumb2 = fEditor.getBreadcrumb2();
+		JavaEditorBreadcrumb j2 = (JavaEditorBreadcrumb)breadcrumb2;
+		if (breadcrumb2 == null)
+			return;
+		
 		IPreferenceStore store= JavaPlugin.getDefault().getPreferenceStore();
 		store.setValue(getPreferenceKey(), true);
+		
 		breadcrumb.activate();
+		breadcrumb2.activate();
 	}
 
 	/**

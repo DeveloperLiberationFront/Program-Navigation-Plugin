@@ -132,7 +132,6 @@ public class DataCallHierarchy {
 			src = projectPath.substring(0,projectPath.indexOf("."));
 			projectPath = projectPath.replace(src+".", "");
 		}
-		System.out.println("projectPath: "+projectPath);
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 	    IProject project = root.getProject(projectName);
 	    IFolder folder = project.getFolder(src);
@@ -187,8 +186,12 @@ public class DataCallHierarchy {
 	    return theMethod;
 	}
 	
-	private IMethod getCurrentMethod(int offset) {
-		System.out.println("offset "+offset);
+	/**
+	 * Gets the method that the cursor is currently located in.
+	 * @param offset
+	 * @return IMethod for current method
+	 */
+	public IMethod getCurrentMethod(int offset) {
 		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 		ITextEditor editor = (ITextEditor) page.getActiveEditor();
 		IJavaElement elem = JavaUI.getEditorInputJavaElement(editor.getEditorInput());

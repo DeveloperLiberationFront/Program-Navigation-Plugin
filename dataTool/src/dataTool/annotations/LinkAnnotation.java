@@ -117,7 +117,12 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 							}
 							if(load) {
 								searchMethod = linkNode.getDeclarationMethod().getName().getIdentifier();
-								openLink(im);
+								IEditorPart editor = JavaUI.openInEditor(im, true, true);
+								if(editor != null) {
+									String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
+									lineSearch(code.toCharArray(), im);
+									goToLine(editor);
+								}
 							}
 						} catch (Exception e) {
 							// Auto-generated catch block
@@ -137,24 +142,10 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	}
 	
 	/**
-	 * Opens invocation of new method in the editor and clears navigation box links
-	 * @param i: IMethod to open
+	 * Searches for line of where method is invoked in new file
+	 * @param source: char[] of code
+	 * @param method: IMethod we're searching for
 	 */
-	public void openLink(IMethod i) {
-		IEditorPart editor = null;
-		try {
-			editor = JavaUI.openInEditor(i, true, true);
-		} catch (JavaModelException | PartInitException e) {
-			// Auto-generated catch block
-			e.printStackTrace();
-		}
-		if(editor != null) {
-			String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
-			lineSearch(code.toCharArray(), i);
-			goToLine(editor);
-		}
-	}
-	
 	private void lineSearch(char[] source, IMethod method) {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(source);
@@ -173,7 +164,6 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 					return true;
 				}
 				public boolean visit(ClassInstanceCreation c) {
-					System.out.println("class  "+c.getType().toString()+"  "+searchMethod);
 					if(c.getType().toString().equals(searchMethod)) {
 						searchResult = c;
 					}
@@ -184,6 +174,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 		}
 		});
 	}	
+	
 	/**
 	 * Opens the new class at the specific line
 	 * http://stackoverflow.com/questions/2873879/eclipe-pde-jump-to-line-x-and-highlight-it
