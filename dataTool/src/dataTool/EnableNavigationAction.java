@@ -8,7 +8,6 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.internal.ui.javaeditor.breadcrumb.IBreadcrumb;
-import org.eclipse.jdt.internal.ui.javaeditor.ShowDataInBreadcrumbAction;
 import org.eclipse.jdt.internal.ui.javaeditor.ShowInBreadcrumbAction;
 import org.eclipse.jdt.internal.ui.javaeditor.ToggleBreadcrumbAction;
 import org.eclipse.jdt.ui.JavaUI;
@@ -28,8 +27,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
-import dataTool.ui.NavigationDownBox;
-import dataTool.ui.NavigationUpBox;
+import dataTool.ui.ShowDataInBreadcrumbAction;
 
 /**
  * An action that enables the statement helper
@@ -135,13 +133,6 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	}
 	
 	public void reset(IWorkbenchPage workbench) throws JavaModelException {
-		try {
-			//NavigationUpBox.getInstance().setText(null);
-			//NavigationDownBox.getInstance().setText(null);
-		}
-		catch (NullPointerException e) {
-			// Navigation boxes aren't active
-		}
 		IWorkbenchPage newPage;
 		if(workbench == null) {
 			newPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();

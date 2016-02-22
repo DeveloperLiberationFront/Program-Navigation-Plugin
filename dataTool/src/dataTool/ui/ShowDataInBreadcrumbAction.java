@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.jdt.internal.ui.javaeditor;
+package dataTool.ui;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -30,6 +30,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditorBreadcrumb;
 import org.eclipse.jdt.internal.ui.javaeditor.ShowInBreadcrumbAction;
 import org.eclipse.jdt.internal.ui.javaeditor.breadcrumb.IBreadcrumb;
 

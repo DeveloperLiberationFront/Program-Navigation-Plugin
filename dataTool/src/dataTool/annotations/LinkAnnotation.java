@@ -1,9 +1,12 @@
 package dataTool.annotations;
 
+import java.awt.HeadlessException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.swing.JOptionPane;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.Annotation;
@@ -48,6 +51,8 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	public static Set<IMethod> searchResultsUp;
 	public static Set<IMethod> searchResultsDown;
 	public String searchMethod = "";
+	
+	public static final String INVALID = "Method not in scope of project.";
 
 	/**
 	 * Function to add link annotations to methods of parameters
@@ -69,44 +74,56 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 			@Override
 			public void mouseDown(MouseEvent arg0) {
 				int click = textWidget.getOffsetAtLocation(new Point(arg0.x,arg0.y));
+				boolean load = true;
 				if(click >= style.start && click <= style.start+style.length){
 					Object[] search;
 					IMethod im;
 					System.out.println("clicked");
-					if(linkNode.getDeclarationMethod() != null) {
+					if(linkNode.getInvocationMethod() != null) {
+						search = searchResultsDown.toArray();
+						for(Object o: search) {
+							im = (IMethod) o;
+							try {
+								if(im.getSource() == null) {
+									load = false;
+									JOptionPane.showMessageDialog(null, INVALID, "Error",JOptionPane.ERROR_MESSAGE);
+								}
+							} catch (HeadlessException | JavaModelException e1) {
+								// Auto-generated catch block
+								e1.printStackTrace();
+							}
+							if(load && im.getElementName().equals(linkNode.getInvocationMethod().getName().getIdentifier())) {
+								try {
+									JavaUI.openInEditor(im, true, true);
+								} catch (PartInitException | JavaModelException e) {
+									// Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+					else if(linkNode.getDeclarationMethod() != null) {
 						try {
 							search = searchResultsUp.toArray();
 							im = (IMethod)search[0];
-							searchMethod = linkNode.getDeclarationMethod().getName().getIdentifier();
-							openLink(im);
+							try {
+								if(im.getSource() == null) {
+									load = false;
+									JOptionPane.showMessageDialog(null, INVALID, "Error",JOptionPane.ERROR_MESSAGE);
+								}
+							} catch (HeadlessException | JavaModelException e1) {
+								// Auto-generated catch block
+								e1.printStackTrace();
+							}
+							if(load) {
+								searchMethod = linkNode.getDeclarationMethod().getName().getIdentifier();
+								openLink(im);
+							}
 						} catch (Exception e) {
 							// Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
-					else if(linkNode.getInvocationMethod() != null) {
-						//TODO Down
-						/*try {
-							search = searchResultsDown.toArray();
-							for(Object o: search) {
-								im = (IMethod) o;
-								if(im.getElementName().equals(linkNode.getParameterMethod().getName().getIdentifier())) {
-									NavigationDownBox.getInstance().openLink(im);
-									break;
-								}
-							}
-						} catch (Exception e) {
-							// Auto-generated catch block
-							e.printStackTrace();
-						}*/
-					}
-					//EnableNavigationAction plugin = new EnableNavigationAction();
-	    			//try {
-						//plugin.reset(null);
-					//} catch (JavaModelException e) {
-						// Auto-generated catch block
-					//	e.printStackTrace();
-					//}
 				}
 			}
 
@@ -131,11 +148,11 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 			// Auto-generated catch block
 			e.printStackTrace();
 		}
-		//if(editor != null) {
-			//String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
-			//lineSearch(code.toCharArray(), i);
-			//goToLine(editor);
-		//}
+		if(editor != null) {
+			String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
+			lineSearch(code.toCharArray(), i);
+			goToLine(editor);
+		}
 	}
 	
 	private void lineSearch(char[] source, IMethod method) {
@@ -156,7 +173,10 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 					return true;
 				}
 				public boolean visit(ClassInstanceCreation c) {
-					//System.out.println("  "+c.getType().toString() +" " + AnnotationManager.currentSearch);
+					System.out.println("class  "+c.getType().toString()+"  "+searchMethod);
+					if(c.getType().toString().equals(searchMethod)) {
+						searchResult = c;
+					}
 					return true;
 				}
 			});
