@@ -123,7 +123,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	 * Opens invocation of new method in the editor and clears navigation box links
 	 * @param i: IMethod to open
 	 */
-	public void openLink(IMethod i) {
+	public static void openLink(IMethod i) {
 		IEditorPart editor = null;
 		try {
 			editor = JavaUI.openInEditor(i, true, true);
@@ -131,14 +131,14 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 			// Auto-generated catch block
 			e.printStackTrace();
 		}
-		//if(editor != null) {
-			//String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
-			//lineSearch(code.toCharArray(), i);
-			//goToLine(editor);
-		//}
+		if(editor != null) {
+			String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
+			lineSearch(code.toCharArray(), i);
+			goToLine(editor);
+		}
 	}
 	
-	private void lineSearch(char[] source, IMethod method) {
+	private static void lineSearch(char[] source, IMethod method) {
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(source);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
