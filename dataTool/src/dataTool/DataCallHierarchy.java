@@ -64,6 +64,7 @@ public class DataCallHierarchy {
 	private String className;
 	private String location;
 	private ICompilationUnit cUnit;
+	private boolean inClass = false;
 	
 	public DataCallHierarchy() {
 		
@@ -95,7 +96,9 @@ public class DataCallHierarchy {
 				if( node.getInvocationMethod() != null ) {
 					Set<IMethod> searchDown = new HashSet<IMethod>();
 					Set<IMethod> temp = search(node, node.getInvocationMethod(), Finder.DOWN);
+					System.out.println(down);
 					for(IMethod i: temp) {
+						System.out.println("  "+i.getElementName());
 						if(down.contains(i.getElementName())) {
 							searchDown.add(i);
 						}
@@ -150,10 +153,15 @@ public class DataCallHierarchy {
 		    methods = callGen.getCallersOf(m);
 	    }
 	    else {
-		    Set<IMethod> temp = callGen.getCalleesOf(m);
-		    for(IMethod i: temp) {
-		    	methods.add(i);
-		    }
+	    	if(!inClass) {
+			    Set<IMethod> temp = callGen.getCalleesOf(m);
+			    for(IMethod i: temp) {
+			    	methods.add(i);
+			    }
+	    	}
+	    	else {
+	    		methods.add(m);
+	    	}
 	    }
 	    return methods;
 	}
@@ -174,6 +182,7 @@ public class DataCallHierarchy {
 	    {
 	        IMethod imethod = methods[i];
 	        if (imethod.getElementName().equals(methodName)) {
+	        	inClass = true;
 	            theMethod = imethod;
 	        }
 	    }
@@ -200,7 +209,7 @@ public class DataCallHierarchy {
 			try {
 				selected = ((ICompilationUnit) elem).getElementAt(offset);
 			} catch (JavaModelException e) {
-				// TODO Auto-generated catch block
+				// Auto-generated catch block
 				e.printStackTrace();
 			}
 		    if (selected != null && selected.getElementType() == IJavaElement.METHOD) {

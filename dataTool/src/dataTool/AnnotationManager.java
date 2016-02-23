@@ -61,7 +61,6 @@ public class AnnotationManager implements ISelectionChangedListener {
 	 * @param anEditor
 	 */
 	public AnnotationManager(AbstractDecoratedTextEditor anEditor) {
-		isActive = false;
 		parseCU(anEditor);
 		sourceViewer = EclipseHacks.getSourceViewer(anEditor);
 		painter = new ProgramNavigationPainter(sourceViewer);
@@ -90,8 +89,6 @@ public class AnnotationManager implements ISelectionChangedListener {
 					ShowDataInBreadcrumbAction crumbs = new ShowDataInBreadcrumbAction(j, activePage);
 					crumbs.run();	
 				}
-				upBreadcrumb.setText(null);
-				downBreadcrumb.setText(null);
 				DataCallHierarchy call = new DataCallHierarchy();
 				Set<IMethod> searchUp = null;
 				Set<IMethod> searchDown = null;
@@ -105,8 +102,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 						addLinkAnnotation(one);
 					}
 				}
-				Set<String> test = new HashSet<String>();
-				test.add(one.getValue());
+
 				//Adds all occurrences of data node off screen
 				ArrayList<Object> textUp = new ArrayList<Object>();
 				ArrayList<Object> textDown = new ArrayList<Object>();
@@ -241,6 +237,12 @@ public class AnnotationManager implements ISelectionChangedListener {
 	public void dispose() {
 		painter.dispose();
 		currentSearch = null;
+	}
+	
+	public void deactivate() {
+		isActive = false;
+		upBreadcrumb.dispose();
+		downBreadcrumb.dispose();
 	}
 
 	public void selectionChanged(SelectionChangedEvent event) {
