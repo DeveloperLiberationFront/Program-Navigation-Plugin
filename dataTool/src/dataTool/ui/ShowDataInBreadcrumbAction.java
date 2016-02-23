@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.jdt.internal.ui.javaeditor;
+package dataTool.ui;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -30,6 +30,7 @@ import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditorBreadcrumb;
 import org.eclipse.jdt.internal.ui.javaeditor.ShowInBreadcrumbAction;
 import org.eclipse.jdt.internal.ui.javaeditor.breadcrumb.IBreadcrumb;
 
@@ -58,12 +59,17 @@ public class ShowDataInBreadcrumbAction extends ShowInBreadcrumbAction {
 	public void run() {
 		IBreadcrumb breadcrumb = fEditor.getBreadcrumb();
 		JavaEditorBreadcrumb j = (JavaEditorBreadcrumb)breadcrumb;
-		if (breadcrumb == null)
+		IBreadcrumb breadcrumb2 = fEditor.getBreadcrumb2();
+		JavaEditorBreadcrumb j2 = (JavaEditorBreadcrumb)breadcrumb2;
+		if (breadcrumb2 == null || breadcrumb2 == null) {
 			return;
-
+		}
+		
 		IPreferenceStore store= JavaPlugin.getDefault().getPreferenceStore();
 		store.setValue(getPreferenceKey(), true);
+		
 		breadcrumb.activate();
+		breadcrumb2.activate();
 	}
 
 	/**

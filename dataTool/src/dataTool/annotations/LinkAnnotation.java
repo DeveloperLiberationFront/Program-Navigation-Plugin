@@ -1,9 +1,12 @@
 package dataTool.annotations;
 
+import java.awt.HeadlessException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
+
+import javax.swing.JOptionPane;
 
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.source.Annotation;
@@ -48,6 +51,10 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	public static Set<IMethod> searchResultsUp;
 	public static Set<IMethod> searchResultsDown;
 	public String searchMethod = "";
+	private IEditorPart editor = null;
+	private boolean load = true;
+	
+	public static final String INVALID = "Method not in scope of project.";
 
 	/**
 	 * Function to add link annotations to methods of parameters
@@ -63,66 +70,73 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 
 			@Override
 			public void mouseDoubleClick(MouseEvent arg0) {
-				mouseDown(arg0);
+				//mouseDown(arg0);
 			}
 
 			@Override
 			public void mouseDown(MouseEvent arg0) {
+				
+			}
+
+			@Override
+			public void mouseUp(MouseEvent arg0) {
 				int click = textWidget.getOffsetAtLocation(new Point(arg0.x,arg0.y));
-				if(click >= style.start && click <= style.start+style.length){
+				if(click >= style.start && click <= style.start+style.length && load){
+					load = false;
 					Object[] search;
 					IMethod im;
-					System.out.println("clicked");
-					if(linkNode.getDeclarationMethod() != null) {
+					if(linkNode.getInvocationMethod() != null) {
+						search = searchResultsDown.toArray();
+						for(Object o: search) {
+							im = (IMethod) o;
+							if(im.getElementName().equals(linkNode.getInvocationMethod().getName().getIdentifier())) {
+								try {
+									JavaUI.openInEditor(im, true, true);
+									load = true;
+								} catch (PartInitException | JavaModelException e) {
+									// Auto-generated catch block
+									e.printStackTrace();
+								}
+							}
+						}
+					}
+					else if(linkNode.getDeclarationMethod() != null) {
 						try {
 							search = searchResultsUp.toArray();
 							im = (IMethod)search[0];
-							searchMethod = linkNode.getDeclarationMethod().getName().getIdentifier();
-							openLink(im);
+							try {
+								if(im.getSource() == null) {
+									JOptionPane.showMessageDialog(null, INVALID, "Error",JOptionPane.ERROR_MESSAGE);
+								}
+							} catch (HeadlessException | JavaModelException e1) {
+								// Auto-generated catch block
+								e1.printStackTrace();
+							}
+								searchMethod = linkNode.getDeclarationMethod().getName().getIdentifier();
+								load = false;
+								editor = JavaUI.openInEditor(im, true, true);
+								if(editor != null) {
+									String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
+									lineSearch(code.toCharArray(), im);
+									goToLine(editor);
+									load = true;
+								}
 						} catch (Exception e) {
 							// Auto-generated catch block
 							e.printStackTrace();
 						}
 					}
-					else if(linkNode.getInvocationMethod() != null) {
-						//TODO Down
-						/*try {
-							search = searchResultsDown.toArray();
-							for(Object o: search) {
-								im = (IMethod) o;
-								if(im.getElementName().equals(linkNode.getParameterMethod().getName().getIdentifier())) {
-									NavigationDownBox.getInstance().openLink(im);
-									break;
-								}
-							}
-						} catch (Exception e) {
-							// Auto-generated catch block
-							e.printStackTrace();
-						}*/
-					}
-					//EnableNavigationAction plugin = new EnableNavigationAction();
-	    			//try {
-						//plugin.reset(null);
-					//} catch (JavaModelException e) {
-						// Auto-generated catch block
-					//	e.printStackTrace();
-					//}
 				}
 			}
-
-			@Override
-			public void mouseUp(MouseEvent arg0) {
-				// Do nothing
-				
-			}
-			
 		});
 	}
 	
 	/**
-	 * Opens invocation of new method in the editor and clears navigation box links
-	 * @param i: IMethod to open
+	 * Searches for line of where method is invoked in new file
+	 * @param source: char[] of code
+	 * @param method: IMethod we're searching for
 	 */
+<<<<<<< HEAD
 	public static void openLink(IMethod i) {
 		IEditorPart editor = null;
 		try {
@@ -139,6 +153,9 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	}
 	
 	private static void lineSearch(char[] source, IMethod method) {
+=======
+	private void lineSearch(char[] source, IMethod method) {
+>>>>>>> 9e7430d02c6f5eb51c986bd85f19126c29bb5e91
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(source);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
@@ -156,7 +173,9 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 					return true;
 				}
 				public boolean visit(ClassInstanceCreation c) {
-					//System.out.println("  "+c.getType().toString() +" " + AnnotationManager.currentSearch);
+					if(c.getType().toString().equals(searchMethod)) {
+						searchResult = c;
+					}
 					return true;
 				}
 			});
@@ -164,6 +183,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 		}
 		});
 	}	
+	
 	/**
 	 * Opens the new class at the specific line
 	 * http://stackoverflow.com/questions/2873879/eclipe-pde-jump-to-line-x-and-highlight-it

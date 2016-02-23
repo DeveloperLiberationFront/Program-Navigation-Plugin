@@ -33,10 +33,19 @@ import org.eclipse.jdt.core.search.SearchPattern;
 import org.eclipse.jdt.core.search.SearchRequestor;
 import org.eclipse.jdt.internal.corext.callhierarchy.CallHierarchy;
 import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
+import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
+import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.TextSelection;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.ISelectionService;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.texteditor.ITextEditor;
 
-import dataTool.ui.DataLink;
+import edu.pdx.cs.multiview.jdt.util.JDTUtils;
 
 
 /**
@@ -55,7 +64,6 @@ public class DataCallHierarchy {
 	private String className;
 	private String location;
 	private ICompilationUnit cUnit;
-	private HashMap<String, ArrayList<DataLink>> results;
 	
 	public DataCallHierarchy() {
 		
@@ -70,19 +78,23 @@ public class DataCallHierarchy {
 	 */
 	public Set<IMethod> searchProject(DataNode node, String direction) throws JavaModelException {
 		Set<IMethod> results = null;
-		System.out.println(node.getDeclarationMethod()+" declaration");
 		if (direction.equals(Finder.UP)) {
 			Method up = node.getDeclarationMethod();
 			if(up != null) {
-				results = search(up.getName().getIdentifier(), Finder.UP);
+				results = search(node, up, Finder.UP);
 			}
 		}
 		else if (direction.equals(Finder.DOWN)) {
-			ArrayList<Method> down = Finder.getInstance().downSearch(node);
-			if(down != null) {
+			ArrayList<String> down = new ArrayList<String>();
+			for(DataNode dn: Finder.getInstance().getOccurrences(node.getValue(), new Position(node.getStartPosition(),node.getLength()))) {
+				if(dn.getInvocationMethod() != null) {
+					down.add(dn.getInvocationMethod().getName().getIdentifier());
+				}
+			}
+			if(down != null && !down.isEmpty()) {
 				if( node.getInvocationMethod() != null ) {
 					Set<IMethod> searchDown = new HashSet<IMethod>();
-					Set<IMethod> temp = search(node.getInvocationMethod().getName().getIdentifier(), Finder.DOWN);
+					Set<IMethod> temp = search(node, node.getInvocationMethod(), Finder.DOWN);
 					for(IMethod i: temp) {
 						if(down.contains(i.getElementName())) {
 							searchDown.add(i);
@@ -96,12 +108,13 @@ public class DataCallHierarchy {
 	}
 	/**
 	 * Searches project for given method name
+	 * @param node 
 	 * @param methodName: String of current method name
 	 * @param direction: String we are searching (Finder.UP or Finder.DOWN)
 	 * @returns Set of methods calling or called by methodName
 	 * @throws JavaModelException
 	 */
-	public Set<IMethod> search(String methodName, String direction) throws JavaModelException {
+	public Set<IMethod> search(DataNode node, Method methodName, String direction) throws JavaModelException {
 	    CallHierarchyGenerator callGen = new CallHierarchyGenerator();
 		IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
 		String[] pathArray = activeEditor.getTitleToolTip().split("/");
@@ -128,9 +141,9 @@ public class DataCallHierarchy {
 	    IPackageFragment frag = ipf.getPackageFragment(projectPath);
 	    cUnit = frag.getCompilationUnit(projectFile);
     	IType type = cUnit.getType(projectFile.replace(".java", ""));
-		IMethod m = findMethod(type, methodName);
+		IMethod m = findMethod(type, methodName.getName().getIdentifier());
 		if(m == null){
-			return null;
+			m = getCurrentMethod(node.getStartPosition());
 		}
 	    Set<IMethod> methods = new HashSet<IMethod>();
 	    if(direction.equals(Finder.UP)) {
@@ -171,5 +184,29 @@ public class DataCallHierarchy {
 	    }
 
 	    return theMethod;
+	}
+	
+	/**
+	 * Gets the method that the cursor is currently located in.
+	 * @param offset
+	 * @return IMethod for current method
+	 */
+	public IMethod getCurrentMethod(int offset) {
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		ITextEditor editor = (ITextEditor) page.getActiveEditor();
+		IJavaElement elem = JavaUI.getEditorInputJavaElement(editor.getEditorInput());
+		if (elem instanceof ICompilationUnit) {
+		    IJavaElement selected = null;
+			try {
+				selected = ((ICompilationUnit) elem).getElementAt(offset);
+			} catch (JavaModelException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    if (selected != null && selected.getElementType() == IJavaElement.METHOD) {
+		         return ((IMethod) selected);
+		    }
+		}
+		return null;
 	}
 }

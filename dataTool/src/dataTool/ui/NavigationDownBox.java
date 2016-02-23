@@ -47,6 +47,7 @@ import org.eclipse.ui.texteditor.ITextEditor;
 import dataTool.DataNode;
 import dataTool.EnableNavigationAction;
 import dataTool.Finder;
+import dataTool.annotations.LinkAnnotation;
 
 @Deprecated
 public class NavigationDownBox {
@@ -127,16 +128,15 @@ public class NavigationDownBox {
 		}
 		if(set != null) {
 	    	for(IMethod i: set) {
-	    		DataLink l = new DataLink(i, i.getElementName(), i.getPath().toString());
 	    		Link link = new Link(shell, SWT.NULL);
-		    	link.setText(l.getText());
+		    	link.setText("<a>null</a>");
 		    	link.addListener(SWT.Selection, new Listener() {
 		    		@Override
 					public void handleEvent(Event arg0) {
 						link.setForeground(new Color(null, 128,0,128));
 		    			try {
 		    				if(i.getSource() == null) {
-		    					JOptionPane.showMessageDialog(null, DataLink.INVALID, "Error",JOptionPane.ERROR_MESSAGE);
+		    					JOptionPane.showMessageDialog(null, LinkAnnotation.INVALID, "Error",JOptionPane.ERROR_MESSAGE);
 		    				}
 		    				else {
 								openLink(i);

@@ -43,9 +43,6 @@ import dataTool.AnnotationManager;
 import dataTool.DataCallHierarchy;
 import dataTool.DataNode;
 import dataTool.Finder;
-import dataTool.ui.DataLink;
-import dataTool.ui.NavigationDownBox;
-import dataTool.ui.NavigationUpBox;
 
 /**
  * Class to handle the annotation painting for the Program Navigation Plugin.
@@ -223,7 +220,6 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 		Position p;
 		String word;
 		Finder finder = Finder.getInstance();
-		HashMap<String, ArrayList<DataLink>> map = null;
 		for (Map.Entry<ISelfDrawingAnnotation, Position> entry : anns.entrySet()) {
 			ann = entry.getKey();
 			p = entry.getValue();

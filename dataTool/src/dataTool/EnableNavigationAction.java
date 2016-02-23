@@ -8,7 +8,6 @@ import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
 import org.eclipse.jdt.internal.ui.javaeditor.breadcrumb.IBreadcrumb;
-import org.eclipse.jdt.internal.ui.javaeditor.ShowDataInBreadcrumbAction;
 import org.eclipse.jdt.internal.ui.javaeditor.ShowInBreadcrumbAction;
 import org.eclipse.jdt.internal.ui.javaeditor.ToggleBreadcrumbAction;
 import org.eclipse.jdt.ui.JavaUI;
@@ -28,8 +27,7 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
-import dataTool.ui.NavigationDownBox;
-import dataTool.ui.NavigationUpBox;
+import dataTool.ui.ShowDataInBreadcrumbAction;
 
 /**
  * An action that enables the statement helper
@@ -95,7 +93,8 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 
 			@Override
 			public void partOpened(IWorkbenchPart arg0) {
-				// TODO Auto-generated method stub
+				// Auto-generated method stub
+				System.out.println("file opened");
 				arg0.getSite().getPage().activate(arg0);
 				try {
 					dispose();
@@ -134,14 +133,12 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 		//do nothing
 	}
 	
+	/**
+	 * Resets the plugin when user opens a new page
+	 * @param workbench
+	 * @throws JavaModelException
+	 */
 	public void reset(IWorkbenchPage workbench) throws JavaModelException {
-		try {
-			//NavigationUpBox.getInstance().setText(null);
-			//NavigationDownBox.getInstance().setText(null);
-		}
-		catch (NullPointerException e) {
-			// Navigation boxes aren't active
-		}
 		IWorkbenchPage newPage;
 		if(workbench == null) {
 			newPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -149,6 +146,13 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 		else {
 			newPage = workbench;
 		}
+		JavaEditor editor = (JavaEditor)newPage.getActiveEditor();
+		IBreadcrumb top = editor.getBreadcrumb();
+		IBreadcrumb bottom = editor.getBreadcrumb2();
+		editor.showBreadcrumbs();
+		System.out.println(editor.getTitle());
+		top.setText(null);
+		bottom.setText(null);
         init(newPage.getWorkbenchWindow());
         run(null);
 	}
