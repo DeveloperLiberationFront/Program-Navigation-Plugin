@@ -10,9 +10,10 @@
  *******************************************************************************/
 package org.eclipse.jdt.internal.ui.javaeditor.breadcrumb;
 
-import java.util.Set;
+import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -21,6 +22,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 
 import org.eclipse.core.runtime.Assert;
@@ -31,14 +33,30 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.StructuredSelection;
 
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+
+import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
 
 import org.eclipse.jdt.core.IMethod;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTNode;
+import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
+import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.MethodInvocation;
 
+import org.eclipse.jdt.ui.JavaUI;
 
 /**
  * The editor breadcrumb shows the parent chain of the active editor item inside a
@@ -73,10 +91,10 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 
 	private IPartListener fPartListener;
 	
-	//Program Navigation Plugin
-	public static Set<IMethod> searchResultsUp;
-	public static Set<IMethod> searchResultsDown;
+	private Shell shell;
 	
+	public static IMethod searchMethod = null;
+		
 	/**
 	 * The editor inside which this breadcrumb is shown.
 	 *
@@ -157,7 +175,6 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 		Object input= fBreadcrumbViewer.getInput();
 		if (input == element || element.equals(input))
 			return;
-
 		fBreadcrumbViewer.setInput(element);
 	}
 
@@ -165,8 +182,6 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 	 * @see org.eclipse.jdt.internal.ui.javaeditor.IBreadcrumb#setFocus()
 	 */
 	public void activate() {
-		if (fBreadcrumbViewer.getSelection().isEmpty())
-			fBreadcrumbViewer.setSelection(new StructuredSelection(fBreadcrumbViewer.getInput()));
 		fBreadcrumbViewer.setFocus();
 	}
 
@@ -176,13 +191,117 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 	public boolean isActive() {
 		return fIsActive;
 	}
+	
+	/**
+	 * Adds links for program navigation in the breadcrumbs
+	 * TODO refresh breadcrumb2, top breadcrumb go to line #
+	 */
+	@Override
+	public void setText(ArrayList<Object> items) {
+		for(Control c: fComposite.getChildren()) {
+			c.dispose();
+		}
+		if(items != null) {
+			GridLayout gridLayout= new GridLayout(items.size(), false);
+			gridLayout.marginWidth= 0;
+			gridLayout.marginHeight= 0;
+			gridLayout.verticalSpacing= 0;
+			gridLayout.horizontalSpacing= 0;
+			fComposite.setLayout(gridLayout);
+			fComposite.update();
+			for(Object o: items) {
+				if(o instanceof IMethod) {
+					final IMethod i = (IMethod)o;
+					Link link = new Link(fComposite, SWT.NULL);
+					link.setText("<a>"+i.getElementName()+"</a> ");
+					link.addListener(SWT.Selection, new Listener() {
+						@Override
+						public void handleEvent(Event arg0) {
+						//Go to specific line
+						try {
+							IEditorPart editor = JavaUI.openInEditor(i, true, true);
+							if(searchMethod != null && editor != null) {
+								String code = ((AbstractTextEditor)editor).getDocumentProvider().getDocument(editor.getEditorInput()).get();
+								lineSearch(code.toCharArray(), i);
+								goToLine(editor);
+							}
+						} catch (PartInitException | JavaModelException e) {
+							// Auto-generated catch block
+							e.printStackTrace();
+						}
+						}
+					});
+				}
+				else if(o instanceof int[]) {
+					final int[] list = (int[])o;
+					final Link link = new Link(fComposite, SWT.NULL);
+					link.setText("<a>line "+list[0]+"</a> ");
+					link.addListener(SWT.Selection, new Listener(){
 
+						@Override
+						public void handleEvent(Event arg0) {
+							link.setForeground(new Color(null, 128,0,128));
+							IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+					    	((ITextEditor) editor).selectAndReveal(list[1], list[2]);
+						}
+					});
+				}
+			}
+		}
+		fComposite.redraw();
+		fComposite.layout();
+		fComposite.getShell().layout();
+	}
+	
+	private static ASTNode searchResult = null;
+
+	private void lineSearch(char[] source, IMethod method) {
+		final IMethod m = method;
+		ASTParser parser = ASTParser.newParser(AST.JLS3);
+		parser.setSource(source);
+		parser.setKind(ASTParser.K_COMPILATION_UNIT);
+		final CompilationUnit cu = (CompilationUnit) parser.createAST(null);
+		cu.accept(new ASTVisitor(){
+			public boolean visit(MethodDeclaration md) {
+				final String methodName = md.getName().getIdentifier();
+				md.accept(new ASTVisitor() {
+				public boolean visit(MethodInvocation mi) {
+					if(m.getElementName().equals(methodName)) {
+						if(mi.getName().getIdentifier().equals(searchMethod.getElementName())) {
+							searchResult = mi;
+						}
+					}
+					return true;
+				}
+				public boolean visit(ClassInstanceCreation c) {
+					//TODO Class instance
+					return true;
+				}
+			});
+				return true;
+		}
+		});
+	}
+		
+	private static void goToLine(IEditorPart editorPart) {
+		if (!(editorPart instanceof ITextEditor)) {
+		    return;
+		}
+		ITextEditor editor = (ITextEditor) editorPart;
+		IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
+		if (document != null && searchResult != null) {
+		    editor.selectAndReveal(searchResult.getStartPosition(), searchResult.getLength());
+		}
+	}
+	
+	public void setSearchMethod(IMethod iMethod) {
+		searchMethod = iMethod;
+	}
 	/*
 	 * @see org.eclipse.jdt.internal.ui.javaeditor.IBreadcrumb#createContent(org.eclipse.swt.widgets.Composite)
 	 */
 	public Control createContent(Composite parent) {
 		Assert.isTrue(fComposite == null, "Content must only be created once."); //$NON-NLS-1$
-		//System.out.println("createMe");
 		boolean rtl= (getTextEditor().getSite().getShell().getStyle() & SWT.RIGHT_TO_LEFT) != 0;
 
 		fComposite= new Composite(parent, rtl ? SWT.RIGHT_TO_LEFT : SWT.NONE);
@@ -194,9 +313,7 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 		gridLayout.verticalSpacing= 0;
 		gridLayout.horizontalSpacing= 0;
 		fComposite.setLayout(gridLayout);
-		//TODO Add links!!!!!!!!!!!!!!!!!!!!!!!!!!
 		Link l = new Link(fComposite, SWT.NULL);
-		l.setText("<a>test</a>");
 		fDisplayFocusListener= new Listener() {
 			public void handleEvent(Event event) {
 				if (isBreadcrumbEvent(event)) {
@@ -225,85 +342,7 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 		Display.getCurrent().addFilter(SWT.FocusIn, fDisplayFocusListener);
 		fBreadcrumbViewer= createViewer(fComposite);
 		fBreadcrumbViewer.getControl().setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-		/*fBreadcrumbViewer.addDoubleClickListener(new IDoubleClickListener() {
-			public void doubleClick(DoubleClickEvent event) {
-				Object element= ((IStructuredSelection) event.getSelection()).getFirstElement();
-				if (element == null)
-					return;
-
-				BreadcrumbItem item= (BreadcrumbItem) fBreadcrumbViewer.doFindItem(element);
-				if (item == null)
-					return;
-
-				int index= fBreadcrumbViewer.getIndexOfItem(item);
-				BreadcrumbItem parentItem= fBreadcrumbViewer.getItem(index - 1);
-				parentItem.openDropDownMenu();
-			}
-		});/*
-
-		fBreadcrumbViewer.addOpenListener(new IOpenListener() {
-			public void open(OpenEvent event) {
-				doRevealOrOpen(event.getSelection());
-			}
-		});
-
-		/*fBreadcrumbViewer.addMenuDetectListener(new MenuDetectListener() {
-			public void menuDetected(MenuDetectEvent event) {
-				ISelectionProvider selectionProvider;
-				if (fBreadcrumbViewer.isDropDownOpen()) {
-					selectionProvider= fBreadcrumbViewer.getDropDownSelectionProvider();
-				} else {
-					selectionProvider= fBreadcrumbViewer;
-				}
-
-				ActionGroup actionGroup= createContextMenuActionGroup(selectionProvider);
-				if (actionGroup == null)
-					return;
-
-				try {
-					MenuManager manager= new MenuManager();
-					actionGroup.setContext(new ActionContext(selectionProvider.getSelection()));
-					actionGroup.fillContextMenu(manager);
-
-					getTextEditor().getEditorSite().registerContextMenu(manager, selectionProvider, false);
-
-					if (manager.isEmpty())
-						return;
-
-					Menu menu= manager.createContextMenu(fBreadcrumbViewer.getControl());
-					menu.setLocation(event.x + 10, event.y + 10);
-					menu.setVisible(true);
-					while (!menu.isDisposed() && menu.isVisible()) {
-						if (!menu.getDisplay().readAndDispatch())
-							menu.getDisplay().sleep();
-					}
-				} finally {
-					actionGroup.dispose();
-				}
-			}
-		});*/
-
-		/*fPropertyChangeListener= new IPropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent event) {
-				if (ACTIVE_TAB_BG_END.equals(event.getProperty())) {
-					if (fComposite.isFocusControl()) {
-						fComposite.setBackground(JFaceResources.getColorRegistry().get(ACTIVE_TAB_BG_END));
-					}
-				}
-			}
-		};
-		JFaceResources.getColorRegistry().addListener(fPropertyChangeListener);*/
-		/*for(Control c: fComposite.getChildren()) {
-			if(!(c instanceof Link)) {
-				c.dispose();
-			}
-		}*/
-		for(Control c: fComposite.getChildren()) {
-			//if(!(c instanceof Link)) {
-				//c.setVisible(false);
-				System.out.println(c.toString() +"c3");
-			//}
-		}
+		
 		return fComposite;
 	}
 

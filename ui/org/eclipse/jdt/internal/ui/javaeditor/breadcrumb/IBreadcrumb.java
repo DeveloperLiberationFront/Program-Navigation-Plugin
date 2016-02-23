@@ -10,11 +10,12 @@
  *******************************************************************************/
 package org.eclipse.jdt.internal.ui.javaeditor.breadcrumb;
 
+import java.util.ArrayList;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import org.eclipse.jface.viewers.ISelectionProvider;
-
 
 /**
  * Implementors can provide a breadcrumb inside an editor.
@@ -67,5 +68,11 @@ public interface IBreadcrumb {
 	 * Dispose all resources hold by this breadcrumb.
 	 */
 	public void dispose();
+	
+	/**
+	 * Sets the text of the breadcrumb
+	 * @param textUp
+	 */
+	public void setText(ArrayList<Object> textUp);
 
 }

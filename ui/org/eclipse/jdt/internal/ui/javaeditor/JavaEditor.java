@@ -1569,6 +1569,9 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @since 3.4
 	 */
 	private boolean fIsBreadcrumbVisible;
+	
+	private boolean fIsBreadcrumb2Visible;
+	
 	/**
 	 * Tells whether the occurrence annotations are sticky
 	 * i.e. whether they stay even if there's no valid Java
@@ -1708,6 +1711,11 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @since 3.4
 	 */
 	private IBreadcrumb fBreadcrumb;
+	
+	/**
+	 * Attempting to add breadcrumb at the bottom of the screen
+	 */
+	private IBreadcrumb fBreadcrumb2;
 
 	/**
 	 * The composite containing the breadcrumb.
@@ -1715,6 +1723,11 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @since 3.4
 	 */
 	private Composite fBreadcrumbComposite;
+	
+	/**
+	 * Attempting to add breadcrumb at the bottom of the screen
+	 */
+	private Composite fBreadcrumbComposite2;
 
 	/**
 	 * This editor's selection provider.
@@ -1800,7 +1813,6 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @see AbstractTextEditor#createSourceViewer(Composite, IVerticalRuler, int)
 	 */
 	protected final ISourceViewer createSourceViewer(Composite parent, IVerticalRuler verticalRuler, int styles) {
-
 		Composite composite= new Composite(parent, SWT.NONE);
 		GridLayout layout= new GridLayout(1, false);
 		layout.marginHeight= 0;
@@ -1808,7 +1820,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		layout.horizontalSpacing= 0;
 		layout.verticalSpacing= 0;
 		composite.setLayout(layout);
-
+		
 		fBreadcrumbComposite= new Composite(composite, SWT.NONE);
 		GridData layoutData= new GridData(SWT.FILL, SWT.TOP, true, false);
 		fBreadcrumbComposite.setLayoutData(layoutData);
@@ -1827,7 +1839,18 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		fillLayout.marginWidth= 0;
 		fillLayout.spacing= 0;
 		editorComposite.setLayout(fillLayout);
-
+		
+		fBreadcrumbComposite2 = new Composite(composite, SWT.NONE);
+		GridData layoutData2 = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
+		fBreadcrumbComposite2.setLayoutData(layoutData2);
+		layout= new GridLayout(1, false);
+		layout.marginHeight= 0;
+		layout.marginWidth= 0;
+		layout.horizontalSpacing= 0;
+		layout.verticalSpacing= 0;
+		layoutData.exclude= true;
+		fBreadcrumbComposite2.setLayout(layout);
+		
 		IPreferenceStore store= getPreferenceStore();
 		JavaSourceViewer javaSourceViewer= createJavaSourceViewer(editorComposite, verticalRuler, getOverviewRuler(), isOverviewRulerVisible(), styles, store);
 
@@ -1883,6 +1906,14 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	public IBreadcrumb getBreadcrumb() {
 		return fBreadcrumb;
 	}
+	
+	/**
+	 * 
+	 * @return breadcrumb at the bottom of the editor
+	 */
+	public IBreadcrumb getBreadcrumb2() {
+		return fBreadcrumb2;
+	}
 
 	/**
 	 * Returns the preference key for the breadcrumb. The
@@ -1899,15 +1930,15 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	}
 
 	/**
-	 * Returns true if the breadcrumb is active. If true
-	 * then the breadcrumb has the focus if this part
-	 * is the active part.
+	 * Returns true if the breadcrumbs are active. If true
+	 * then the breadcrumb and breadcrumb2 have the focus if this part
 	 *
-	 * @return true if the breadcrumb is active.
+	 * @return true if the breadcrumbs are active.
 	 * @since 3.4
 	 */
-	public boolean isBreadcrumbActive() {
-		return fBreadcrumb != null && fBreadcrumb.isActive();
+	public boolean areBreadcrumbsActive() {
+		return (fBreadcrumb != null && fBreadcrumb.isActive() &&
+					fBreadcrumb2 != null && fBreadcrumb2.isActive());
 	}
 
 	/**
@@ -1916,47 +1947,43 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 *
 	 * @since 3.4
 	 */
-	private void showBreadcrumb() {
-		if (fBreadcrumb == null)
+	public void showBreadcrumbs() {
+		if (fBreadcrumb == null || fBreadcrumb2 == null)
 			return;
 
 		if (fBreadcrumbComposite.getChildren().length == 0) {
 			fBreadcrumb.createContent(fBreadcrumbComposite);
 		}
+		
+		if (fBreadcrumbComposite2.getChildren().length == 0) {
+			fBreadcrumb2.createContent(fBreadcrumbComposite2);
+		}
 
 		((GridData) fBreadcrumbComposite.getLayoutData()).exclude= false;
 		fBreadcrumbComposite.setVisible(true);
-
-		ISourceReference selection= computeHighlightRangeSourceReference();
-		if (selection == null)
-			selection= getInputJavaElement();
-		setBreadcrumbInput(selection);
+		
+		((GridData) fBreadcrumbComposite2.getLayoutData()).exclude= false;
+		fBreadcrumbComposite2.setVisible(true);
+		
 		fBreadcrumbComposite.getParent().layout(true, true);
+		fBreadcrumbComposite2.getParent().layout(true, true);
 	}
 
 	/**
-	 * Hides the breadcrumb
+	 * Hides the breadcrumbs
 	 *
 	 * @since 3.4
 	 */
-	private void hideBreadcrumb() {
-		if (fBreadcrumb == null)
+	private void hideBreadcrumbs() {
+		if (fBreadcrumb == null || fBreadcrumb2 == null)
 			return;
 		((GridData) fBreadcrumbComposite.getLayoutData()).exclude= true;
 		fBreadcrumbComposite.setVisible(false);
 		fBreadcrumbComposite.getParent().layout(true, true);
-	}
-
-	/**
-	 * Sets the breadcrumb input to the given element.
-	 * @param element the element to use as input for the breadcrumb
-	 * @since 3.4
-	 */
-	private void setBreadcrumbInput(ISourceReference element) {
-		if (fBreadcrumb == null)
-			return;
-
-		fBreadcrumb.setInput(element);
+		
+		((GridData) fBreadcrumbComposite2.getLayoutData()).exclude= true;
+		fBreadcrumbComposite2.setVisible(false);
+		fBreadcrumbComposite2.getParent().layout(true, true);
 	}
 
 	/**
@@ -2152,7 +2179,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 						 * @since 3.4
 						 */
 						public Object getInput() {
-							if (isBreadcrumbActive())
+							if (areBreadcrumbsActive())
 								return null;
 
 							return getEditorInput();
@@ -2163,8 +2190,9 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 						 * @since 3.3
 						 */
 						public ISelection getSelection() {
-							if (isBreadcrumbActive())
-								return getBreadcrumb().getSelectionProvider().getSelection();
+							if (areBreadcrumbsActive()) {
+								return getBreadcrumb2().getSelectionProvider().getSelection();
+							}
 
 							try {
 								IJavaElement je= SelectionConverter.getElementAtOffset(JavaEditor.this);
@@ -2190,7 +2218,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		}
 
 		if (required == IContextProvider.class) {
-			if (isBreadcrumbActive()) {
+			if (areBreadcrumbsActive()) {
 				return JavaUIHelp.getHelpContextProvider(this, IJavaHelpContextIds.JAVA_EDITOR_BREADCRUMB);
 			} else {
 				return JavaUIHelp.getHelpContextProvider(this, IJavaHelpContextIds.JAVA_EDITOR);
@@ -2211,8 +2239,6 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		ISourceReference element= computeHighlightRangeSourceReference();
 		if (getPreferenceStore().getBoolean(PreferenceConstants.EDITOR_SYNC_OUTLINE_ON_CURSOR_MOVE))
 			synchronizeOutlinePage(element);
-		if (fIsBreadcrumbVisible && fBreadcrumb != null && !fBreadcrumb.isActive())
-			setBreadcrumbInput(element);
 		setSelection(element, false);
 		if (!fSelectionChangedViaGotoAnnotation)
 			updateStatusLine();
@@ -2356,7 +2382,9 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	public void setFocus() {
 		if (fBreadcrumb != null && fBreadcrumb.isActive()) {
 			fBreadcrumb.activate();
-			return;
+		}
+		if (fBreadcrumb2 != null && fBreadcrumb2.isActive()) {
+			fBreadcrumb2.activate();
 		}
 
 		super.setFocus();
@@ -2522,6 +2550,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		ISourceViewer sourceViewer= getSourceViewer();
 		if (!(sourceViewer instanceof ISourceViewerExtension2)) {
 			setPreferenceStore(createCombinedPreferenceStore(input));
+			System.out.println("do input "+input);
 			internalDoSetInput(input);
 			return;
 		}
@@ -2652,6 +2681,11 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		if (fBreadcrumb != null) {
 			fBreadcrumb.dispose();
 			fBreadcrumb= null;
+		}
+		
+		if (fBreadcrumb2 != null) {
+			fBreadcrumb2.dispose();
+			fBreadcrumb2 = null;
 		}
 
 		super.dispose();
@@ -2864,10 +2898,11 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 			if (property.equals(getBreadcrumbPreferenceKey())) {
 				if (newBooleanValue != fIsBreadcrumbVisible) {
 					fIsBreadcrumbVisible= newBooleanValue;
-					if (fIsBreadcrumbVisible)
-						showBreadcrumb();
+					fIsBreadcrumb2Visible = newBooleanValue;
+					if (fIsBreadcrumbVisible && fIsBreadcrumb2Visible)
+						showBreadcrumbs();
 					else
-						hideBreadcrumb();
+						hideBreadcrumbs();
 				}
 				return;
 			}
@@ -3084,9 +3119,11 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 			installSemanticHighlighting();
 
 		fBreadcrumb= createBreadcrumb();
+		fBreadcrumb2 = createBreadcrumb();
 		fIsBreadcrumbVisible= isBreadcrumbShown();
-		if (fIsBreadcrumbVisible)
-			showBreadcrumb();
+		fIsBreadcrumb2Visible = isBreadcrumbShown();
+		if (fIsBreadcrumbVisible && fIsBreadcrumb2Visible)
+			showBreadcrumbs();
 
 		PlatformUI.getWorkbench().addWindowListener(fActivationListener);
 	}
@@ -3380,7 +3417,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 	 * @return true if editor breadcrumbs are enabled
 	 * @since 3.4
 	 */
-	protected boolean isBreadcrumbShown() {
+	public boolean isBreadcrumbShown() {
 		IPreferenceStore store= getPreferenceStore();
 		String key= getBreadcrumbPreferenceKey();
 		return store != null && key != null && store.getBoolean(key);

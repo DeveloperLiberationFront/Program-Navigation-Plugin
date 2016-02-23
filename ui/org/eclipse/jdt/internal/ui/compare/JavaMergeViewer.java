@@ -509,7 +509,7 @@ public class JavaMergeViewer extends TextMergeViewer {
 		super.createControls(composite);
 		IWorkbenchPart workbenchPart = getCompareConfiguration().getContainer().getWorkbenchPart();
 		if (workbenchPart != null) {
-			IContextService service = (IContextService)workbenchPart.getSite().getService(IContextService.class);
+			IContextService service = workbenchPart.getSite().getService(IContextService.class);
 			if (service != null) {
 				service.activateContext("org.eclipse.jdt.ui.javaEditorScope"); //$NON-NLS-1$
 			}

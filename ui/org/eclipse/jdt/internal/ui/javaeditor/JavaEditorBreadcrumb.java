@@ -557,9 +557,6 @@ public class JavaEditorBreadcrumb extends EditorBreadcrumb {
 	 */
 	protected BreadcrumbViewer createViewer(Composite composite) {
 		fViewer= new ProblemBreadcrumbViewer(composite, SWT.HORIZONTAL);
-		//fViewer.setLabelProvider(createLabelProvider());
-		//fViewer.setToolTipLabelProvider(createToolTipLabelProvider());
-
 		fViewer.setContentProvider(createContentProvider());
 		fViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			public void selectionChanged(SelectionChangedEvent event) {
@@ -772,7 +769,7 @@ public class JavaEditorBreadcrumb extends EditorBreadcrumb {
 	/*
 	 * @see org.eclipse.jdt.internal.ui.javaeditor.breadcrumb.EditorBreadcrumb#getCurrentInput()
 	 */
-	protected Object getCurrentInput() {
+	public Object getCurrentInput() {
 		try {
 			ITypeRoot input= SelectionConverter.getInput(getJavaEditor());
 			if (input == null)
@@ -901,5 +898,4 @@ public class JavaEditorBreadcrumb extends EditorBreadcrumb {
 	private JavaEditor getJavaEditor() {
 		return (JavaEditor)getTextEditor();
 	}
-
 }

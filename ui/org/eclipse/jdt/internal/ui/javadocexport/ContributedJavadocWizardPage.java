@@ -132,7 +132,7 @@ public class ContributedJavadocWizardPage extends NewElementWizardPage implement
 	public IJavaElement[] getSelectedJavaElements() {
 		IJavaElement[] sourceElements= fStore.getSourceElements();
 		if (sourceElements != null) {
-			return (IJavaElement[]) sourceElements.clone();
+			return sourceElements.clone();
 		}
 		return new IJavaElement[0];
 	}
