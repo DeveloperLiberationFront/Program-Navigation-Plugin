@@ -179,6 +179,7 @@ public class Finder {
 	public TreeSet<DataNode> getOccurrences(String s, Position p) {
 		TreeSet<DataNode> returnList = new TreeSet<DataNode>();
 		String binding = null;
+		String bindingKey = null;
 		String key = null;
 
 		for (Entry<String, TreeSet<DataNode>> entry : map.entrySet()) {
@@ -193,6 +194,7 @@ public class Finder {
 					if (dn.getStartPosition() == p.offset) {
 						foundNode = dn;
 						binding = dn.getBinding();
+						bindingKey = dn.getKey();
 						break;
 					}
 				}
@@ -200,7 +202,7 @@ public class Finder {
 				for (DataNode dn : list) {
 					// TODO distinguish between class and local variables of
 					// same name
-					if (dn.getBinding().equals(binding)) {
+					if (dn.getKey().equals(bindingKey)) {
 						returnList.add(dn);
 					}
 				}
@@ -210,6 +212,7 @@ public class Finder {
 				for (DataNode dn : list) {
 					if (dn.getStartPosition() == p.offset) {
 						binding = dn.getBinding();
+						bindingKey = dn.getKey();
 						break;
 					}
 				}
@@ -217,7 +220,7 @@ public class Finder {
 				for (DataNode dn : list) {
 					// TODO distinguish between class and local variables of
 					// same name
-					if (dn.getBinding().equals(binding)) {
+					if (dn.getKey().equals(bindingKey)) {
 						returnList.add(dn);
 					}
 				}

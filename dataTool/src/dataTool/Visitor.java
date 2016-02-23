@@ -143,7 +143,10 @@ class Visitor extends ASTVisitor {
 			public boolean visit( SimpleName sn ) {
 				if( sn.resolveTypeBinding() != null ) {
 					// Add the node to the list
-					getNodeFromName( sn );
+					String binding = sn.resolveBinding().toString();
+					if( !binding.contains("(") && !binding.contains("class") && !binding.contains("interface")){
+						getNodeFromName( sn );
+					}
 				}
 				return true;
 			}

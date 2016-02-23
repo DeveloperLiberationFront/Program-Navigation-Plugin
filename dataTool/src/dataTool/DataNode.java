@@ -23,6 +23,7 @@ public class DataNode implements Comparable {
 	final public static String VAR = "variable";
 	
 	private String binding;
+	private String key;
 	private String value;
 	private int index;
 	private int length;
@@ -61,6 +62,7 @@ public class DataNode implements Comparable {
 		length = value.length();
 		isHighlighted = false;
 		parameterIndex = -1;
+		this.key = sn.resolveBinding().getKey();
 		this.binding = sn.resolveBinding().toString();
 	}
 	public void setStartPosition( int i ) {
@@ -127,7 +129,9 @@ public class DataNode implements Comparable {
 		}
 		return true;
 	}
-
+	public String getKey() {
+		return key;
+	}
 	@Override
 	public int compareTo(Object o) {
 		if( o == null || !( o instanceof DataNode ) ) {
