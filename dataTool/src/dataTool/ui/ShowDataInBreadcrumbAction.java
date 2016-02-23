@@ -67,7 +67,7 @@ public class ShowDataInBreadcrumbAction extends ShowInBreadcrumbAction {
 		
 		IPreferenceStore store= JavaPlugin.getDefault().getPreferenceStore();
 		store.setValue(getPreferenceKey(), true);
-		
+		fEditor.showBreadcrumbs();
 		breadcrumb.activate();
 		breadcrumb2.activate();
 	}

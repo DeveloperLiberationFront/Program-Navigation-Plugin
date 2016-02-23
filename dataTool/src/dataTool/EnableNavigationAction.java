@@ -7,9 +7,8 @@ import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.ui.JavaPlugin;
 import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
-import org.eclipse.jdt.internal.ui.javaeditor.breadcrumb.IBreadcrumb;
-import org.eclipse.jdt.internal.ui.javaeditor.ShowInBreadcrumbAction;
 import org.eclipse.jdt.internal.ui.javaeditor.ToggleBreadcrumbAction;
+import org.eclipse.jdt.internal.ui.javaeditor.breadcrumb.IBreadcrumb;
 import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -47,7 +46,7 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	
 	//whether the listener is currently enabled
 	private boolean isEnabled = false;
-	
+		
 	public void dispose() {
 		if(annotationManager!=null)
 			annotationManager.dispose();
@@ -76,7 +75,15 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 			@Override
 			public void partBroughtToTop(IWorkbenchPart arg0) {
 				// Auto-generated method stub
-
+				arg0.getSite().getPage().activate(arg0);
+				try {
+					dispose();
+					isEnabled = false;
+					reset(arg0.getSite().getPage());
+				} catch (JavaModelException e) {
+					// Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 
 			@Override
@@ -94,16 +101,7 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 			@Override
 			public void partOpened(IWorkbenchPart arg0) {
 				// Auto-generated method stub
-				System.out.println("file opened");
-				arg0.getSite().getPage().activate(arg0);
-				try {
-					dispose();
-					isEnabled = false;
-					reset(arg0.getSite().getPage());
-				} catch (JavaModelException e) {
-					// Auto-generated catch block
-					e.printStackTrace();
-				}
+				
 			}
 			
 		});
@@ -147,12 +145,6 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 			newPage = workbench;
 		}
 		JavaEditor editor = (JavaEditor)newPage.getActiveEditor();
-		IBreadcrumb top = editor.getBreadcrumb();
-		IBreadcrumb bottom = editor.getBreadcrumb2();
-		editor.showBreadcrumbs();
-		System.out.println(editor.getTitle());
-		top.setText(null);
-		bottom.setText(null);
         init(newPage.getWorkbenchWindow());
         run(null);
 	}

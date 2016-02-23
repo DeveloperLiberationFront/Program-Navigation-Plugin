@@ -61,9 +61,8 @@ public class AnnotationManager implements ISelectionChangedListener {
 	 * @param anEditor
 	 */
 	public AnnotationManager(AbstractDecoratedTextEditor anEditor) {
-
+		isActive = false;
 		parseCU(anEditor);
-
 		sourceViewer = EclipseHacks.getSourceViewer(anEditor);
 		painter = new ProgramNavigationPainter(sourceViewer);
 		painter.addSelectionChangedListener(this);
@@ -72,7 +71,6 @@ public class AnnotationManager implements ISelectionChangedListener {
 	}
 
 	public void selectionChanged(ITextSelection selection) {
-		System.out.println("selectionChanged");
 		painter.removeAllAnnotations();
 		try {
 			DataNode one = getNode(selection.getOffset());
@@ -85,12 +83,10 @@ public class AnnotationManager implements ISelectionChangedListener {
 				JavaEditor j = (JavaEditor) activeEditor;
 				upBreadcrumb = j.getBreadcrumb();
 				downBreadcrumb = j.getBreadcrumb2();
-				System.out.println(isActive+ " is active");
-				System.out.println(upBreadcrumb.isActive());
-				System.out.println(downBreadcrumb.isActive());
-				System.out.println(j.areBreadcrumbsActive());
 				if(!isActive) {
 					isActive = true;
+					upBreadcrumb.setText(null);
+					downBreadcrumb.setText(null);
 					ShowDataInBreadcrumbAction crumbs = new ShowDataInBreadcrumbAction(j, activePage);
 					crumbs.run();	
 				}

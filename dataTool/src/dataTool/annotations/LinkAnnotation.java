@@ -39,8 +39,7 @@ import dataTool.DataCallHierarchy;
 import dataTool.DataNode;
 import dataTool.EnableNavigationAction;
 import dataTool.Finder;
-import dataTool.ui.NavigationDownBox;
-import dataTool.ui.NavigationUpBox;
+
 import edu.pdx.cs.multiview.jdt.util.JDTUtils;
 import edu.pdx.cs.multiview.jface.annotation.ISelfDrawingAnnotation;
 
@@ -104,23 +103,14 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 						try {
 							search = searchResultsUp.toArray();
 							im = (IMethod)search[0];
-							try {
-								if(im.getSource() == null) {
-									JOptionPane.showMessageDialog(null, INVALID, "Error",JOptionPane.ERROR_MESSAGE);
-								}
-							} catch (HeadlessException | JavaModelException e1) {
-								// Auto-generated catch block
-								e1.printStackTrace();
+							searchMethod = linkNode.getDeclarationMethod().getName().getIdentifier();
+							editor = JavaUI.openInEditor(im, true, true);
+							if(editor != null) {
+								String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
+								lineSearch(code.toCharArray(), im);
+								goToLine(editor);
+								load = true;
 							}
-								searchMethod = linkNode.getDeclarationMethod().getName().getIdentifier();
-								load = false;
-								editor = JavaUI.openInEditor(im, true, true);
-								if(editor != null) {
-									String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
-									lineSearch(code.toCharArray(), im);
-									goToLine(editor);
-									load = true;
-								}
 						} catch (Exception e) {
 							// Auto-generated catch block
 							e.printStackTrace();
@@ -131,31 +121,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 		});
 	}
 	
-	/**
-	 * Searches for line of where method is invoked in new file
-	 * @param source: char[] of code
-	 * @param method: IMethod we're searching for
-	 */
-<<<<<<< HEAD
-	public static void openLink(IMethod i) {
-		IEditorPart editor = null;
-		try {
-			editor = JavaUI.openInEditor(i, true, true);
-		} catch (JavaModelException | PartInitException e) {
-			// Auto-generated catch block
-			e.printStackTrace();
-		}
-		if(editor != null) {
-			String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
-			lineSearch(code.toCharArray(), i);
-			goToLine(editor);
-		}
-	}
-	
-	private static void lineSearch(char[] source, IMethod method) {
-=======
 	private void lineSearch(char[] source, IMethod method) {
->>>>>>> 9e7430d02c6f5eb51c986bd85f19126c29bb5e91
 		ASTParser parser = ASTParser.newParser(AST.JLS3);
 		parser.setSource(source);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
