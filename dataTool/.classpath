@@ -8,5 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src_tests"/>
+	<classpathentry exported="true" kind="lib" path="org.eclipse.jdt.internal.ui.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
