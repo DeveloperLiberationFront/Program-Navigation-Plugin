@@ -23,6 +23,8 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
+import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
@@ -51,7 +53,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	public static Set<IMethod> searchResultsDown;
 	public String searchMethod = "";
 	private IEditorPart editor = null;
-	private boolean load = true;
+	private static boolean load = true;
 	
 	public static final String INVALID = "Method not in scope of project.";
 
@@ -90,8 +92,14 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 							im = (IMethod) o;
 							if(im.getElementName().equals(linkNode.getInvocationMethod().getName().getIdentifier())) {
 								try {
-									JavaUI.openInEditor(im, true, true);
-									load = true;
+									if(im.getParameters().length > 0) {
+										editor = JavaUI.openInEditor(im.getParameters()[linkNode.getParameterIndex()], true, true);
+										load = true;
+									}
+									else {
+										JavaUI.openInEditor(im, true, true);
+										load = true;
+									}
 								} catch (PartInitException | JavaModelException e) {
 									// Auto-generated catch block
 									e.printStackTrace();
@@ -104,13 +112,20 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 							search = searchResultsUp.toArray();
 							im = (IMethod)search[0];
 							searchMethod = linkNode.getDeclarationMethod().getName().getIdentifier();
-							editor = JavaUI.openInEditor(im, true, true);
-							if(editor != null) {
-								String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
-								lineSearch(code.toCharArray(), im);
-								goToLine(editor);
+							if(im.getParameters().length > 0) {
+								editor = JavaUI.openInEditor(im.getParameters()[linkNode.getParameterIndex()], true, true);
 								load = true;
 							}
+							else {
+								editor = JavaUI.openInEditor(im, true, true);
+								if(editor != null) {
+									String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
+									lineSearch(code.toCharArray(), im);
+									goToLine(editor);
+									load = true;
+								}
+							}
+							
 						} catch (Exception e) {
 							// Auto-generated catch block
 							e.printStackTrace();
@@ -138,12 +153,13 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 					}
 					return true;
 				}
-				public boolean visit(ClassInstanceCreation c) {
+				//TODO if we need it
+				/*public boolean visit(ClassInstanceCreation c) {
 					if(c.getType().toString().equals(searchMethod)) {
 						searchResult = c;
 					}
 					return true;
-				}
+				}*/
 			});
 				return true;
 		}
@@ -163,6 +179,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 		  ITextEditor editor = (ITextEditor) editorPart;
 		  IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
 		  if (document != null && searchResult != null) {
+			  //searchResult.
 		    	editor.selectAndReveal(searchResult.getStartPosition(), searchResult.getLength());
 		  }
 		}

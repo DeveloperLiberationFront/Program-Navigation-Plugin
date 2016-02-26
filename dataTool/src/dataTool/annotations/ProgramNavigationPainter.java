@@ -60,7 +60,6 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	private Set<ISelectionChangedListener> listeners = new HashSet<ISelectionChangedListener>();
 	private SourceViewer viewer;
 	private Map<ISelfDrawingAnnotation, Position> anns = new HashMap<ISelfDrawingAnnotation, Position>();
-	private Map<ISelfDrawingAnnotation, Position> linkAnns = new HashMap<ISelfDrawingAnnotation, Position>();
 	private boolean isActive = false;
 	private boolean painted = false;
 
@@ -151,9 +150,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 
 	public void removeAllAnnotations() {
 		Collection<Position> positions = new ArrayList<Position>(anns.values());
-		positions.addAll(linkAnns.values());
 		anns.clear();
-		linkAnns.clear();
 		fireAnnotationChangedEvent(positions);
 	}
 

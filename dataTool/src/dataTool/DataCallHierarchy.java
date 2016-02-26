@@ -96,13 +96,6 @@ public class DataCallHierarchy {
 				if( node.getInvocationMethod() != null ) {
 					Set<IMethod> searchDown = new HashSet<IMethod>();
 					Set<IMethod> temp = search(node, node.getInvocationMethod(), Finder.DOWN);
-					System.out.println(down);
-					for(IMethod i: temp) {
-						System.out.println("  "+i.getElementName());
-						if(down.contains(i.getElementName())) {
-							searchDown.add(i);
-						}
-					}
 					results = searchDown;
 				}
 			}

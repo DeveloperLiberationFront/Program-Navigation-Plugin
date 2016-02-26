@@ -68,7 +68,11 @@ public class AnnotationManager implements ISelectionChangedListener {
 		sourceViewer.addPainter(painter);
 		selectionChanged((ITextSelection) painter.getSelection());
 	}
-
+	
+	/**
+	 * Handles updating the annotations and searching when user clicks a variable
+	 * @param selection: current text selected
+	 */
 	public void selectionChanged(ITextSelection selection) {
 		painter.removeAllAnnotations();
 		try {
@@ -122,9 +126,11 @@ public class AnnotationManager implements ISelectionChangedListener {
 				if(searchUp != null) {
 					textUp.addAll(searchUp);
 					((EditorBreadcrumb)upBreadcrumb).setSearchMethod(call.getCurrentMethod(one.getStartPosition()));
+					((EditorBreadcrumb)upBreadcrumb).setSearchIndex(one.getParameterIndex());
 				}
 				if(searchDown != null) {
 					textDown.addAll(searchDown);
+					((EditorBreadcrumb)downBreadcrumb).setSearchIndex(one.getParameterIndex());
 				}
 				upBreadcrumb.setText(textUp);
 				downBreadcrumb.setText(textDown);
@@ -180,7 +186,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 	private boolean isAlreadyAnnotated(int start, int end) {
 
 		Position headPosition = painter.getPosition(highlightAnnotation);
-
+		
 		if (headPosition != null)
 			return headPosition.getOffset() == start && headPosition.getOffset() + headPosition.getLength() == end;
 
@@ -227,7 +233,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 
 	public void removeAnnotations() {
 		try {
-			if (highlightAnnotation != null) {
+			if (highlightAnnotation != null || linkAnnotation != null) {
 				painter.removeAllAnnotations();
 			}
 		} catch (Exception ignore) {

@@ -194,15 +194,17 @@ class Visitor extends ASTVisitor {
 						}
 						List<Expression> args = mi.arguments();
 						Method methodInvocation = new Method( mi.getName());
-						
 						List<DataNode> nodeArgs = new ArrayList<DataNode>();
+						int i = -1;
 						for( Expression e : args ) {
 							if( e.getNodeType() == ASTNode.SIMPLE_NAME ) {
+								i++;
 								SimpleName n = (SimpleName) e;
 								addedNode = getNodeFromName(n);
 								// TODO shouldn't need a check here
 								if( addedNode != null ) {
 									addedNode.setInvocationMethod(methodInvocation);
+									addedNode.setParameterIndex(i);
 									nodeArgs.add( addedNode );
 								}
 							} else {
