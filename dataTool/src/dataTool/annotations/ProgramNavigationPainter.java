@@ -62,6 +62,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	private Map<ISelfDrawingAnnotation, Position> anns = new HashMap<ISelfDrawingAnnotation, Position>();
 	private boolean isActive = false;
 	private boolean painted = false;
+	private LinkAnnotation linkAnnotation = new LinkAnnotation();
 
 
 	public ProgramNavigationPainter(SourceViewer v) {
@@ -228,6 +229,14 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 				// Highlight all instances in class
 				for (DataNode node : finder.getOccurrences(word, p)) {
 					ann.draw(e.gc, viewer.getTextWidget(), node.getStartPosition(), node.getLength());
+					if(node.getInvocationMethod() != null) {
+						linkAnnotation.draw(e.gc, viewer.getTextWidget(), 
+								node.getInvocationMethod().getName().getStartPosition(), node.getInvocationMethod().getName().getLength());
+					}
+					if(node.getDeclarationMethod() != null) {
+						linkAnnotation.draw(e.gc, viewer.getTextWidget(), 
+								node.getDeclarationMethod().getName().getStartPosition(), node.getDeclarationMethod().getName().getLength());
+					}
 				}
 			}
 		}

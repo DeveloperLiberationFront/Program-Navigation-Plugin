@@ -96,15 +96,14 @@ public class AnnotationManager implements ISelectionChangedListener {
 				DataCallHierarchy call = new DataCallHierarchy();
 				Set<IMethod> searchUp = null;
 				Set<IMethod> searchDown = null;
-				if((finder.upSearch(one) != null || finder.downSearch(one) != null || one.getInvocationMethod() != null) && currentSearch != null) {
+				if((finder.upSearch(one) != null || finder.downSearch(one) != null || 
+						one.getInvocationMethod() != null || one.getDeclarationMethod() != null) && currentSearch != null) {
 					searchUp = call.searchProject(one, Finder.UP);
 					searchDown = call.searchProject(one, Finder.DOWN);
-					if(one.isParameterSelected(selection.getOffset())) {
-						linkAnnotation.searchResultsDown = searchDown;
-						linkAnnotation.searchResultsUp = searchUp;
-						linkAnnotation.setDataNode(one);
-						addLinkAnnotation(one);
-					}
+					linkAnnotation.searchResultsDown = searchDown;
+					linkAnnotation.searchResultsUp = searchUp;
+					linkAnnotation.setDataNode(one);
+					addLinkAnnotation(one);
 				}
 
 				//Adds all occurrences of data node off screen

@@ -197,6 +197,10 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 		return clear;
 	}
 	
+	/**
+	 * Sets the data node to be the current selected text
+	 * @param node: Current DataNode selected by user
+	 */
 	public void setDataNode(DataNode node) {
 		linkNode = node;
 	}
