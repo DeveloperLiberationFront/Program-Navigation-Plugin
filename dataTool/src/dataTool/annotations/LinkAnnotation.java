@@ -3,6 +3,7 @@ package dataTool.annotations;
 import java.awt.HeadlessException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -23,8 +24,6 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
 import org.eclipse.ui.texteditor.ITextEditor;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.ILocalVariable;
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
@@ -53,7 +52,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	public static Set<IMethod> searchResultsDown;
 	public String searchMethod = "";
 	private IEditorPart editor = null;
-	private static boolean load = true;
+	private boolean load = true;
 	
 	public static final String INVALID = "Method not in scope of project.";
 
@@ -86,14 +85,14 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 					load = false;
 					Object[] search;
 					IMethod im;
-					if(linkNode.getInvocationMethod() != null) {
+					if(linkNode.getInvocationMethod() != null && searchResultsDown != null) {
 						search = searchResultsDown.toArray();
 						for(Object o: search) {
 							im = (IMethod) o;
 							if(im.getElementName().equals(linkNode.getInvocationMethod().getName().getIdentifier())) {
 								try {
 									if(im.getParameters().length > 0) {
-										editor = JavaUI.openInEditor(im.getParameters()[linkNode.getParameterIndex()], true, true);
+										JavaUI.openInEditor(im.getParameters()[linkNode.getParameterIndex()], true, true);
 										load = true;
 									}
 									else {
@@ -114,18 +113,15 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 							searchMethod = linkNode.getDeclarationMethod().getName().getIdentifier();
 							if(im.getParameters().length > 0) {
 								editor = JavaUI.openInEditor(im.getParameters()[linkNode.getParameterIndex()], true, true);
-								load = true;
 							}
 							else {
 								editor = JavaUI.openInEditor(im, true, true);
-								if(editor != null) {
-									String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
+								if(searchMethod != null && editor != null) {
+									String code = ((AbstractTextEditor)editor).getDocumentProvider().getDocument(editor.getEditorInput()).get();
 									lineSearch(code.toCharArray(), im);
 									goToLine(editor);
-									load = true;
 								}
 							}
-							
 						} catch (Exception e) {
 							// Auto-generated catch block
 							e.printStackTrace();
@@ -153,13 +149,12 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 					}
 					return true;
 				}
-				//TODO if we need it
-				/*public boolean visit(ClassInstanceCreation c) {
+				public boolean visit(ClassInstanceCreation c) {
 					if(c.getType().toString().equals(searchMethod)) {
 						searchResult = c;
 					}
 					return true;
-				}*/
+				}
 			});
 				return true;
 		}
@@ -179,8 +174,8 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 		  ITextEditor editor = (ITextEditor) editorPart;
 		  IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
 		  if (document != null && searchResult != null) {
-			  //searchResult.
-		    	editor.selectAndReveal(searchResult.getStartPosition(), searchResult.getLength());
+			  //TODO List m = ((MethodDeclaration)searchResult).parameters();
+		      editor.selectAndReveal(searchResult.getStartPosition(), searchResult.getLength());
 		  }
 		}
 	
@@ -197,10 +192,6 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 		return clear;
 	}
 	
-	/**
-	 * Sets the data node to be the current selected text
-	 * @param node: Current DataNode selected by user
-	 */
 	public void setDataNode(DataNode node) {
 		linkNode = node;
 	}

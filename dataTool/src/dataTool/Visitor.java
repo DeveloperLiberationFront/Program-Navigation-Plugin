@@ -101,7 +101,7 @@ class Visitor extends ASTVisitor {
 	 *            String of current data selected
 	 */
 	private void addOccurrences(DataNode dn) {
-		nodes.put(new Position(dn.getStartPosition(), dn.getLength()), dn);
+		nodes.put(dn.getPosition(), dn);
 		finder.add(dn);
 	}
 
@@ -177,7 +177,7 @@ class Visitor extends ASTVisitor {
 						addedNode = getNodeFromName(sn);
 						if( addedNode != null ) {
 							for( DataNode dn : params ) {
-								if( addedNode.getBinding().equals(dn.getBinding() ) ) {
+								if( addedNode.getKey().equals(dn.getKey() ) ) {
 									addedNode.setDeclarationMethod(methodDeclaration);
 									addedNode.setParameterIndex(dn.getParameterIndex());
 								}

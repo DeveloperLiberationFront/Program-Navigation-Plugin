@@ -28,5 +28,3 @@ Import-Package: org.eclipse.jdt.internal.ui.search
 Export-Package: dataTool,
  dataTool.annotations,
  dataTool.ui
-Bundle-ClassPath: org.eclipse.jdt.internal.ui.jar,
- .

@@ -35,8 +35,8 @@ public class DataNodeTest extends TestCase {
 	/*
 	 * Tests for all of the DataNode getters, need to add checks for ASTNode constructor as well
 	 */
-	
-	/*@Test
+	/*
+	@Test
 	public void testGetValue() {
 		DataNode node = new DataNode("TEST", 0, "type", "method");
 		assertEquals(node.getValue(),"TEST");

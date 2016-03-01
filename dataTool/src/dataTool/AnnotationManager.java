@@ -68,11 +68,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 		sourceViewer.addPainter(painter);
 		selectionChanged((ITextSelection) painter.getSelection());
 	}
-	
-	/**
-	 * Handles updating the annotations and searching when user clicks a variable
-	 * @param selection: current text selected
-	 */
+
 	public void selectionChanged(ITextSelection selection) {
 		painter.removeAllAnnotations();
 		try {
@@ -80,7 +76,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 			Finder finder = Finder.getInstance();
 			if(one != null) {
 				addAnnotation(one);
-				currentSearch = one.getBinding();
+				currentSearch = one.getKey();
 				IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 				IEditorPart activeEditor = activePage.getActiveEditor();
 				JavaEditor j = (JavaEditor) activeEditor;
@@ -96,20 +92,18 @@ public class AnnotationManager implements ISelectionChangedListener {
 				DataCallHierarchy call = new DataCallHierarchy();
 				Set<IMethod> searchUp = null;
 				Set<IMethod> searchDown = null;
-				if((finder.upSearch(one) != null || finder.downSearch(one) != null || 
-						one.getInvocationMethod() != null || one.getDeclarationMethod() != null) && currentSearch != null) {
+				if((finder.upSearch(one) != null || finder.downSearch(one) != null || one.getInvocationMethod() != null) && currentSearch != null) {
 					searchUp = call.searchProject(one, Finder.UP);
 					searchDown = call.searchProject(one, Finder.DOWN);
-					linkAnnotation.searchResultsDown = searchDown;
-					linkAnnotation.searchResultsUp = searchUp;
-					linkAnnotation.setDataNode(one);
-					addLinkAnnotation(one);
 				}
 
 				//Adds all occurrences of data node off screen
+				linkAnnotation.searchResultsDown = searchDown;
+				linkAnnotation.searchResultsUp = searchUp;
+				
 				ArrayList<Object> textUp = new ArrayList<Object>();
 				ArrayList<Object> textDown = new ArrayList<Object>();
-				for(DataNode dn: finder.getOccurrences(one.getValue(), new Position(one.getStartPosition(), one.getLength()))) {
+				for(DataNode dn: finder.getOccurrences(one.getPosition())) {
 					int[] offScreen = new int[3];
 					int line = sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1;
 					offScreen[0] = line;
@@ -121,15 +115,25 @@ public class AnnotationManager implements ISelectionChangedListener {
 					else if(dn.getStartPosition() > sourceViewer.getBottomIndexEndOffset()) {
 						textDown.add(offScreen);
 					}
+					if(dn.getDeclarationMethod() != null) {
+						linkAnnotation.setDataNode(dn);
+						linkAnnotation.draw(null, sourceViewer.getTextWidget(), 
+								dn.getDeclarationMethod().getName().getStartPosition(), dn.getDeclarationMethod().getName().getLength());
+					}
+					if(dn.getInvocationMethod() != null) {
+						linkAnnotation.setDataNode(dn);
+						linkAnnotation.draw(null, sourceViewer.getTextWidget(), dn.getInvocationMethod().getName().getStartPosition(), 
+								dn.getInvocationMethod().getName().getLength());
+					}
 				}
 				if(searchUp != null) {
 					textUp.addAll(searchUp);
-					((EditorBreadcrumb)upBreadcrumb).setSearchMethod(call.getCurrentMethod(one.getStartPosition()));
 					((EditorBreadcrumb)upBreadcrumb).setSearchIndex(one.getParameterIndex());
+					((EditorBreadcrumb)upBreadcrumb).setSearchMethod(call.getCurrentMethod(one.getStartPosition()));
 				}
 				if(searchDown != null) {
-					textDown.addAll(searchDown);
 					((EditorBreadcrumb)downBreadcrumb).setSearchIndex(one.getParameterIndex());
+					textDown.addAll(searchDown);
 				}
 				upBreadcrumb.setText(textUp);
 				downBreadcrumb.setText(textDown);
@@ -185,7 +189,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 	private boolean isAlreadyAnnotated(int start, int end) {
 
 		Position headPosition = painter.getPosition(highlightAnnotation);
-		
+
 		if (headPosition != null)
 			return headPosition.getOffset() == start && headPosition.getOffset() + headPosition.getLength() == end;
 
@@ -232,7 +236,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 
 	public void removeAnnotations() {
 		try {
-			if (highlightAnnotation != null || linkAnnotation != null) {
+			if (highlightAnnotation != null) {
 				painter.removeAllAnnotations();
 			}
 		} catch (Exception ignore) {

@@ -87,7 +87,7 @@ public class DataCallHierarchy {
 		}
 		else if (direction.equals(Finder.DOWN)) {
 			ArrayList<String> down = new ArrayList<String>();
-			for(DataNode dn: Finder.getInstance().getOccurrences(node.getValue(), new Position(node.getStartPosition(),node.getLength()))) {
+			for(DataNode dn: Finder.getInstance().getOccurrences(node.getPosition())) {
 				if(dn.getInvocationMethod() != null) {
 					down.add(dn.getInvocationMethod().getName().getIdentifier());
 				}
@@ -96,6 +96,11 @@ public class DataCallHierarchy {
 				if( node.getInvocationMethod() != null ) {
 					Set<IMethod> searchDown = new HashSet<IMethod>();
 					Set<IMethod> temp = search(node, node.getInvocationMethod(), Finder.DOWN);
+					for(IMethod i: temp) {
+						if(down.contains(i.getElementName())) {
+							searchDown.add(i);
+						}
+					}
 					results = searchDown;
 				}
 			}
