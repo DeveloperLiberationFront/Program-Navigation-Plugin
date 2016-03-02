@@ -47,6 +47,7 @@ import edu.pdx.cs.multiview.jface.annotation.ISelfDrawingAnnotation;
 public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation {
 	
 	private DataNode linkNode;
+	private static DataNode previousNode = null;
 	private static ASTNode searchResult;
 	public static Set<IMethod> searchResultsUp;
 	public static Set<IMethod> searchResultsDown;
@@ -60,7 +61,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	 * Function to add link annotations to methods of parameters
 	 */
 	public void draw(GC gc, StyledText textWidget, int offset, int length) {		
-		StyleRange style = new StyleRange();
+		final StyleRange style = new StyleRange();
 		style.start = offset;
 		style.length = length;
 		style.underline = true;
@@ -80,6 +81,11 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 
 			@Override
 			public void mouseUp(MouseEvent arg0) {
+				if(linkNode == previousNode) {
+					//Occasionally click registers twice and messes up direction the link
+					return;
+				}
+				previousNode = linkNode;
 				int click = textWidget.getOffsetAtLocation(new Point(arg0.x,arg0.y));
 				if(click >= style.start && click <= style.start+style.length && load){
 					load = false;
@@ -106,7 +112,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 							}
 						}
 					}
-					else if(linkNode.getDeclarationMethod() != null) {
+					else if(linkNode.getDeclarationMethod() != null && searchResultsUp != null) {
 						try {
 							search = searchResultsUp.toArray();
 							im = (IMethod)search[0];

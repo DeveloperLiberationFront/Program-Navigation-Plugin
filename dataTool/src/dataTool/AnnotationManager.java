@@ -100,7 +100,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 				//Adds all occurrences of data node off screen
 				linkAnnotation.searchResultsDown = searchDown;
 				linkAnnotation.searchResultsUp = searchUp;
-				
+				linkAnnotation.setDataNode(one);
 				ArrayList<Object> textUp = new ArrayList<Object>();
 				ArrayList<Object> textDown = new ArrayList<Object>();
 				for(DataNode dn: finder.getOccurrences(one.getPosition())) {
@@ -116,12 +116,10 @@ public class AnnotationManager implements ISelectionChangedListener {
 						textDown.add(offScreen);
 					}
 					if(dn.getDeclarationMethod() != null) {
-						linkAnnotation.setDataNode(dn);
 						linkAnnotation.draw(null, sourceViewer.getTextWidget(), 
 								dn.getDeclarationMethod().getName().getStartPosition(), dn.getDeclarationMethod().getName().getLength());
 					}
 					if(dn.getInvocationMethod() != null) {
-						linkAnnotation.setDataNode(dn);
 						linkAnnotation.draw(null, sourceViewer.getTextWidget(), dn.getInvocationMethod().getName().getStartPosition(), 
 								dn.getInvocationMethod().getName().getLength());
 					}
