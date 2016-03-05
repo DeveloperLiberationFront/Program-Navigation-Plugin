@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -79,8 +78,7 @@ public class DataCallHierarchy {
 	 * @throws JavaModelException
 	 */
 	public Set<IMethod> searchProject(DataNode node, String direction) throws JavaModelException {
-		Set<IMethod> results = new HashSet<IMethod>();
-		//inClass = false;
+		Set<IMethod> results = null;
 		if (direction.equals(Finder.UP)) {
 			Method up = node.getDeclarationMethod();
 			if(up != null) {
@@ -89,21 +87,25 @@ public class DataCallHierarchy {
 		}
 		else if (direction.equals(Finder.DOWN)) {
 			ArrayList<String> down = new ArrayList<String>();
-			Set<IMethod> searchDown = new HashSet<IMethod>();
-			for(DataNode dn: Finder.getInstance().getOccurrences(node.getPosition())) {
+			for(DataNode dn: Finder.getInstance().getOccurrences(node.getValue(), new Position(node.getStartPosition(),node.getLength()))) {
 				if(dn.getInvocationMethod() != null) {
 					down.add(dn.getInvocationMethod().getName().getIdentifier());
-					searchDown.addAll(search(dn, dn.getInvocationMethod(), Finder.DOWN));
 				}
 			}
-			for(IMethod s: searchDown) {
-				if(down.contains(s.getElementName())) {
-					results.add(s);
+			if(down != null && !down.isEmpty()) {
+				if( node.getInvocationMethod() != null ) {
+					Set<IMethod> searchDown = new HashSet<IMethod>();
+					Set<IMethod> temp = search(node, node.getInvocationMethod(), Finder.DOWN);
+					System.out.println(down);
+					for(IMethod i: temp) {
+						System.out.println("  "+i.getElementName());
+						if(down.contains(i.getElementName())) {
+							searchDown.add(i);
+						}
+					}
+					results = searchDown;
 				}
 			}
-		}
-		if(results.isEmpty()) {
-			return null;
 		}
 		return results;
 	}
@@ -151,11 +153,15 @@ public class DataCallHierarchy {
 		    methods = callGen.getCallersOf(m);
 	    }
 	    else {
-	    	Set<IMethod> temp = callGen.getCalleesOf(m);
-			for(IMethod i: temp) {
-			  	methods.add(i);
-			}
-	    	methods.add(m);
+	    	if(!inClass) {
+			    Set<IMethod> temp = callGen.getCalleesOf(m);
+			    for(IMethod i: temp) {
+			    	methods.add(i);
+			    }
+	    	}
+	    	else {
+	    		methods.add(m);
+	    	}
 	    }
 	    return methods;
 	}
@@ -176,7 +182,7 @@ public class DataCallHierarchy {
 	    {
 	        IMethod imethod = methods[i];
 	        if (imethod.getElementName().equals(methodName)) {
-	        	//inClass = true;
+	        	inClass = true;
 	            theMethod = imethod;
 	        }
 	    }

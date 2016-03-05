@@ -6,9 +6,6 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclaration;
-import org.eclipse.jface.text.Position;
-
-import jdk.internal.org.objectweb.asm.tree.analysis.Value;
 
 /**
  * DataNode class that creates objects for the data we find and want to highlight.
@@ -25,28 +22,51 @@ public class DataNode implements Comparable {
 	final public static String FOR_VAR = "variableFor";
 	final public static String VAR = "variable";
 	
+	private String binding;
 	private String key;
-	private String name;
-	private int startPosition;
+	private String value;
+	private int index;
 	private int length;
 	private int parameterIndex;
 	private SimpleName sn;
 	private String type;
+	private String signature;
 	private Method declarationMethod;
 	private Method invocationMethod;
-	private Position position;
+	private boolean isHighlighted;
 
+//	/**
+//	 * Constructor to create DataNodes with just values, mainly for DownFinder
+//	 * @param val= Current variable name
+//	 * @param start= start position of the current variable
+//	 */
+//	public DataNode (String val, int start, String nodeType, Method call) {
+//		
+//		
+//		value = val;
+//		index = start;
+//		length = val.length();
+//		type = nodeType;
+//		method = call;
+//		if( method != null ) {
+//			signature = method.getSignature() + "." + value;
+//		} else {
+//			signature = "null";
+//		}
+//	}
+	
 	public DataNode( SimpleName sn ) {
 		this.sn = sn;
-		name = sn.getFullyQualifiedName();
-		startPosition = sn.getStartPosition();
-		length = name.length();
-		position = new Position( startPosition, length );
+		value = sn.getFullyQualifiedName();
+		index = sn.getStartPosition();
+		length = value.length();
+		isHighlighted = false;
 		parameterIndex = -1;
 		this.key = sn.resolveBinding().getKey();
+		this.binding = sn.resolveBinding().toString();
 	}
 	public void setStartPosition( int i ) {
-		startPosition = i;
+		index = i;
 	}
 	
 	/**
@@ -54,7 +74,11 @@ public class DataNode implements Comparable {
 	 * @returns variable name
 	 */
 	public String getValue() {
-		return this.name;
+		return this.value;
+	}
+	
+	public String getBinding() {
+		return binding;
 	}
 	
 	/**
@@ -62,7 +86,7 @@ public class DataNode implements Comparable {
 	 * @returns variable start position
 	 */
 	public int getStartPosition() {
-		return this.startPosition;
+		return this.index;
 	}
 	
 	/**
@@ -91,13 +115,16 @@ public class DataNode implements Comparable {
 	public void setInvocationMethod( Method m ) {
 		invocationMethod = m;
 	}
+	public String getSignature() {
+		return this.signature;
+	}
 	/**
 	 * Checks to see if current node is a parameter, only want to display box when actual
 	 * param is selected
 	 * @returns true if node is a parameter, else false
 	 */
 	public boolean isParameterSelected(int pos) {
-		if(pos < startPosition || pos > startPosition+length) {
+		if(pos < index || pos > index+length) {
 			return false;
 		}
 		return true;
@@ -110,14 +137,11 @@ public class DataNode implements Comparable {
 		if( o == null || !( o instanceof DataNode ) ) {
 			return 1;
 		}
-		return startPosition - ((DataNode)o).getStartPosition();
+		return index - ((DataNode)o).getStartPosition();
 	}
 	@Override
 	public String toString() {
-		return key;
-	}
-	public Position getPosition() {
-		return position;
+		return binding;
 	}
 
 }

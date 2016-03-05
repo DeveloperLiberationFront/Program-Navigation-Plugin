@@ -3,7 +3,6 @@ package dataTool.annotations;
 import java.awt.HeadlessException;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -47,7 +46,6 @@ import edu.pdx.cs.multiview.jface.annotation.ISelfDrawingAnnotation;
 public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation {
 	
 	private DataNode linkNode;
-	private static DataNode previousNode = null;
 	private static ASTNode searchResult;
 	public static Set<IMethod> searchResultsUp;
 	public static Set<IMethod> searchResultsDown;
@@ -61,7 +59,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	 * Function to add link annotations to methods of parameters
 	 */
 	public void draw(GC gc, StyledText textWidget, int offset, int length) {		
-		final StyleRange style = new StyleRange();
+		StyleRange style = new StyleRange();
 		style.start = offset;
 		style.length = length;
 		style.underline = true;
@@ -81,30 +79,19 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 
 			@Override
 			public void mouseUp(MouseEvent arg0) {
-				if(linkNode == previousNode) {
-					//Occasionally click registers twice and messes up direction the link
-					return;
-				}
-				previousNode = linkNode;
 				int click = textWidget.getOffsetAtLocation(new Point(arg0.x,arg0.y));
 				if(click >= style.start && click <= style.start+style.length && load){
 					load = false;
 					Object[] search;
 					IMethod im;
-					if(linkNode.getInvocationMethod() != null && searchResultsDown != null) {
+					if(linkNode.getInvocationMethod() != null) {
 						search = searchResultsDown.toArray();
 						for(Object o: search) {
 							im = (IMethod) o;
 							if(im.getElementName().equals(linkNode.getInvocationMethod().getName().getIdentifier())) {
 								try {
-									if(im.getParameters().length > 0) {
-										JavaUI.openInEditor(im.getParameters()[linkNode.getParameterIndex()], true, true);
-										load = true;
-									}
-									else {
-										JavaUI.openInEditor(im, true, true);
-										load = true;
-									}
+									JavaUI.openInEditor(im, true, true);
+									load = true;
 								} catch (PartInitException | JavaModelException e) {
 									// Auto-generated catch block
 									e.printStackTrace();
@@ -112,21 +99,17 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 							}
 						}
 					}
-					else if(linkNode.getDeclarationMethod() != null && searchResultsUp != null) {
+					else if(linkNode.getDeclarationMethod() != null) {
 						try {
 							search = searchResultsUp.toArray();
 							im = (IMethod)search[0];
 							searchMethod = linkNode.getDeclarationMethod().getName().getIdentifier();
-							if(im.getParameters().length > 0) {
-								editor = JavaUI.openInEditor(im.getParameters()[linkNode.getParameterIndex()], true, true);
-							}
-							else {
-								editor = JavaUI.openInEditor(im, true, true);
-								if(searchMethod != null && editor != null) {
-									String code = ((AbstractTextEditor)editor).getDocumentProvider().getDocument(editor.getEditorInput()).get();
-									lineSearch(code.toCharArray(), im);
-									goToLine(editor);
-								}
+							editor = JavaUI.openInEditor(im, true, true);
+							if(editor != null) {
+								String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
+								lineSearch(code.toCharArray(), im);
+								goToLine(editor);
+								load = true;
 							}
 						} catch (Exception e) {
 							// Auto-generated catch block
@@ -180,8 +163,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 		  ITextEditor editor = (ITextEditor) editorPart;
 		  IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
 		  if (document != null && searchResult != null) {
-			  //TODO List m = ((MethodDeclaration)searchResult).parameters();
-		      editor.selectAndReveal(searchResult.getStartPosition(), searchResult.getLength());
+		    	editor.selectAndReveal(searchResult.getStartPosition(), searchResult.getLength());
 		  }
 		}
 	

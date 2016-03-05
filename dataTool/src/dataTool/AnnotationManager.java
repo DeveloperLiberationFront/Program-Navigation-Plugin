@@ -76,7 +76,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 			Finder finder = Finder.getInstance();
 			if(one != null) {
 				addAnnotation(one);
-				currentSearch = one.getKey();
+				currentSearch = one.getBinding();
 				IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 				IEditorPart activeEditor = activePage.getActiveEditor();
 				JavaEditor j = (JavaEditor) activeEditor;
@@ -95,15 +95,18 @@ public class AnnotationManager implements ISelectionChangedListener {
 				if((finder.upSearch(one) != null || finder.downSearch(one) != null || one.getInvocationMethod() != null) && currentSearch != null) {
 					searchUp = call.searchProject(one, Finder.UP);
 					searchDown = call.searchProject(one, Finder.DOWN);
+					if(one.isParameterSelected(selection.getOffset())) {
+						linkAnnotation.searchResultsDown = searchDown;
+						linkAnnotation.searchResultsUp = searchUp;
+						linkAnnotation.setDataNode(one);
+						addLinkAnnotation(one);
+					}
 				}
 
 				//Adds all occurrences of data node off screen
-				linkAnnotation.searchResultsDown = searchDown;
-				linkAnnotation.searchResultsUp = searchUp;
-				linkAnnotation.setDataNode(one);
 				ArrayList<Object> textUp = new ArrayList<Object>();
 				ArrayList<Object> textDown = new ArrayList<Object>();
-				for(DataNode dn: finder.getOccurrences(one.getPosition())) {
+				for(DataNode dn: finder.getOccurrences(one.getValue(), new Position(one.getStartPosition(), one.getLength()))) {
 					int[] offScreen = new int[3];
 					int line = sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1;
 					offScreen[0] = line;
@@ -115,22 +118,12 @@ public class AnnotationManager implements ISelectionChangedListener {
 					else if(dn.getStartPosition() > sourceViewer.getBottomIndexEndOffset()) {
 						textDown.add(offScreen);
 					}
-					if(dn.getDeclarationMethod() != null) {
-						linkAnnotation.draw(null, sourceViewer.getTextWidget(), 
-								dn.getDeclarationMethod().getName().getStartPosition(), dn.getDeclarationMethod().getName().getLength());
-					}
-					if(dn.getInvocationMethod() != null) {
-						linkAnnotation.draw(null, sourceViewer.getTextWidget(), dn.getInvocationMethod().getName().getStartPosition(), 
-								dn.getInvocationMethod().getName().getLength());
-					}
 				}
 				if(searchUp != null) {
 					textUp.addAll(searchUp);
-					((EditorBreadcrumb)upBreadcrumb).setSearchIndex(one.getParameterIndex());
 					((EditorBreadcrumb)upBreadcrumb).setSearchMethod(call.getCurrentMethod(one.getStartPosition()));
 				}
 				if(searchDown != null) {
-					((EditorBreadcrumb)downBreadcrumb).setSearchIndex(one.getParameterIndex());
 					textDown.addAll(searchDown);
 				}
 				upBreadcrumb.setText(textUp);

@@ -101,7 +101,7 @@ class Visitor extends ASTVisitor {
 	 *            String of current data selected
 	 */
 	private void addOccurrences(DataNode dn) {
-		nodes.put(dn.getPosition(), dn);
+		nodes.put(new Position(dn.getStartPosition(), dn.getLength()), dn);
 		finder.add(dn);
 	}
 
@@ -177,7 +177,7 @@ class Visitor extends ASTVisitor {
 						addedNode = getNodeFromName(sn);
 						if( addedNode != null ) {
 							for( DataNode dn : params ) {
-								if( addedNode.getKey().equals(dn.getKey() ) ) {
+								if( addedNode.getBinding().equals(dn.getBinding() ) ) {
 									addedNode.setDeclarationMethod(methodDeclaration);
 									addedNode.setParameterIndex(dn.getParameterIndex());
 								}
@@ -194,17 +194,15 @@ class Visitor extends ASTVisitor {
 						}
 						List<Expression> args = mi.arguments();
 						Method methodInvocation = new Method( mi.getName());
+						
 						List<DataNode> nodeArgs = new ArrayList<DataNode>();
-						int i = -1;
 						for( Expression e : args ) {
 							if( e.getNodeType() == ASTNode.SIMPLE_NAME ) {
-								i++;
 								SimpleName n = (SimpleName) e;
 								addedNode = getNodeFromName(n);
 								// TODO shouldn't need a check here
 								if( addedNode != null ) {
 									addedNode.setInvocationMethod(methodInvocation);
-									addedNode.setParameterIndex(i);
 									nodeArgs.add( addedNode );
 								}
 							} else {
