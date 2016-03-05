@@ -1,15 +1,32 @@
 package dataTool;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.jdt.core.JavaModelException;
+import org.eclipse.jdt.internal.ui.JavaPlugin;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
+import org.eclipse.jdt.internal.ui.javaeditor.ToggleBreadcrumbAction;
+import org.eclipse.jdt.internal.ui.javaeditor.breadcrumb.IBreadcrumb;
+import org.eclipse.jdt.ui.JavaUI;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IPageListener;
+import org.eclipse.ui.IPartListener;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
-import dataTool.ui.NavigationBox;
+import dataTool.ui.ShowDataInBreadcrumbAction;
 
 /**
  * An action that enables the statement helper
@@ -22,18 +39,14 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	//	aka - mouse-hovers that replace hot-keys for selecting nodes
 	
 	//the currently open page
-	private IWorkbenchPage page;
+	private IWorkbenchPage page;	
 	
 	//the listener to the current page
 	private AnnotationManager annotationManager;
 	
 	//whether the listener is currently enabled
 	private boolean isEnabled = false;
-	
-	public static String project;
-	public static String file;
-	public static String path;
-	
+		
 	public void dispose() {
 		if(annotationManager!=null)
 			annotationManager.dispose();
@@ -45,10 +58,6 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	 * @param activeEditor
 	 */
 	private void enable(IEditorPart activeEditor) {
-		String[] path = activeEditor.getTitleToolTip().split("/");
-		project = path[0];
-		file = activeEditor.getTitle();
-		this.path = activeEditor.getEditorInput().toString().replace("org.eclipse.ui.part.FileEditorInput(", "").replace(")","");
 		if(page.getActiveEditor()!=null) {
 			annotationManager = new AnnotationManager((AbstractDecoratedTextEditor)activeEditor);
 		}
@@ -56,24 +65,43 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 
 	public void init(IWorkbenchWindow window) {
 		this.page = window.getActivePage();
-		window.addPageListener(new IPageListener() {
+		page.addPartListener(new IPartListener(){
 
 			@Override
-			public void pageActivated(IWorkbenchPage arg0) {
-				// TODO Auto-generated method stub
-				init(arg0.getWorkbenchWindow());
+			public void partActivated(IWorkbenchPart arg0) {
+				// Auto-generated method stub
 			}
 
 			@Override
-			public void pageClosed(IWorkbenchPage arg0) {
-				// TODO Auto-generated method stub
+			public void partBroughtToTop(IWorkbenchPart arg0) {
+				// Auto-generated method stub
+				arg0.getSite().getPage().activate(arg0);
+				try {
+					dispose();
+					isEnabled = false;
+					reset(arg0.getSite().getPage());
+				} catch (JavaModelException e) {
+					// Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			@Override
+			public void partClosed(IWorkbenchPart arg0) {
+				// Auto-generated method stub
+
+			}
+
+			@Override
+			public void partDeactivated(IWorkbenchPart arg0) {
+				// Auto-generated method stub
 				
 			}
 
 			@Override
-			public void pageOpened(IWorkbenchPage arg0) {
-				// TODO Auto-generated method stub
-				init(arg0.getWorkbenchWindow());
+			public void partOpened(IWorkbenchPart arg0) {
+				// Auto-generated method stub
+				
 			}
 			
 		});
@@ -102,5 +130,22 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	public void selectionChanged(IAction action, ISelection selection) {
 		//do nothing
 	}
-
+	
+	/**
+	 * Resets the plugin when user opens a new page
+	 * @param workbench
+	 * @throws JavaModelException
+	 */
+	public void reset(IWorkbenchPage workbench) throws JavaModelException {
+		IWorkbenchPage newPage;
+		if(workbench == null) {
+			newPage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		}
+		else {
+			newPage = workbench;
+		}
+		JavaEditor editor = (JavaEditor)newPage.getActiveEditor();
+        init(newPage.getWorkbenchWindow());
+        run(null);
+	}
 }

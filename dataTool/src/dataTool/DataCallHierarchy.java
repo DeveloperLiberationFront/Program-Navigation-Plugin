@@ -3,10 +3,13 @@ package dataTool;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -30,8 +33,19 @@ import org.eclipse.jdt.core.search.SearchPattern;
 import org.eclipse.jdt.core.search.SearchRequestor;
 import org.eclipse.jdt.internal.corext.callhierarchy.CallHierarchy;
 import org.eclipse.jdt.internal.corext.callhierarchy.MethodWrapper;
+import org.eclipse.jdt.internal.ui.javaeditor.EditorUtility;
+import org.eclipse.jdt.internal.ui.javaeditor.JavaEditor;
+import org.eclipse.jdt.ui.JavaUI;
+import org.eclipse.jface.text.ITextSelection;
+import org.eclipse.jface.text.Position;
+import org.eclipse.jface.text.TextSelection;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.ISelectionService;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.texteditor.ITextEditor;
 
-import dataTool.ui.DataLink;
+import edu.pdx.cs.multiview.jdt.util.JDTUtils;
 
 
 /**
@@ -43,174 +57,165 @@ import dataTool.ui.DataLink;
  */
 public class DataCallHierarchy {
 	
+	private String projectName;
 	private String searchMatch;
 	private String method;
 	private String parameters;
 	private String className;
 	private String location;
 	private ICompilationUnit cUnit;
-	private HashMap<String, ArrayList<DataLink>> results;
-	
-	public String goTo = null;
-	public int goToOffset;
+	private boolean inClass = false;
 	
 	public DataCallHierarchy() {
 		
-	}
-	
-	public void setGoTo(int offset) {
-		goToOffset = offset;
-	}
+	}	
 	
 	/**
-	 * Returns all instances of method
-	 * @param m: IMethod to search for
-	 * @returns Set of IMethods for m
+	 * Function to search the project for instances of methods
+	 * @param node: Current DataNode selected by user
+	 * @param direction: String of data flow from current node
+	 * @returns Set of methods
+	 * @throws JavaModelException
 	 */
-	public HashSet<IMethod> getCalls(IMethod m) {
-		HashSet<IMethod> methods = new HashSet<IMethod>();
-		methods.addAll(getCallersOf(m));
-		methods.addAll(getCalleesOf(m));
-		return methods;
-	}
-	
-	public HashSet<IMethod> getCalleesOf(IMethod m) {
-		CallHierarchy callHierarchy = CallHierarchy.getDefault();
-		 
-		IMember[] members = {m};
-		MethodWrapper[] methodWrappers = callHierarchy.getCalleeRoots(members);
-		HashSet<IMethod> callers = new HashSet<IMethod>();
-		for (MethodWrapper mw : methodWrappers) {
-		    MethodWrapper[] mw2 = mw.getCalls(new NullProgressMonitor());
-		    HashSet<IMethod> temp = getIMethods(mw2);
-		    callers.addAll(temp);    
-		} 
-		return callers;
-	}
-	
-	public HashSet<IMethod> getCallersOf(IMethod m) {
-		 CallHierarchy callHierarchy = CallHierarchy.getDefault();
-		 
-		 IMember[] members = {m};
-		 
-		 MethodWrapper[] methodWrappers = callHierarchy.getCallerRoots(members);
-		 HashSet<IMethod> callers = new HashSet<IMethod>();
-		 for (MethodWrapper mw : methodWrappers) {
-		     MethodWrapper[] mw2 = mw.getCalls(new NullProgressMonitor());
-		     HashSet<IMethod> temp = getIMethods(mw2);
-		     callers.addAll(temp);    
-		 }
-		return callers;
-	}
-		 
-	private HashSet<IMethod> getIMethods(MethodWrapper[] methodWrappers) {
-		  HashSet<IMethod> c = new HashSet<IMethod>(); 
-		  for (MethodWrapper m : methodWrappers) {
-			  IMethod im = getIMethodFromMethodWrapper(m);
-			  if (im != null) {
-				  c.add(im);
-			  }
-		  }
-		  return c;
-	}
-		 
-	private IMethod getIMethodFromMethodWrapper(MethodWrapper m) {
-		try {
-		    IMember im = m.getMember();
-		    if (im.getElementType() == IJavaElement.METHOD) {
-		    	return (IMethod)m.getMember();
-		    }
-		} 
-		catch (Exception e) {
-		    e.printStackTrace();
-		 }
-		 return null;
-	}
-	
-	/**
-	 * Search project for method
-	 * @param project: String project name
-	 * @param method: String method name
-	 * @returns String of next method name
-	 * @throws CoreException
-	 */
-	public HashMap<String, ArrayList<DataLink>> searchProject(String method) throws CoreException {
-		results = new HashMap<String, ArrayList<DataLink>>();
-		String projectName = EnableNavigationAction.project;
-		String path = EnableNavigationAction.path;
-		String projectPath;
-		if(path.contains("/src/")) {
-			projectPath = path.substring(path.indexOf("/src/")+5,path.lastIndexOf("/")).replace("/", ".");
+	public Set<IMethod> searchProject(DataNode node, String direction) throws JavaModelException {
+		Set<IMethod> results = null;
+		if (direction.equals(Finder.UP)) {
+			Method up = node.getDeclarationMethod();
+			if(up != null) {
+				results = search(node, up, Finder.UP);
+			}
 		}
-		else {
-			projectPath = path;
-		}
-		String projectFile = EnableNavigationAction.file;
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-	    IProject project = root.getProject(projectName);
-	    IFolder folder = project.getFolder("src");
-	    IJavaProject javaProject = JavaCore.create(project);
-	    IPackageFragmentRoot ipf = javaProject.getPackageFragmentRoot(folder);
-	    ipf.createPackageFragment(projectPath, true, null);
-	    IPackageFragment frag = ipf.getPackageFragment(projectPath);
-	    cUnit = frag.getCompilationUnit(projectFile);
-	    IType type = cUnit.getType(projectFile.replace(".java", ""));
-	    HashSet<IMethod> calls = null;
-		ArrayList<DataLink> links = new ArrayList<DataLink>();
-	    for(IMethod im: type.getMethods()){
-	    	if(im.getElementName().equals(method)) {
-	    		calls = getCalls(im);
-	    		for(IMethod mem: calls) {
-	    			links.add(new DataLink(mem, mem.getElementName(), mem.getPath().toString()));
-	    			searchMatch = mem.toString();
-	    		}
-	    	}
-	    }
-	    results.put(Finder.UP, links);
-	    if(calls == null) {
-	    	results.put(Finder.DOWN, processRootDirectory(method));
-	    }
-	    return results;
-	}
-	
-	private ArrayList<DataLink> processRootDirectory(String method) throws JavaModelException,CoreException {
-		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();		
-		IProject[] projects = root.getProjects();
-		ArrayList<DataLink> links = new ArrayList<DataLink>();
-		
-		// process each project
-		for (IProject project : projects) {
-			if (project.isNatureEnabled("org.eclipse.jdt.core.javanature")) {
-				IJavaProject javaProject = JavaCore.create(project);
-				IPackageFragment[] packages = javaProject.getPackageFragments();
-		
-				// process each package
-				for (IPackageFragment pack: packages) {
-					// We will only look at the package from the source folder
-					// K_BINARY would include also included JARS
-					// only process the .java files
-					if (pack.getKind() == IPackageFragmentRoot.K_SOURCE) {
-						for (ICompilationUnit unit : pack.getCompilationUnits()) {
-							IType[] allTypes = unit.getAllTypes();
-							for (IType type : allTypes) {
-								IMethod[] methods = type.getMethods();
-								for (IMethod imethod : methods) {
-									if(imethod.getElementName().equals(method)) {
-										searchMatch = method.toString();
-										links.add(new DataLink(imethod, imethod.getElementName(),imethod.getPath().toString()));
-									}
-								}
-							}
-						}
-					}
+		else if (direction.equals(Finder.DOWN)) {
+			ArrayList<String> down = new ArrayList<String>();
+			for(DataNode dn: Finder.getInstance().getOccurrences(node.getValue(), new Position(node.getStartPosition(),node.getLength()))) {
+				if(dn.getInvocationMethod() != null) {
+					down.add(dn.getInvocationMethod().getName().getIdentifier());
 				}
 			}
+			if(down != null && !down.isEmpty()) {
+				if( node.getInvocationMethod() != null ) {
+					Set<IMethod> searchDown = new HashSet<IMethod>();
+					Set<IMethod> temp = search(node, node.getInvocationMethod(), Finder.DOWN);
+					System.out.println(down);
+					for(IMethod i: temp) {
+						System.out.println("  "+i.getElementName());
+						if(down.contains(i.getElementName())) {
+							searchDown.add(i);
+						}
+					}
+					results = searchDown;
+				}
+			}
+		}
+		return results;
+	}
+	/**
+	 * Searches project for given method name
+	 * @param node 
+	 * @param methodName: String of current method name
+	 * @param direction: String we are searching (Finder.UP or Finder.DOWN)
+	 * @returns Set of methods calling or called by methodName
+	 * @throws JavaModelException
+	 */
+	public Set<IMethod> search(DataNode node, Method methodName, String direction) throws JavaModelException {
+	    CallHierarchyGenerator callGen = new CallHierarchyGenerator();
+		IEditorPart activeEditor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+		String[] pathArray = activeEditor.getTitleToolTip().split("/");
+		projectName = pathArray[0];
+		String path = activeEditor.getEditorInput().toString().replace("org.eclipse.ui.part.FileEditorInput(", "").replace(")","");
+		String projectFile = activeEditor.getTitle();
+		String projectPath;
+		String src;
+		if(path.contains("/src/")) {
+			projectPath = path.substring(path.indexOf("/src/")+5,path.lastIndexOf("/")).replace("/", ".");
+			src = "src";
+		}
+		else {
+			projectPath = path.substring(1,path.lastIndexOf("/")).replace("/", ".").replace(projectName+".", "");
+			src = projectPath.substring(0,projectPath.indexOf("."));
+			projectPath = projectPath.replace(src+".", "");
+		}
+		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+	    IProject project = root.getProject(projectName);
+	    IFolder folder = project.getFolder(src);
+	    IJavaProject javaProject = JavaCore.create(project);
+    	IPackageFragmentRoot ipf = javaProject.getPackageFragmentRoot(folder);
+    	ipf.createPackageFragment(projectPath, true, null);
+	    IPackageFragment frag = ipf.getPackageFragment(projectPath);
+	    cUnit = frag.getCompilationUnit(projectFile);
+    	IType type = cUnit.getType(projectFile.replace(".java", ""));
+		IMethod m = findMethod(type, methodName.getName().getIdentifier());
+		if(m == null){
+			m = getCurrentMethod(node.getStartPosition());
+		}
+	    Set<IMethod> methods = new HashSet<IMethod>();
+	    if(direction.equals(Finder.UP)) {
+		    methods = callGen.getCallersOf(m);
+	    }
+	    else {
+	    	if(!inClass) {
+			    Set<IMethod> temp = callGen.getCalleesOf(m);
+			    for(IMethod i: temp) {
+			    	methods.add(i);
+			    }
+	    	}
+	    	else {
+	    		methods.add(m);
+	    	}
+	    }
+	    return methods;
+	}
+	
+	/**
+	 * Finds the method in the current class
+	 * @param type: IType for the current class
+	 * @param methodName: String name of the method
+	 * @returns IMethod of method search or null
+	 * @throws JavaModelException
+	 */
+	private IMethod findMethod(IType type, String methodName) throws JavaModelException
+	{
+	    IMethod[] methods = type.getMethods();
+	    IMethod theMethod = null;
 
+	    for (int i = 0; i < methods.length; i++)
+	    {
+	        IMethod imethod = methods[i];
+	        if (imethod.getElementName().equals(methodName)) {
+	        	inClass = true;
+	            theMethod = imethod;
+	        }
+	    }
+
+	    if (theMethod == null) {           
+	        System.out.println("Error, method " + methodName + " not found");
+	        return null;
+	    }
+
+	    return theMethod;
+	}
+	
+	/**
+	 * Gets the method that the cursor is currently located in.
+	 * @param offset
+	 * @return IMethod for current method
+	 */
+	public IMethod getCurrentMethod(int offset) {
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		ITextEditor editor = (ITextEditor) page.getActiveEditor();
+		IJavaElement elem = JavaUI.getEditorInputJavaElement(editor.getEditorInput());
+		if (elem instanceof ICompilationUnit) {
+		    IJavaElement selected = null;
+			try {
+				selected = ((ICompilationUnit) elem).getElementAt(offset);
+			} catch (JavaModelException e) {
+				// Auto-generated catch block
+				e.printStackTrace();
+			}
+		    if (selected != null && selected.getElementType() == IJavaElement.METHOD) {
+		         return ((IMethod) selected);
+		    }
 		}
-		if(links.isEmpty())
-		{
-			links.add(new DataLink(null, DataLink.INVALID, DataLink.INVALID_DESC));
-		}
-		return links;
+		return null;
 	}
 }

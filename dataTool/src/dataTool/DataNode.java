@@ -13,7 +13,7 @@ import org.eclipse.jdt.core.dom.VariableDeclaration;
  * @author Chris
  *
  */
-public class DataNode {
+public class DataNode implements Comparable {
 	
 	final public static String PARAM_UP = "parameterUp";
 	final public static String PARAM_DOWN = "parameterDown";
@@ -22,45 +22,51 @@ public class DataNode {
 	final public static String FOR_VAR = "variableFor";
 	final public static String VAR = "variable";
 	
+	private String binding;
+	private String key;
 	private String value;
 	private int index;
 	private int length;
-	private String method;
+	private int parameterIndex;
+	private SimpleName sn;
 	private String type;
+	private String signature;
+	private Method declarationMethod;
+	private Method invocationMethod;
+	private boolean isHighlighted;
+
+//	/**
+//	 * Constructor to create DataNodes with just values, mainly for DownFinder
+//	 * @param val= Current variable name
+//	 * @param start= start position of the current variable
+//	 */
+//	public DataNode (String val, int start, String nodeType, Method call) {
+//		
+//		
+//		value = val;
+//		index = start;
+//		length = val.length();
+//		type = nodeType;
+//		method = call;
+//		if( method != null ) {
+//			signature = method.getSignature() + "." + value;
+//		} else {
+//			signature = "null";
+//		}
+//	}
 	
-	/**
-	 * Constructor to build DataNode with an ASTNode, used for UpFinder mostly
-	 * @param node: current SimpleName ASTNode selected
-	 */
-	public DataNode (ASTNode node, String nodeType) {
-		if (node instanceof SimpleName) {
-			value = ((SimpleName) node).getIdentifier();
-			length = value.length();
-			type = nodeType;
-			method = null;
-		}
-		else {
-			value = ((SingleVariableDeclaration) node).getName().getIdentifier();
-			length = node.getLength();
-			type = nodeType;
-			if(node.getParent() instanceof MethodDeclaration) {
-				method = ((MethodDeclaration) node.getParent()).getName().getIdentifier();
-			}
-		}
-		index = node.getStartPosition();
+	public DataNode( SimpleName sn ) {
+		this.sn = sn;
+		value = sn.getFullyQualifiedName();
+		index = sn.getStartPosition();
+		length = value.length();
+		isHighlighted = false;
+		parameterIndex = -1;
+		this.key = sn.resolveBinding().getKey();
+		this.binding = sn.resolveBinding().toString();
 	}
-	
-	/**
-	 * Constructor to create DataNodes with just values, mainly for DownFinder
-	 * @param val= Current variable name
-	 * @param start= start position of the current variable
-	 */
-	public DataNode (String val, int start, String nodeType, String call) {
-		value = val;
-		index = start;
-		length = val.length();
-		type = nodeType;
-		method = call;
+	public void setStartPosition( int i ) {
+		index = i;
 	}
 	
 	/**
@@ -69,6 +75,10 @@ public class DataNode {
 	 */
 	public String getValue() {
 		return this.value;
+	}
+	
+	public String getBinding() {
+		return binding;
 	}
 	
 	/**
@@ -86,36 +96,52 @@ public class DataNode {
 	public int getLength() {
 		return this.length;
 	}
-	
-	/**
-	 * Gets the type of the DataNode
-	 * @returns String of data type
-	 */
-	public String getType() {
-		return this.type;
+	public int getParameterIndex() {
+		return parameterIndex;
+	}
+	public void setParameterIndex( int p ) {
+		parameterIndex = p;
+	}
+	public Method getDeclarationMethod() {
+		return declarationMethod;
+	}
+	public void setDeclarationMethod( Method m ) {
+		declarationMethod = m;
+	}
+	public Method getInvocationMethod() {
+		return invocationMethod;
 	}
 	
-	/**
-	 * Gets the name of the method of the node if one exists
-	 * @returns string method
-	 */
-	public String getMethod() {
-		if(isParameter(index)) {
-			return this.method;
-		}
-		return null;
+	public void setInvocationMethod( Method m ) {
+		invocationMethod = m;
 	}
-	
+	public String getSignature() {
+		return this.signature;
+	}
 	/**
 	 * Checks to see if current node is a parameter, only want to display box when actual
 	 * param is selected
 	 * @returns true if node is a parameter, else false
 	 */
-	public boolean isParameter(int pos) {
+	public boolean isParameterSelected(int pos) {
 		if(pos < index || pos > index+length) {
 			return false;
 		}
-		return (type.equals(PARAM_UP) || (type.equals(PARAM_DOWN)));
+		return true;
+	}
+	public String getKey() {
+		return key;
+	}
+	@Override
+	public int compareTo(Object o) {
+		if( o == null || !( o instanceof DataNode ) ) {
+			return 1;
+		}
+		return index - ((DataNode)o).getStartPosition();
+	}
+	@Override
+	public String toString() {
+		return binding;
 	}
 
 }

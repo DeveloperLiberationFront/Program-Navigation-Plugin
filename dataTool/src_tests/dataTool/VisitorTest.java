@@ -38,7 +38,6 @@ public class VisitorTest extends TestCase{
 		
 		visitor = new Visitor(enhancedForTestStr);
 		visitor.parseData();
-		System.out.println(visitor.getData().size());
 	}
 	
 }
