@@ -6,6 +6,8 @@
 \hyphenation{op-tical net-works semi-conduc-tor}
 
 
+\newcommand{\toolName}{OUR TOOL}
+
 \begin{document}
 %
 % paper title
@@ -14,7 +16,7 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{Our Tool: Navigating Program Flow in the IDE}
+\title{\toolName: Navigating Program Flow in the IDE}
 
 
 % author names and affiliations
@@ -49,7 +51,6 @@ Based on a preliminary evaluation with 8 participants, our tool compares well to
 \IEEEpeerreviewmaketitle
 
 
-
 \section{Introduction}
 Modern software systems contain millions of lines of source code. 
 As software grows in size and complexity, developers increasingly rely on tools to help them navigate the programs they create. 
@@ -67,7 +68,7 @@ To address the limitations of existing program navigation tools, our tool will e
 
 \section{Design Principles}
 \label{DesignPrinciples}
-In this section we describe the design principles that we used to shape our tool. We derived these design principles by evaluating the limitations of existing program navigation tools.
+In this section we describe the design principles that we used to shape \toolName. We derived these design principles by evaluating the limitations of existing program navigation tools.
  
 \subsection{Powerful Program Analysis}
 By leveraging powerful program analysis techniques, navigation tools can provide more accurate information.
@@ -97,8 +98,8 @@ Summary of related work, including a table evaluating existing tools on various 
 Spoiler alert, none of the tools satisfy all of the principles.
 
 
-\section{[Name of Tool]}
-We implemented our tool as a plugin to the Eclipse IDE [cite]. We chose Eclipse because of its popularity and extensibility. 
+\section{\toolName}
+We implemented \toolName~as a plugin to the Eclipse IDE~\cite{Eclipse}. We chose Eclipse because of its popularity and extensibility. 
 Eclipse is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. 
 
 \section{Preliminary Evaluation}
