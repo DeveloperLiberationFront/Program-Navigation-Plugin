@@ -180,6 +180,21 @@ Time to first method
 \subsection{Systematic Evaluation}
 Program navigation tools should help developers keep track of where they have been and where they are going. Especially while attempting to resolve complex defects, developers may want to thoroughly explore all program paths. Their navigation tools should help them keep track of their progress.
 
+\subsection{Design Implications}
+
+Participants were taken to new locations but couldn't backtrack.
+	Back buttons exist, but most didn't use and they didn't help the person who did use them...
+	Points to an inherent limitation of our minimalistic approach. People would be more oriented with a graph or more persistent breadcrumbs...
+Overwhelmed when the call graph had a high branching factor.
+	Participants quickly navigated up single paths as in Task 1
+	When call paths branched in many directions our tool could reccomend more full featured tools.
+Couldn't keep track of where they had been.
+	See systematic evaluation. Links could turn purple and get moved to the end of the list.
+Performance.
+	Whenever the user clicks on a new variable \toolName~ has to search through the entire project for locations where the method is declared or invoked. We observed that participants navigated within one file more often than between files. To improve the performance of our tool, we could optimize the search to return local results before returning global search results.
+	
+	They also clicked on the same variables (we could do some caching)
+
 
 \section{Limitations}
 
