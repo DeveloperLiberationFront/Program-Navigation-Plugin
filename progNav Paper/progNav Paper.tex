@@ -79,23 +79,28 @@ Spoiler alert, none of the tools satisfy all of the principles.
 \label{DesignPrinciples}
 In this section we describe the design principles that we used to shape \toolName. We derived these design principles by evaluating the limitations of existing program navigation tools.
  
-\subsection{Powerful Program Analysis}
+\vspace{1em} 
+\noindent\textbf{Powerful Program Analysis -}
 By leveraging powerful program analysis techniques, navigation tools can provide more accurate information.
 For example, by analyzing abstract syntax trees (ASTs) and call graphs, tools can make proper references to variables and methods. 
 Simple textual analysis may lead to inaccurate results, especially when programs include inheritance and duplicate variable names.
 
-\subsection{Low Barriers to Invocation}
+\vspace{1em} 
+\noindent\textbf{Low Barriers to Invocation -}
 Barriers to invocation may inhibit adoption. 
 As developers may wish to navigate multiple program paths concurrently, repetitively invoking the tool may be cumbersome, especially if barriers are high. 
 
-\subsection{Full Program Navigation}
+
+\vspace{1em} 
+\noindent\textbf{Full Program Navigation -}
 Developers are not only interested in traversing programs' call graph, but also how data flows through the call graph.
 To do so, developers must inspect the relationship between methods as well as the methods themselves.
 Often the methods of interest span across multiple source files.
 Furthermore, program navigation tools should support this traversal both upstream and downstream. 
 That is, tools should highlight variable assignments and also subsequent variable uses. 
 
-\subsection{In Situ Results}  
+\vspace{1em} 
+\noindent\textbf{In Situ Results -}
 Switching between views in the IDE can cause disorientation~\cite{deAlwis2006disorient}. As developers navigate through code, navigation tools should present their results in that context. 
 When navigation tools present results outside the code, developers are burdened with the cognitive load of translating those results back to the code.
 
