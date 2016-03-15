@@ -146,11 +146,18 @@ We implemented \toolName~as a plugin to the Eclipse IDE~\cite{Eclipse}.
 We chose Eclipse because of its popularity and extensibility. 
 Eclipse is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. 
 
-Figure \ref{fig:tool} depicts \toolName~invoked on a variable participants were asked to inspect as part of our evaluation. To visualize how a programmer would interact with \toolName, consider the following scenario:\\
+Figure \ref{fig:tool} depicts \toolName~invoked on a variable participants were asked to inspect as part of our evaluation. To visualize how a programmer would interact with \toolName, consider the following scenario:
+
 You are concerned that users could modify the value of \texttt{fileName} before it gets passed into \texttt{getQueries}. 
-You click on \texttt{fileName} (A) and \toolName~ highlights proper occurrences of that variable in the code.
-Since \texttt{fileName} is a formal parameter to \texttt{getQueries}, \toolName~ 
-(A) - When a user clicks on a variable all (visible) instances of that variable are highlighted in the code. (B) - When the variable has been declared as a parameter to the current method, users can click on that method's name in the editor to navigate to a location where that method is called. (X) - When the variable is passed to an external method, users can click on that method's name to open its declaration. (C) - If the variable is passed in from another method or is defined earlier in the current file, a link to that location is displayed in the ``top box.'' (D) - If the variable is passed in to another method or referenced later in the current file, links to those locations appear in the ``bottom box.''
+Because it is the variable you are concerned with, you click on \texttt{fileName} (A). 
+To help you locate where the variable is modified and referenced, \toolName~ highlights proper occurrences of that variable in the code.
+Since \texttt{fileName} is a formal parameter to \texttt{getQueries}, any method calling \texttt{getQueries} could modify \texttt{fileName}. 
+Those methods reside in other class files, so \toolName~ provides links to their locations (C).
+Rather than move your mouse up to the top of the editor window, you click on \texttt{getQueries} (B), which conveniently links to the first call site. 
+\toolName~ opens \texttt{createTables} and highlights the location in that method where fileName is passed to \texttt{getQueries}.
+
+%Something about using \toolName for down flow.
+%(A) - When a user clicks on a variable all (visible) instances of that variable are highlighted in the code. (B) - When the variable has been declared as a parameter to the current method, users can click on that method's name in the editor to navigate to a location where that method is called. (X) - When the variable is passed to an external method, users can click on that method's name to open its declaration. (C) - If the variable is passed in from another method or is defined earlier in the current file, a link to that location is displayed in the ``top box.'' (D) - If the variable is passed in to another method or referenced later in the current file, links to those locations appear in the ``bottom box.''
 
 \begin{figure*}
 	\centering
