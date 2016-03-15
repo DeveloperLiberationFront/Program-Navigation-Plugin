@@ -197,21 +197,27 @@ Our goals in this study were to get feedback on the usability of our tool and ev
 
 All participants were graduate students at the time of the study and on average had 5 years of professional programming experience; Table \ref{table:participants} provides additional information about each participant. We recruited participants using a convenience sampling approach. 
 
-To control for learning and fatigue effects, we used a 2x2 latin square design which permuted the order participants received each tool and performed each task. Accordingly, each participant was assigned to one of four groups -- one for each pair of conditions.
+Each participant used \toolName for one task and the Eclipse's tools (call hierarchy, mark occurrences, and open declaration) for the second task.
+To control for learning and fatigue effects, we used a 2x2 latin square design which permuted the order participants received each tool and performed each task. Accordingly, each participant was assigned to one of four groups -- one group for each pair of conditions.
 Before the study, we asked participants to report whether they were familiar with the Eclipse IDE. We used this information to balance Eclipse novices across groups.
 
 
 \subsection{Tasks}
-We analyzed the data from our previous study which included two tasks that required program flow navigation. (Observed that participants failed to execute efficient )
-We will ask developers to perform two tasks that involve program flow navigation (Task 1 and Task 3 from \cite{Smith2015}).
+We analyzed the data from our previous study~\cite{Smith2015}, which included two tasks that required program flow navigation.
+In the previous study, developers expressed a willingness to navigate the program, but used sub-optimal strategies to do so.
+Because the challenges participants faced in ~\cite{Smith2015} partially inspired the development of \toolName, we include the same two tasks in this study.
+For Task 1 we asked participants to tell us whether a method ever receives user-provided input.
+For Task 2 we asked participants to tell us whether a form field is validated before being sent to the database.
+To ensure all participants had a baseline familiarity with both tools, we trained participants on the appropriate tools preceding each task. 
+To evaluate the effectiveness of the navigation tools rather than participants' familiarity with a particular code base, we asked participants to navigate code they had not previously contributed to. 
+Because think aloud protocols distort the amount of time required to complete tasks, we did not interrupt or prompt participants until after they had completed the tasks.
 
-We chose two tasks that (differentiate between the two tasks... up and down?)
+%We chose two tasks that (differentiate between the two tasks... up and down?)
 
 \subsection{Usability Evaluation}
-To evaluate the usability of \toolName, we administered an adapted version of the Post-Study System Usability Questionnaire (PSSUQ)~\cite{Lewis95ibmcomputer}. We modified the questionnaire by replacing ``this system'' with ``this tool'' and asked questions from the System Quality and Interface Quality categories. We asked 10 questions; participants responded on a 7-point Likert scale from ``Strongly Disagree'' to ``Strongly Agree.'' 	
+To evaluate the usability of \toolName, we administered an adapted version of the Post-Study System Usability Questionnaire (PSSUQ)~\cite{Lewis95ibmcomputer} after participants had completed both tasks. We modified the questionnaire by replacing ``this system'' with ``this tool'' and asked questions from the System Quality and Interface Quality categories. We asked 10 questions; participants responded on a 7-point Likert scale from ``Strongly Disagree'' to ``Strongly Agree.'' 	
 We also asked participants open-ended questions based on applicable categories from Nielsen's usability heuristics~\cite{Nielsen1992}
-
-To capture participant's experiences that these two approaches overlooked, two of the authors independently examined each audio/video recording 
+To capture participant's experiences that these two metrics overlooked, two of the authors independently examined each audio/video recording and recorded memos. 
 
 \section{Results}
 \subsection{Quant stuff...}
