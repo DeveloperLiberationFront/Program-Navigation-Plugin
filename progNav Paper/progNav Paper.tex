@@ -230,8 +230,6 @@ To capture participant's experiences that these two metrics overlooked, two of t
 
 \section{Results}
 \subsection{Quant stuff...}
-
-
 \begin{figure}
 	\centering
 	\includegraphics[width=\columnwidth]{images/taskTime}
@@ -239,12 +237,19 @@ To capture participant's experiences that these two metrics overlooked, two of t
 	\label{fig:taskTime} 
 \end{figure}
 
-Graph with average time to complete each task split by tool and no tool different colors.
-Time to first method for Task 1 split by tool and no tool.
 
-Time to first method
+Compared to the Eclipse tools, results with \toolName~ were mixed.
+%Overall, task competion time distorts the actual time participants took to complete the task.
+%Participants who explored more of the call graph are penalized. 
+%Some participants spent additional time exploring after finding the right answer to confirm their conclusion
+For Task 1, participants were X\% faster with \toolName~ than the Eclipse tools (Figure \ref{fig:taskTime}). 
+(Not sure how to report correctness here... 4 gave the correct answer with eclipse tools --
+2 were correct with ours. However, the incorrect two navigated correctly, located a hard-coded parameter, responded incorrectly, and did not justify)
+However, participants were Y\% slower for Task 2.
+(Correctness in terms of navigation was even split. One with our tool guessed correctly)
 
-Correctness
+To understand why participants were faster for Task 1 with \toolName, we analyzed how long it took participants to navigate one step up the call graph. Participants equipped with our tool were strictly faster than participants with the Eclipse tools with averages of 8 seconds and 44 seconds, respectively. 
+
 
 \subsection{Qualitative Results} 
 Satisfied with easy to use	and Simple to use and Easy to learn Participants responded positively
