@@ -246,9 +246,10 @@ Correctness
 
 \subsection{Qualitative Results} 
 Satisfied with easy to use	and Simple to use and Easy to learn Participants responded positively
--Low barriers to invocation
+%-Low barriers to invocation
 
 Responded low for complete tasks quickly (performance issues and disorientation)
+
 All the functions I expected (Missing tracability and mark bars, ... )
 
 With our tool: Task 1 Faster than other tool, less correct. Task 2 slower, but more correct. 
@@ -268,7 +269,7 @@ Few branches
 \subsection{Losses}
 Why were they slower and less accurate with our tool?
 Second task: 
-Lots of confounding variables.
+Lots of confounding variables meant participants spent time switching between variables.
 Requires more knowledge about iTrust. Even though we signposted all the areas that (required) knowledge about iTrust...
 
 Using our tool for task 1, everyone located a hard-coded string. But the two participants that answered incorrectly (misinterreted the information)
@@ -280,16 +281,14 @@ Program navigation tools should help developers keep track of where they have be
 
 Participants were taken to new locations but couldn't backtrack.
 	Back buttons exist, but most didn't use and they didn't help the person who did use them...
-	Points to an inherent limitation of our minimalistic approach. People would be more oriented with a graph or more persistent breadcrumbs...
+	Points to an inherent limitation of our minimalistic approach. People would be more oriented with a graph or more persistent breadcrumbs...\\
 Overwhelmed when the call graph had a high branching factor.
 	Participants quickly navigated up single paths as in Task 1
-	When call paths branched in many directions our tool could reccomend more full featured tools.
+	When call paths branched in many directions our tool could reccomend more full featured tools.\\
 Couldn't keep track of where they had been.
-	See systematic evaluation. Links could turn purple and get moved to the end of the list.
+	See systematic evaluation. Links could turn purple and get moved to the end of the list.\\
 Performance.
-	Whenever the user clicks on a new variable \toolName~ has to search through the entire project for locations where the method is declared or invoked. We observed that participants navigated within one file more often than between files. To improve the performance of our tool, we could optimize the search to return local results before returning global search results.
-	
-	They also clicked on the same variables (we could do some caching)
+	Whenever the user clicks on a new variable \toolName~ has to search through the entire project for locations where the method is declared or invoked. We observed that participants navigated within one file more often than between files. To improve the performance of our tool, we could optimize the search to return local results before returning global search results.	Participants also repeated invocation on the same variables (we could do some caching)
 
 
 \section{Limitations}
