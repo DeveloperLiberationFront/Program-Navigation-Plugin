@@ -112,13 +112,21 @@ Spoiler alert, none of the tools satisfy all of the principles.
 
 
 \section{\toolName}
-We implemented \toolName~as a plugin to the Eclipse IDE~\cite{Eclipse}. We chose Eclipse because of its popularity and extensibility. 
-Eclipse is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. Figure \ref{fig:tool} depicts our tool...
+\toolName~ was designed to realize all of the principles described in Section \ref{DesignPrinciples}. 
+We implemented \toolName~as a plugin to the Eclipse IDE~\cite{Eclipse}. 
+We chose Eclipse because of its popularity and extensibility. 
+Eclipse is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. 
+
+Figure \ref{fig:tool} depicts \toolName~invoked on a variable participants were asked to inspect as part of our evaluation. To visualize how a programmer would interact with \toolName, consider the following scenario:\\
+You are concerned that users could modify the value of \texttt{fileName} before it gets passed into \texttt{getQueries}. 
+You click on \texttt{fileName} (A) and \toolName~ highlights proper occurrences of that variable in the code.
+Since \texttt{fileName} is a formal parameter to \texttt{getQueries}, \toolName~ 
+(A) - When a user clicks on a variable all (visible) instances of that variable are highlighted in the code. (B) - When the variable has been declared as a parameter to the current method, users can click on that method's name in the editor to navigate to a location where that method is called. (X) - When the variable is passed to an external method, users can click on that method's name to open its declaration. (C) - If the variable is passed in from another method or is defined earlier in the current file, a link to that location is displayed in the ``top box.'' (D) - If the variable is passed in to another method or referenced later in the current file, links to those locations appear in the ``bottom box.''
 
 \begin{figure*}
 	\centering
 	\includegraphics[width=0.75\textwidth]{images/toolScreenshot}
-	\caption{(A) - When a user clicks on a variable all (visible) instances of that variable are highlighted in the code. (B) - When the variable has been declared as a parameter to the current method, users can click on that method's name in the editor to navigate to a location where that method is called. (X) - When the variable is passed to an external method, users can click on that method's name to open its declaration. (C) - If the variable is passed in from another method or is defined earlier in the current file, a link to that location is displayed in the ``top box.'' (D) - If the variable is passed in to another method or referenced later in the current file, links to those locations appear in the ``bottom box.''}
+	\caption{Code view in the Eclipse IDE with \toolName~invoked on Task 1}	
 	\label{fig:tool} 
 \end{figure*}
 
