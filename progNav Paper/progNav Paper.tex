@@ -110,15 +110,15 @@ When navigation tools present results outside the code, developers are burdened 
 \section{Background}
 %Summary of related work, including a table evaluating existing %tools on various design principles.
 %Spoiler alert, none of the tools satisfy all of the principles.
-There are a variety of tools available to help developers explore and navigate code, but we found that none of these previous works were able to satisfy all four of the design principles used to implement \toolName.
+There are a variety of tools available to help developers explore and navigate code. Here we discuss two types of tools, production tools and visualization tools and Table \ref{table:background} shows a comparison between \toolName~ and other related tools in terms of the four design principles used to implement our tool.
+
 \subsection{Production Tools}
-Production tools are represented by plugins in integrated development environments that provide detailed information and analysis on variables and methods in the source code. Examples of these types of tools include Call Hierarchy and Find References in Eclipse\cite{Eclipse} and Analyze Data Flow To/From Here and Analyze Dependencies in IntelliJ\cite{IntelliJ}. These tools provide powerful program analysis for users to navigate throughout the entirety of a project, however they differ from our tool in that they require multiple steps to start the tool, need repeated invocations of the plugin to track multiple paths in the code, and force users to switch between the text editor of the IDE and a new panel displaying the results.
+Production tools are represented by plugins in integrated development environments that provide detailed information and analysis on variables and methods in the source code. Examples of these types of tools include \emph{Call Hierarchy} and \emph{Find References} in Eclipse\cite{Eclipse} and \emph{Analyze Data Flow To/From Here} and \emph{Analyze Dependencies} in IntelliJ\cite{IntelliJ}. These tools provide powerful program analysis for users to navigate throughout the entirety of a project, however they generally differ from our tool in that they may require multiple steps to start the tool or modify the user's navigation (i.e. switching between up and down search), may need repeated invocations of the plugin to track multiple paths or variables in the code, and force users to switch between the text editor of the IDE and a new panel displaying the results.
+
+There are also several production tools that are strictly consolidated within the editor. Two examples of these types of commercial tools include \emph{Mark Occurrences}\cite{MarkOccurrences} and \emph{Open Declaration} in the Eclipse IDE. These approaches are similar to our tool in that they display the results within the editor rather than a separate view or panel, but in some cases they may not provide a detailed enough analysis to explore the entire program or provide extra unnecessary information, for example Mark Occurrences only highlighting the instances of data within a class in addition to highlighting the value in a comment. These can require repeated work to start the tool, such as Open Declaration requiring the user to right-click or enter a keyboard shortcut for each method or variable declaration the user wants to open.
 
 \subsection{Visualization Tools}
-Code navigation tools that provide users with a graphical representation of the results are visualization tools. Some examples of these types of tools include Code Bubbles\cite{CodeBubbles}, Code Canvas\cite{CodeCanvas}, Code Surfer\cite{CodeSurfer}, Dora\cite{Dora}, Reacher\cite{Reacher}, Relo\cite{Relo}, Whyline\cite{Whyline}, and many more research tools. These works provide various views of control flow graphs, class and UML-like diagrams, call graphs, and other images to describe the relationship between different variables or functions within the code. \toolName~is different because we want to provide minimal steps to invoke the tool and present the information inside of the editor while also exploring the full project's source code and providing powerful data analysis.
-
-\subsection{IDE Integrated Tools}
-IDE Integrated tools are navigation tools that are consolidated into the editor. Some examples of these include Mark Occurrences\cite{MarkOccurrences} and Open Declaration in the Eclipse IDE. These approaches are similar to our tool in that they do not present the results in a new view or panel, but in some cases they may not provide a detailed enough analysis to explore the entire program or provide extra unnecessary information, for example Mark Occurrences only highlighting the instances of data within a class in addition to highlighting the value in a comment. These can require repeated work to start the tool, such as Open Declaration requiring the user to right-click or enter a keyboard shortcut for each method declaration the user wants to open.
+Code navigation tools that provide users with a graphical representation of the results are visualization tools. Some examples of these types of tools include \emph{Code Bubbles}\cite{CodeBubbles}, \emph{Code Canvas}\cite{CodeCanvas}, \emph{Code Surfer}\cite{CodeSurfer}, \emph{Dora}\cite{Dora}, \emph{Reacher}\cite{Reacher}, \emph{Relo}\cite{Relo}, \emph{Whyline}\cite{Whyline}, and many more research tools. These works provide various views of control flow graphs, class and UML-like diagrams, trees, call graphs, and other images to describe the hierarchy and relationship between different variables or functions within the code. \toolName~differs because, while all visualization tools can provide powerful data analysis, but we desire minimal steps to invoke the tool and present the information inside of the editor.
 
 \begin{table}
 	\centering
@@ -126,20 +126,39 @@ IDE Integrated tools are navigation tools that are consolidated into the editor.
 	\begin{tabular}{|c|c|c|c|c|}
 		%\rowcolor{gray!50}
 		\hline
-		Tool & Powerful & Low & Full Program & In Situ\\
+		Tool & Powerful & Low & Full Prog. & In Situ\\
 		%\rowcolor{gray!50}
-		Category & Program Analysis & Barriers & Navigation & Results\\
+		 & Analysis & Barriers & Nav. & Nav.\\
 		\hline
-		Production & \checkmark & - & \checkmark & -\\
+		Call Hierarchy & \checkmark & - & \checkmark & -\\
 		\hline
-		Visualization & \checkmark & - & \checkmark & - \\
+		Find References & \checkmark & - & \checkmark & -\\
 		\hline
-		IDE Integrated & - & \checkmark & Sometimes & \checkmark \\
+		Analyze Data Flow & \checkmark & - & \checkmark & -\\
+		\hline
+		Analyze Dependencies & \checkmark & - & \checkmark & -\\
+		\hline
+		Mark Occurrences & - & \checkmark & - & \checkmark \\
+		\hline
+		Open Declaration & \checkmark & - & \checkmark & \checkmark \\
+		\hline
+		Code Bubbles & \checkmark & - & \checkmark & \checkmark \\
+		\hline
+		Code Canvas & \checkmark & - & \checkmark & \checkmark \\
+		\hline
+		Code Surfer & \checkmark & - & \checkmark & Sometimes \\
+		\hline
+		Dora & \checkmark & - & \checkmark & - \\
+		\hline
+		Reacher & \checkmark & - & \checkmark & - \\
+		\hline
+		Relo & \checkmark & - & \checkmark & - \\
+		\hline
+		Whyline & \checkmark & - & \checkmark & - \\
 		\hline
 	\end{tabular}
 	\label{table:background}
 \end{table}
-
 
 
 \section{\toolName}
