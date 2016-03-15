@@ -140,7 +140,7 @@ IDE Integrated tools are navigation tools that are consolidated into the editor.
 
 
 \section{\toolName}
-\toolName~ was designed to realize all of the principles described in Section \ref{DesignPrinciples}. 
+\toolName~was designed to realize all of the principles described in Section \ref{DesignPrinciples}. 
 We implemented \toolName~as a plugin to the Eclipse IDE~\cite{Eclipse}. 
 We chose Eclipse because of its popularity and extensibility. 
 Eclipse is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. 
@@ -151,8 +151,8 @@ You are concerned that users could modify the value of \texttt{fileName} before 
 Because it is the variable you are concerned with, you click on \texttt{fileName} (A). 
 To help you locate where the variable is modified and referenced, \toolName~ highlights proper occurrences of that variable in the code.
 Since \texttt{fileName} is a formal parameter to \texttt{getQueries}, any method calling \texttt{getQueries} could modify \texttt{fileName}. 
-Those methods reside in other class files, so \toolName~ provides links to their locations (C).
-Rather than move your mouse up to the top of the editor window, you click on \texttt{getQueries} (B), which conveniently links to the first call site. 
+Those methods reside in other class files, so \toolName~ provides links to their locations (B1).
+Rather than move your mouse up to the top of the editor window, you click on \texttt{getQueries} (B2), which conveniently links to the first call site. 
 \toolName~ opens \texttt{createTables} and highlights the location in that method where fileName is passed to \texttt{getQueries}.
 
 %Something about using \toolName for down flow.
@@ -203,7 +203,7 @@ Our goals in this study were to get feedback on the usability of our tool and ev
 
 All participants were graduate students at the time of the study and on average had 5 years of professional programming experience; Table \ref{table:participants} provides additional information about each participant. We recruited participants using a convenience sampling approach. 
 
-Each participant used \toolName for one task and the Eclipse's tools (call hierarchy, mark occurrences, and open declaration) for the second task.
+Each participant used \toolName~for one task and the Eclipse's tools (call hierarchy, mark occurrences, and open declaration) for the second task.
 To control for learning and fatigue effects, we used a 2x2 latin square design which permuted the order participants received each tool and performed each task. Accordingly, each participant was assigned to one of four groups -- one group for each pair of conditions.
 Before the study, we asked participants to report whether they were familiar with the Eclipse IDE. We used this information to balance Eclipse novices across groups.
 
