@@ -2,6 +2,9 @@
 \usepackage{cite}
 \usepackage{graphicx}
 \usepackage{multirow}
+\usepackage{amssymb}
+\usepackage{siunitx}
+\usepackage{dcolumn}
 
 % correct bad hyphenation here
 \hyphenation{op-tical net-works semi-conduc-tor}
@@ -127,11 +130,11 @@ IDE Integrated tools are navigation tools that are consolidated into the editor.
 		%\rowcolor{gray!50}
 		Category & Program Analysis & Barriers & Navigation & Results\\
 		\hline
-		Production & Yes & No & Yes & No\\
+		Production & \checkmark & - & \checkmark & -\\
 		\hline
-		Visualization & Yes & No & Yes & No \\
+		Visualization & \checkmark & - & \checkmark & - \\
 		\hline
-		IDE Integrated & No & Yes & Sometimes & Yes \\
+		IDE Integrated & - & \checkmark & Sometimes & \checkmark \\
 		\hline
 	\end{tabular}
 	\label{table:background}
@@ -170,12 +173,12 @@ Rather than move your mouse up to the top of the editor window, you click on \te
 \begin{table}
 \centering
 \caption{Participant Demographics}
-\begin{tabular}{|c|c|c|c|}
+\begin{tabular}{|c|S|S|c|}
 %\rowcolor{gray!50}
 \hline
-Participant & Industry & Java &\multicolumn{1}{c|}{Previous} \\
+Participant & \multicolumn{1}{c|}{Industry} & \multicolumn{1}{c|}{Java} &\multicolumn{1}{c|}{Previous} \\
 %\rowcolor{gray!50}
-& Experience (years) & Experience (years) & \multicolumn{1}{c|}{Eclipse Use} \\
+& \multicolumn{1}{c|}{Experience (years)} & \multicolumn{1}{c|}{Experience (years)} & \multicolumn{1}{c|}{Eclipse Use} \\
 \hline
 P1 & 9 & 5 & Yes \\
 \hline
