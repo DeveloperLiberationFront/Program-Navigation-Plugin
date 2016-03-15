@@ -80,27 +80,27 @@ To address the limitations of existing program navigation tools, \toolName embod
 In this section we describe the design principles that we used to shape \toolName. We derived these design principles by examining existing program navigation tools.
  
 \vspace{1em} 
-\noindent\textbf{Powerful Program Analysis -}
-By leveraging powerful program analysis techniques, navigation tools can provide more accurate information.
-For example, by analyzing abstract syntax trees (ASTs) and call graphs, tools can make proper references to variables and methods. 
-Simple textual analysis may lead to inaccurate results, especially when programs include inheritance and duplicate variable names.
+\noindent\textbf{Powerful Program Analysis} ---
+Simple textual analysis may lead to inaccurate results in many scenarios. For example, such analysis fails when programs include duplicated variable names that refer different variables in different scopes. Textual analysis also falls short when programs contain inheritance and when variable names are included in comments, doccumentation, or other syntactically irrelevant locations.
+By leveraging powerful program analysis techniques, navigation tools can provide more accurate information than simple textual analysis.
+By analyzing abstract syntax trees (ASTs) and call graphs, tools can make proper references to variables and methods. 
 
 \vspace{1em} 
-\noindent\textbf{Low Barriers to Invocation -}
+\noindent\textbf{Low Barriers to Invocation} ---
 Barriers to invocation may inhibit adoption. 
 As developers may wish to navigate multiple program paths concurrently, repetitively invoking the tool may be cumbersome, especially if barriers are high. 
 
 
 \vspace{1em} 
-\noindent\textbf{Full Program Navigation -}
-Developers are not only interested in traversing programs' call graph, but also how data flows through the call graph.
+\noindent\textbf{Full Program Navigation}  ---
+Developers are not only interested in traversing programs' call graphs, but also how data flows through the call graph.
 To do so, developers must inspect the relationship between methods as well as the methods themselves.
 Often the methods of interest span across multiple source files.
 Furthermore, program navigation tools should support this traversal both upstream and downstream. 
 That is, tools should highlight variable assignments and also subsequent variable uses. 
 
 \vspace{1em} 
-\noindent\textbf{In Situ Results -}
+\noindent\textbf{In Situ Navigation}  ---
 Switching between views in the IDE can cause disorientation~\cite{deAlwis2006disorient}. As developers navigate through code, navigation tools should present their results in that context. 
 When navigation tools present results outside the code, developers are burdened with the cognitive load of translating those results back to the code.
 
@@ -152,7 +152,7 @@ Because it is the variable you are concerned with, you click on \texttt{fileName
 To help you locate where the variable is modified and referenced, \toolName~ highlights proper occurrences of that variable in the code.
 Since \texttt{fileName} is a formal parameter to \texttt{getQueries}, any method calling \texttt{getQueries} could modify \texttt{fileName}. 
 Those methods reside in other class files, so \toolName~ provides links to their locations (B1).
-Rather than move your mouse up to the top of the editor window, you click on \texttt{getQueries} (B2), which conveniently links to the first call site. 
+Rather than move your mouse up to the top of the editor window, you click on \texttt{getQueries} (B2), which conveniently links to the first call site, \texttt{createTables}. 
 \toolName~ opens \texttt{createTables} and highlights the location in that method where fileName is passed to \texttt{getQueries}.  Additionally, if the selected variable has uses that do not appear in the user's current view of the editor then the tool will provide links to those off-screen line numbers in the top box if it appears above the current location and in the bottom box if it is used below (not shown).
 
 %Something about using \toolName for down flow.
@@ -233,7 +233,7 @@ To capture participant's experiences that these two metrics overlooked, two of t
 \begin{figure}
 	\centering
 	\includegraphics[width=\columnwidth]{images/taskTime}
-	\caption{Average time to complete each task with and without \toolName}
+	\caption{Mean time to complete each task with and without \toolName}
 	\label{fig:taskTime} 
 \end{figure}
 
@@ -250,13 +250,14 @@ However, participants were Y\% slower for Task 2.
 
 To understand why participants were faster for Task 1 with \toolName, we analyzed how long it took participants to navigate one step up the call graph. Participants equipped with our tool were strictly faster than participants with the Eclipse tools with averages of 8 seconds and 44 seconds, respectively. 
 
-
-\subsection{Qualitative Results}
 On the PSSUQ, participants responded most positively to questions about \toolName's simplicity, how easy it was to use, and how easy it was to learn. 
 Median responses to these three questions was 6.
 On the other hand, participants responded most negatively to questions about whether the tool provided all the expected functions and capabilities and whether it would enable them to complete tasks quickly.
 To these two questions, participants' median response was 5. 
 On average, participants who used \toolName~ for Task 1 rated it more highly than those who used the tool for Task 2.
+
+
+\subsection{Qualitative Results}
 
 After navigating through several chains of method invocations with \toolName, some participants felt like they had reached ``dead ends'' and were unsure of how to navigate back to where they came from. After reaching a top-level method, P1 asked, ``How can I return back to where I came from?'' While working with \toolName~ P6 utilized Eclipse's back buttons to retrace his steps, but still could not reorient himself. 
 
