@@ -225,7 +225,7 @@ Because think aloud protocols distort the amount of time required to complete ta
 
 \subsection{Usability Evaluation}
 To evaluate the usability of \toolName, we administered an adapted version of the Post-Study System Usability Questionnaire (PSSUQ)~\cite{Lewis95ibmcomputer} after participants had completed both tasks. We modified the questionnaire by replacing ``this system'' with ``this tool'' and asked questions from the System Quality and Interface Quality categories. We asked 10 questions; participants responded on a 7-point Likert scale from ``Strongly Disagree'' to ``Strongly Agree.'' 	
-We also asked participants open-ended questions based on applicable categories from Nielsen's usability heuristics~\cite{Nielsen1992}
+To prompt discussion about the usability of \toolName, we also asked participants open-ended questions based on applicable categories from Nielsen's usability heuristics~\cite{Nielsen1992}.
 To capture participant's experiences that these two metrics overlooked, two of the authors independently examined each audio/video recording and recorded memos. 
 
 \section{Results}
@@ -251,15 +251,17 @@ However, participants were Y\% slower for Task 2.
 To understand why participants were faster for Task 1 with \toolName, we analyzed how long it took participants to navigate one step up the call graph. Participants equipped with our tool were strictly faster than participants with the Eclipse tools with averages of 8 seconds and 44 seconds, respectively. 
 
 
-\subsection{Qualitative Results} 
-Satisfied with easy to use	and Simple to use and Easy to learn Participants responded positively
-%-Low barriers to invocation
+\subsection{Qualitative Results}
+On the PSSUQ, participants responded most positively to questions about \toolName's simplicity, how easy it was to use, and how easy it was to learn. 
+Median responses to these three questions was 6.
+On the other hand, participants responded most negatively to questions about whether the tool provided all the expected functions and capabilities and whether it would enable them to complete tasks quickly.
+To these two questions, participants' median response was 5. 
+On average, participants who used \toolName~ for Task 1 rated it more highly than those who used the tool for Task 2.
 
-Responded low for complete tasks quickly (performance issues and disorientation)
+After navigating through several chains of method invocations with \toolName, some participants felt like they had reached ``dead ends'' and were unsure of how to navigate back to where they came from. After reaching a top-level method, P1 asked, ``How can I return back to where I came from?'' While working with \toolName~ P6 utilized Eclipse's back buttons to retrace his steps, but still could not reorient himself. 
 
-All the functions I expected (Missing tracability and mark bars, ... )
+%All the functions I expected (Missing tracability and mark bars, ... )
 
-With our tool: Task 1 Faster than other tool, less correct. Task 2 slower, but more correct. 
 
 
 \section{Discussion - Scenarios}
@@ -281,6 +283,8 @@ Requires more knowledge about iTrust. Even though we signposted all the areas th
 
 Using our tool for task 1, everyone located a hard-coded string. But the two participants that answered incorrectly (misinterreted the information)
 
+
+
 \subsection{Systematic Evaluation}
 Program navigation tools should help developers keep track of where they have been and where they are going. Especially while attempting to resolve complex defects, developers may want to thoroughly explore all program paths. Their navigation tools should help them keep track of their progress.
 
@@ -289,6 +293,8 @@ Program navigation tools should help developers keep track of where they have be
 Participants were taken to new locations but couldn't backtrack.
 	Back buttons exist, but most didn't use and they didn't help the person who did use them...
 	Points to an inherent limitation of our minimalistic approach. People would be more oriented with a graph or more persistent breadcrumbs...\\
+	Especially important when participants reach ``dead ends.'' When we detect that, intervene!
+	
 Overwhelmed when the call graph had a high branching factor.
 	Participants quickly navigated up single paths as in Task 1
 	When call paths branched in many directions our tool could reccomend more full featured tools.\\
