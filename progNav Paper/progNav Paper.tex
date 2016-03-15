@@ -106,8 +106,37 @@ When navigation tools present results outside the code, developers are burdened 
 
 
 \section{Background}
-Summary of related work, including a table evaluating existing tools on various design principles.
-Spoiler alert, none of the tools satisfy all of the principles.
+%Summary of related work, including a table evaluating existing %tools on various design principles.
+%Spoiler alert, none of the tools satisfy all of the principles.
+There are a variety of tools available to help developers explore and navigate code.
+\subsection{Production Tools}
+Production tools are represented by plugins in integrated development environments that provide detailed information and analysis on variables and methods in the source code. Examples of these types of tools include Call Hierarchy and Find References in Eclipse and Analyze Data Flow To/From Here and Analyze Dependencies in IntelliJ. These tools provide powerful program analysis for users to navigate throughout the entirety of a project, however they differ from our tool in that they require multiple steps to start the tool, need repeated invocations of the plugin to track multiple paths in the code, and force users to switch between the text editor of the IDE and a new panel displaying the results.
+
+\subsection{Visualization Tools}
+Code navigation tools that provide users with a graphical representation of the results are visualization tools. Some examples of these types of tools include Code Bubbles, Code Canvas, Code Surfer, Dora, Reacher, Relo, Whyline, and many more research tools. These works provide various views of control flow graphs, class and UML-like diagrams, call graphs, and other images to describe the relationship between different variables or functions within the code. \toolName~is different because we want to provide minimal steps to invoke the tool and present the information inside of the editor while also exploring the full project's source code and providing powerful data analysis.
+
+\subsection{IDE Integrated Tools}
+IDE Integrated tools are navigation tools that are consolidated into the editor. Some examples of these include Mark Occurrences and Open Declaration in the Eclipse IDE. These approaches are similar to our tool in that they do not present the results in a new view or panel, but in some cases they may not provide a detailed enough analysis to explore the entire program or provide extra unnecessary information, for example Mark Occurrences only highlighting the instances of data within a class in addition to highlighting the value in a comment. These can require repeated work to start the tool, such as Open Declaration requiring the user to right-click or enter a keyboard shortcut for each method declaration the user wants to open.
+
+\begin{table}
+	\centering
+	\caption{Design Principles}
+	\begin{tabular}{|c|c|c|c|c|}
+		%\rowcolor{gray!50}
+		\hline
+		Tool & Powerful & Low & Full Program & In Situ\\
+		%\rowcolor{gray!50}
+		Category & Program Analysis & Barriers & Navigation & Results\\
+		\hline
+		Production & Yes & No & Yes & No\\
+		\hline
+		Visualization & Yes & No & Yes & No \\
+		\hline
+		IDE Integrated & No & Yes & Sometimes & Yes \\
+		\hline
+	\end{tabular}
+	\label{table:background}
+\end{table}
 
 
 
