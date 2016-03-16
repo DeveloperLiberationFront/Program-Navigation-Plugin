@@ -97,7 +97,7 @@ She vaguely recalls that Eclipse provides tools to help her trace control flow a
 She spends some time looking through various menus, tries out a few tools, but cannot locate the right tool.
 Turning her attention back to the code, she begins scrolling through the current file, scanning for uses of the variable. 
 Satisfied she has inspected all the occurrences in the current file, she now searches globally for the variable.
-Frustratingly, her search returns an overwhelming number of irrelevant results, including references to the variable's name in comments, documentation.
+Frustratingly, her search returns an overwhelming number of irrelevant results, including references to the variable's name in comments and documentation.
 Unsure of whether the the variable gets sanitized or if it gets used in a sensitive context, she decides to ignore the warning.
 %Two months later an attacker exploits the vulnerability, costing her company hundreds of millions of dollars. Hillary gets fired for her oversight. Without her high-paying job, she can no longer afford to feed her kids and pay her mortgage. Drowning in credit card debt, homeless, and divorced, Hillary curses the Eclipse tools that let her down.   
 Though Hillary is fictional, her story is based on the experiences of real developers we observed in a previous study~\cite{Smith2015}.
@@ -198,7 +198,7 @@ Figure \ref{fig:tool} depicts \toolName~invoked on a variable participants were 
 Suppose you are a programmer and you notice that by modifying the value of the \texttt{fileName} variable, users could gain access to sensitive information in the database. 
 You want to determine whether users can modify \texttt{fileName} before it gets passed into \texttt{getQueries} or if \texttt{fileName} is always bound to hard-coded parameters. 
 First, you click on \texttt{fileName} (A). 
-To help you locate where the variable is modified and referenced, \toolName~ highlights occurrences of that variable in the code.
+To help you locate where the variable is modified and referenced, \toolName~highlights occurrences of that variable in the code.
 Since \texttt{fileName} is a formal parameter to \texttt{getQueries}, any method calling \texttt{getQueries} could modify \texttt{fileName}. 
 Those methods reside in other class files, so \toolName~ provides links to their locations (B1).
 Rather than move your mouse up to the top of the editor window, you click on \texttt{getQueries} (B2), which conveniently links to the first call site, \texttt{createTables}. 
