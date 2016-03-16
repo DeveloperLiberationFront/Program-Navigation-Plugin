@@ -60,15 +60,25 @@ Based on a preliminary evaluation with 8 programmers, our tool compares well to 
 
 \section{Introduction}
 %Probably need to add in the minimalist angle. How much can we achieve with minimal alterations to the IDE.
-%Existing tools feature many cumbersome UI widgets or seem poorly integrated into the IDE.
-%
 Modern software systems contain millions of lines of source code. 
 As software grows in size and complexity, developers increasingly rely on tools to help them navigate the programs they create. 
 Program navigation is a central task tied to many critical activities, including exploring new code bases, debugging, and assessing security vulnerabilities. 
 
-While navigating programs, developers ask questions about control flow and data flow throughout the program~\cite{latoza2010hard, Smith2015}. We will refer to these two concepts together as \textit{program flow}. Developers are interested in navigating program flow to trace how data is modified across multiple method invocations.
+Integrated development environments (IDEs) present code linearly in the order methods are defined. 
+However, successful developers do not navigate source code linearly (line by line starting at the top of the file). 
+Instead, they methodically navigate the code's hierarchical semantic structures~\cite{robillard2004investigate}.
+While navigating programs, developers ask questions about control flow and data flow throughout the program~\cite{latoza2010hard, Smith2015}. 
+We will refer to these two concepts together as \textit{program flow}. 
 
-Integrated development environments (IDEs) present code linearly in the order methods are defined. However, successful developers do not navigate source code linearly (line by line starting at the top of the file). Instead, they methodically navigate the code's hierarchical semantic structures~\cite{robillard2004investigate}. To resolve this conflict and realize their ideal navigation strategies, developers rely on program navigation tools. 
+To realize their ideal program flow navigation strategies, developers rely on navigation tools that expose the links between distant locations in the source code. 
+Many existing tools do so by adding call graph visualizations or other user interface elements to the screen~\cite{}... 
+Evaluations have demonstrated the effectiveness of such tools, 
+%Existing tools feature many cumbersome UI widgets or seem poorly integrated into the IDE.
+%Previous approaches help developers navigate control flow by helping them visualize. 
+%Tools typically present their results outside the code view. 
+%The additional graphs, maps, and visualizations have been shown to help developers stay oriented. However, (occupy a lot of screen real estate, may be difficult for new users to understand, ...). 
+%Also, don't help developers navigate both flows at the same time.   
+
 
 % Much work has focused on helping developers visualize and navigate call graphs,
 % we also interested in 
