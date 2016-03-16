@@ -73,11 +73,21 @@ Integrated development environments (IDEs) present code linearly in the order me
 % Discuss program visualization tools vs navigation tools.
 
 In this work we designed, implemented, and evaluated a program navigation tool.
-To address the limitations of existing program navigation tools, \toolName embodies four key design principles (Section \ref{DesignPrinciples}).
+To address the limitations of existing program navigation tools, \toolName~embodies four key design principles (Section \ref{DesignPrinciples}).
 
 %This paper makes the following contributions:
+\section{Motivating Example}
+Consider Hillary, a professional Java developer at a large software company.
+While maintaining some old code, Hillary notices a warning from a static analysis tool --- ``This variable contains user-provided data. If it is used in a sensitive context before being sanitized, this code could be vulnerable to various security vulnerabilities.''
 
-
+She vaguely recalls that Eclipse provides tools to help her trace control flow and data flow throughout the program, but is unsure how to invoke them.
+She spends some time looking through various menus, tries out a few tools, but cannot locate the right tool.
+Turning her attention back to the code, she begins scrolling through the current file, scanning for uses of the variable. 
+Satisfied she has inspected all the occurrences in the current file, she now searches globally for the variable.
+Frustratingly, her search returns an overwhelming number of irrelevant results, including references to the variable's name in comments, documentation.
+Unsure of whether the the variable gets sanitized or if it gets used in a sensitive context, she decides to ignore the warning.
+%Two months later an attacker exploits the vulnerability, costing her company hundreds of millions of dollars. Hillary gets fired for her oversight. Without her high-paying job, she can no longer afford to feed her kids and pay her mortgage. Drowning in credit card debt, homeless, and divorced, Hillary curses the Eclipse tools that let her down.   
+Though Hillary is fictional, her story is based on the experiences of real developers we observed in a previous study~\cite{Smith2015} .
 \section{Design Principles}
 \label{DesignPrinciples}
 In this section we describe the design principles that we used to shape \toolName. We derived these design principles by examining existing program navigation tools.
