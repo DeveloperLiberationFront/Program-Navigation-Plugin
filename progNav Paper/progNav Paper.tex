@@ -169,13 +169,16 @@ Eclipse is one of the most widely used open source IDEs for Java development and
 
 Figure \ref{fig:tool} depicts \toolName~invoked on a variable participants were asked to inspect as part of our evaluation. To visualize how a programmer would interact with \toolName, consider the following scenario:
 
-You are concerned that users could modify the value of \texttt{fileName} before it gets passed into \texttt{getQueries}. 
+
+Suppose you are a programmer and you notice that by modifying the value of the \texttt{fileName} variable, users could gain access to sensitive information in the database. 
+You want to determine whether users can modify \texttt{fileName} before it gets passed into \texttt{getQueries} or if \texttt{fileName} is always bound to hard-coded parameters. 
 First, you click on \texttt{fileName} (A). 
-To help you locate where the variable is modified and referenced, \toolName~ highlights proper occurrences of that variable in the code.
+To help you locate where the variable is modified and referenced, \toolName~ highlights occurrences of that variable in the code.
 Since \texttt{fileName} is a formal parameter to \texttt{getQueries}, any method calling \texttt{getQueries} could modify \texttt{fileName}. 
 Those methods reside in other class files, so \toolName~ provides links to their locations (B1).
 Rather than move your mouse up to the top of the editor window, you click on \texttt{getQueries} (B2), which conveniently links to the first call site, \texttt{createTables}. 
-\toolName~ opens \texttt{createTables} and highlights the location in that method where fileName is passed to \texttt{getQueries}.  Additionally, if the selected variable has uses that do not appear in the user's current view of the editor then the tool will provide links to those off-screen line numbers in the top box if it appears above the current location and in the bottom box if it is used below (not shown).
+\toolName~ opens \texttt{createTables} and highlights the location in that method where fileName is passed to \texttt{getQueries}.  
+Additionally, if the selected variable has uses that do not appear in the user's current view of the editor then the tool will provide links to those off-screen line numbers in the top box if it appears above the current location and in the bottom box if it is used below (not shown).
 
 %Something about using \toolName for down flow.
 %(A) - When a user clicks on a variable all (visible) instances of that variable are highlighted in the code. (B) - When the variable has been declared as a parameter to the current method, users can click on that method's name in the editor to navigate to a location where that method is called. (X) - When the variable is passed to an external method, users can click on that method's name to open its declaration. (C) - If the variable is passed in from another method or is defined earlier in the current file, a link to that location is displayed in the ``top box.'' (D) - If the variable is passed in to another method or referenced later in the current file, links to those locations appear in the ``bottom box.''
