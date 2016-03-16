@@ -87,14 +87,14 @@ Satisfied she has inspected all the occurrences in the current file, she now sea
 Frustratingly, her search returns an overwhelming number of irrelevant results, including references to the variable's name in comments, documentation.
 Unsure of whether the the variable gets sanitized or if it gets used in a sensitive context, she decides to ignore the warning.
 %Two months later an attacker exploits the vulnerability, costing her company hundreds of millions of dollars. Hillary gets fired for her oversight. Without her high-paying job, she can no longer afford to feed her kids and pay her mortgage. Drowning in credit card debt, homeless, and divorced, Hillary curses the Eclipse tools that let her down.   
-Though Hillary is fictional, her story is based on the experiences of real developers we observed in a previous study~\cite{Smith2015} .
+Though Hillary is fictional, her story is based on the experiences of real developers we observed in a previous study~\cite{Smith2015}.
 \section{Design Principles}
 \label{DesignPrinciples}
 In this section we describe the design principles that we used to shape \toolName. We derived these design principles by examining existing program navigation tools.
  
 \vspace{1em} 
 \noindent\textbf{Powerful Program Analysis} ---
-Simple textual analysis may lead to inaccurate results in many scenarios. For example, such analysis fails when programs include duplicated variable names that refer different variables in different scopes. Textual analysis also falls short when programs contain inheritance and when variable names are included in comments, doccumentation, or other syntactically irrelevant locations.
+Simple textual analysis may lead to inaccurate results in many scenarios. For example, such analysis fails when programs include duplicated variable names that refer different variables in different scopes. Textual analysis also falls short when programs contain inheritance and when variable names are included in comments, documentation, or other syntactically irrelevant locations.
 By leveraging powerful program analysis techniques, navigation tools can provide more accurate information than simple textual analysis.
 By analyzing abstract syntax trees (ASTs) and call graphs, tools can make proper references to variables and methods. 
 
