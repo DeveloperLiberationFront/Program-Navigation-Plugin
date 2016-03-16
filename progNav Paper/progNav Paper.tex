@@ -221,7 +221,11 @@ P8 & 5.5 & 3.5 & \checkmark\\
 
 \section{Preliminary Evaluation}
 We performed a preliminary evaluation of \toolName~ with eight programmers performing two code navigation tasks.
-Our goals in this study were to get feedback on the usability of our tool and evaluate whether our approach shows promise in enabling developers to effectively navigate program flow. 
+As a baseline, we compare our tool against the existing suite of tools available in Eclipse (Open Declaration, Mark Occurrences, and Call Hierarchy).
+Our goals in this study were to (a) get feedback on the usability of \toolName~ and (b) determine what types of navigation activities \toolName~ effectively supports.
+Section \ref{UsabilityMethodology} outlines our approach to answering (a).
+To answer (b), we measured how quickly and accurately participants completed different activities.
+The remainder of this section describes our participants, study design, and task selection.
 
 All participants were graduate students at the time of the study with a mean of 5 years of professional programming experience; Table \ref{table:participants} provides additional information about each participant. We recruited participants using a convenience sampling approach. 
 
@@ -229,8 +233,6 @@ Each participant used \toolName~for one task and Eclipse's tools (call hierarchy
 To control for learning and fatigue effects, we used a 2x2 latin square design which permuted the order participants received each tool and performed each task. Accordingly, each participant was assigned to one of four groups -- one group for each pair of conditions.
 Before the study, we asked participants to report whether they were familiar with the Eclipse IDE. We used this information to balance Eclipse novices across groups.
 
-
-\subsection{Tasks}
 We analyzed the data from our previous study~\cite{Smith2015}, which included two tasks that required program flow navigation.
 In the previous study, developers expressed a willingness to navigate the program, but used sub-optimal strategies to do so.
 Because the challenges participants faced in ~\cite{Smith2015} partially inspired the development of \toolName, we include the same two tasks in this study.
@@ -246,6 +248,7 @@ Because think aloud protocols distort the amount of time required to complete ta
 %We chose two tasks that (differentiate between the two tasks... up and down?)
 
 \subsection{Usability Evaluation}
+\label{UsabilityMethodology}
 To evaluate the usability of \toolName, we administered an adapted version of the Post-Study System Usability Questionnaire (PSSUQ)~\cite{Lewis95ibmcomputer} after participants had completed both tasks. We modified the questionnaire by replacing ``this system'' with ``this tool'' and asked questions from the System Quality and Interface Quality categories. We asked 10 questions; participants responded on a 7-point Likert scale from ``Strongly Disagree'' to ``Strongly Agree.'' 	
 To prompt discussion about the usability of \toolName, we also asked participants open-ended questions based on applicable categories from Nielsen's usability heuristics~\cite{Nielsen1992}.
 To capture participant's experiences that these two metrics overlooked, two of the authors independently examined each audio/video recording and recorded memos. 
