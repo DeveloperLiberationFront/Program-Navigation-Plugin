@@ -76,22 +76,20 @@ While navigating programs, developers ask questions about control flow and data 
 We will refer to these two concepts together as \textit{program flow}. 
 
 To realize their ideal program flow navigation strategies, developers rely on navigation tools that expose the links between distant locations in the source code. 
-Many existing tools do so by adding call graph visualizations or other user interface elements to the screen~\cite{}... 
-Evaluations have demonstrated the effectiveness of such tools, 
+Many existing tools do so by displaying call graph visualizations or adding views to the the screen.
+In general, evaluations have demonstrated the effectiveness of such tools ~\cite{Reacher,Whyline,Relo,Stacksplorer}.
+
+However, these tools rely on cumbersome user interface widgets that new users might struggle to understand and occupy valuable screen real estate.
+We present a tool, \toolName, that represents a minimalistic approach to program navigation.
+\toolName~ leverages powerful program analysis techniques and integrates all of its results into the code view.
+In evaluating \toolName, we want to understand what types of tasks it can effectively support withoult leaning on the the additional user interface elements that characterize other tools.
 %Existing tools feature many cumbersome UI widgets or seem poorly integrated into the IDE.
 %Previous approaches help developers navigate control flow by helping them visualize. 
-%Tools typically present their results outside the code view. 
-%The additional graphs, maps, and visualizations have been shown to help developers stay oriented. However, (occupy a lot of screen real estate, may be difficult for new users to understand, ...). 
+%The additional graphs, maps, and visualizations have been shown to help developers stay oriented. However, (occupy a lot of screen real estate, may be difficult for new users to understand, mapping stuff). 
 %Also, don't help developers navigate both flows at the same time.   
 
-
-% Much work has focused on helping developers visualize and navigate call graphs,
-% we also interested in 
-% Probably more to come in here? What are some current tools and why are they limited.
-% Discuss program visualization tools vs navigation tools.
-
-In this work we designed, implemented, and evaluated a program navigation tool.
-To address the limitations of existing program navigation tools, \toolName~embodies four key design principles (Section \ref{DesignPrinciples}).
+In this work we designed, implemented, and evaluated a program navigation tool, \toolName.
+In contrast to existing navigation tools, \toolName~embodies four key design principles (Section \ref{DesignPrinciples}) that enable developers to simultaneously trace data flow and control flow within the code view. 
 
 %This paper makes the following contributions:
 \section{Motivating Example}
