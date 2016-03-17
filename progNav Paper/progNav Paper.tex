@@ -119,7 +119,7 @@ By analyzing abstract syntax trees (ASTs) and call graphs, tools can make refere
 \noindent\textbf{Low Barriers to Invocation} ---
 Some tools are easier to invoke than others. 
 Tools with high barriers to invocation require users to sift through menus and include unintuitive widgets. 
-Barriers to invocation inhibit adoption. 
+Barriers to invocation inhibit adoption~\cite{johnson2013don}.
 As developers navigate multiple program paths concurrently, repetitively invoking tools may be cumbersome, especially if barriers are high. 
 
 
@@ -262,9 +262,9 @@ Each participant used \toolName~for one task and Eclipse's tools for the other t
 To control for learning and fatigue effects, we used a 2x2 latin square design which permuted the order participants received each tool and performed each task. 
 Accordingly, each participant was assigned to one of four groups (Task Group column in Table \ref{table:participants}).
 
-We analyzed the data from our previous study~\cite{Smith2015}, which included two tasks that required program flow navigation.
-In the previous study, developers expressed a willingness to navigate the program, but used sub-optimal strategies to do so.
-Because the challenges participants faced in ~\cite{Smith2015} partially inspired the development of \toolName, we include the same two tasks in this study.
+We based our tasks in this study on two tasks (Tasks 1 and 3) from a previous study ~\cite{Smith2015}.
+In the previous study, participants used a think-aloud protocol to, among other things, describe their program navigation strategies.
+Here, we did not interrupt, prompt, or ask participants to think aloud until after they had completed the tasks as to not distort their task completion time.
 
 The two tasks we chose are complementary in that Task 1 required participants to navigate up the call graph, inspecting the callers of the initial method. 
 On the other hand, Task 2 required participants to inspect the methods called by the initial method.
@@ -272,7 +272,6 @@ For Task 1 we asked participants to tell us whether a method ever receives user-
 For Task 2 we asked participants to tell us whether a form field is validated before being sent to the database.
 To ensure all participants had a baseline familiarity, we trained participants on the appropriate tools preceding each task. 
 To evaluate the effectiveness of the navigation tools rather than participants' familiarity with a particular code base, we asked participants to navigate code they had not previously contributed to. 
-Because think aloud protocols distort the amount of time required to complete tasks, we did not interrupt or prompt participants until after they had completed the tasks.
 
 %We chose two tasks that (differentiate between the two tasks... up and down?)
 
@@ -373,6 +372,8 @@ Upon detecting one of these situations, \toolName~ could facilitate the user's t
 
 
 \section{Limitations}
+
+Small number of participants, only two tasks. 
 
 \section{Conclusion}
 
