@@ -95,6 +95,7 @@ To address the limitations of existing program navigation tools, \toolName~embod
 
 %This paper makes the following contributions:
 \section{Motivating Example}
+\label{MotivatingExample}
 Consider Hillary, a professional Java developer at a large software company.
 While maintaining some old code, Hillary notices a warning from a static analysis tool --- ``This variable contains user-provided data. If it is used in a sensitive context before being sanitized, this code could be vulnerable to various security vulnerabilities.''
 
@@ -344,25 +345,24 @@ Similarly, after reaching a top-level method, P1 asked, ``How can I return back 
 \section{Discussion}
 
 \subsection{Systematic Navigation}
-Participants successfully completed simple navigation tasks with \toolName, perhaps due to its minimalistic interface.
+Participants completed simple navigation tasks quickly and accurately with \toolName, perhaps due to its minimalistic interface.
 However, when the task required participants to navigate more complex semantic structures, participants demanded features that would allow them to navigate more systematically.
-Many existing tools support systematic exploration through the use of secondary views containing either hierarchically structured lists of methods or call graph visualizations.
-In keeping with \toolName's minimalistic design and trying to preserve \toolName's \textit{Low Barriers to Invocation}, 
-Admittedly, \toolName's minimalistic interface omits many features that could help developers  
-Program navigation tools should help developers keep track of where they have been and where they are going. Especially while attempting to resolve complex defects, developers may want to thoroughly explore all program paths. Their navigation tools should help them keep track of their progress.
-
-Participants were taken to new locations but couldn't backtrack.
-Back buttons exist, but most didn't use and they didn't help the person who did use them...
-Points to an inherent limitation of our minimalistic approach. People would be more oriented with a graph or more persistent breadcrumbs...\\
-Especially important when participants reach ``dead ends.'' When we detect that, intervene!
-
-animations, breadcrumbs, detect dead ends, reorganize links to 
-
-Couldn't keep track of where they had been.
-See systematic evaluation. Links could turn purple and get moved to the end of the list.\\
+Many existing tools support systematic exploration through the use of secondary views containing either hierarchically structured lists of methods (e.g. \textit{Call Hierarchy} and \textit{Analyze Data Flow}) or call graph visualizations (e.g. \textit{Reacher}).
+In keeping with \toolName's minimalistic design and trying to preserve \toolName's \textit{Low Barriers to Invocation}, we envision several design changes that might enable \toolName~ to support more systematic navigation.
+By tracking developers progress, \toolName~ could display already-visited locations differently than unexplored methods either positionally or through the use of colors.
+Additionally, \toolName~ could use animation to transition more smoothly between locations, perhaps giving users a sense of naturally moving through the code.
+%Especially important when participants reach ``dead ends.'' When we detect that, intervene!
+%animations, breadcrumbs, detect dead ends, reorganize links to 
 
 
 \subsection{Synergistic Tools}
+Navigation without any dedicated tools can be frustrating and unfruitful (Section \ref{MotivatingExample}). 
+However, full-featured navigation tools might be too cumbersome for simple navigation tasks and too complex for unfamiliar users. 
+
+Admittedly, \toolName's minimalistic interface omits many features that could help orient developers as they navigate complex program flows.
+
+For the purposes of this evaluation we observed programmers using \toolName~ in isolation.   
+
 	
 Overwhelmed when the call graph had a high branching factor.
 	Participants quickly navigated up single paths as in Task 1
