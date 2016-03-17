@@ -280,79 +280,93 @@ To prompt discussion about the usability of \toolName, we also asked participant
 	\label{fig:taskTime} 
 \end{figure}
 
+\textbf{Approachable Interface:}
+On the PSSUQ, participants responded most positively to questions about \toolName's simplicity, how easy it was to use, and how easy it was to learn. 
+The median response to these three questions was 6.
+These responses seem to indicate that participants were most enthusiastic about \toolName's minimalistic interface. 
+Participants reiterated these sentiments in their responses to the open-ended questions. 
+For the most part, participants felt it was easy to remember how to use \toolName~and that it featured a ``consistent interface.''
 
-Compared to the Eclipse tools, results with \toolName~ were mixed.
+\textbf{Branchless Navigation:}
+For Task 1, all participants correctly navigated up the call graph.
+The first two steps in this task involved navigating a portion of the call graph that did not include any branches.
+In other words, participants started in the \texttt{parseSQLFile} method, which was only called in one location, \texttt{parseAndCache}. 
+The \texttt{parseAndCache} method was itself only called in one method \texttt{getQueries}.
+Participants equipped with our tool were strictly faster in navigating the first step up this branchless chain. 
+The mean times for participants to reach \texttt{parseAndCache} with \toolName~and the Eclipse tools were 8 seconds and 44 seconds, respectively.
+These two results suggest that \toolName~successfully adhered to the \textit{Low Barriers to Invocation} design principle. 
+
+\textbf{Get Me Outta Here:}
+For Task 2, participants were more accurate with \toolName.
+Two participants (P3 and P6) navigated to the correct validation method with \toolName.
+Only one (P8) did so with the Eclipse tools.
+
+However, the mean completion time for Task 2 with \toolName~was higher (Figure \ref{fig:taskTime}).
+Additionally, participants who used \toolName~ for Task 2 scored the tool lower on the PSSUQ than those who used it for Task 1.
+Based on open-ended responses and our observations of participants, we provide one likely explanation for this deficiency.
+Participants were required to sift through more confounding variables and branches to complete Task 2.
+When participants took missteps they found it difficult to retrace their navigation path.
+While working on Task 2 with \toolName~ P6 attempted to utilized Eclipse's built-in back buttons to backtrack, but still had difficulty reorienting himself. 
+To a lesser extent, we observed this same difficulty during Task 1.
+After navigating through several chains of method invocations with \toolName, P7 felt like she had reached a ``dead end'' and was unsure of how to navigate back to where she came from.
+Similarly, after reaching a top-level method, P1 asked, ``How can I return back to where I came from?''
+
+%PSSUQ responses support this. Could talk about the low categories
+%On the other hand, participants responded most negatively to questions about whether the tool provided all the expected functions and capabilities and whether it would enable them to complete tasks quickly.
+%All the functions I expected (Missing tracability and mark bars, ... )
+%To these two questions, participants' median response was 5. 
+
+
 %Overall, task competion time distorts the actual time participants took to complete the task.
 %Participants who explored more of the call graph are penalized. 
 %Some participants spent additional time exploring after finding the right answer to confirm their conclusion
-For Task 1, participants were X\% faster with \toolName~ than the Eclipse tools (Figure \ref{fig:taskTime}). 
-(Not sure how to report correctness here... 4 gave the correct answer with eclipse tools --
-2 were correct with ours. However, the incorrect two navigated correctly, located a hard-coded parameter, responded incorrectly, and did not justify)
-However, participants were Y\% slower for Task 2.
-(Correctness in terms of navigation was even split. One with our tool guessed correctly)
 
-To understand why participants were faster for Task 1 with \toolName, we analyzed how long it took participants to navigate one step up the call graph. Participants equipped with our tool were strictly faster than participants with the Eclipse tools with averages of 8 seconds and 44 seconds, respectively. 
+%(Not sure how to report correctness here... 4 gave the correct answer with eclipse tools --
+%2 were correct with ours. However, the incorrect two navigated correctly, located a hard-coded %parameter, responded incorrectly, and did not justify)
+%However, participants were Y\% slower for Task 2.
+%(Correctness in terms of navigation was even split. One with our tool guessed correctly)
 
-On the PSSUQ, participants responded most positively to questions about \toolName's simplicity, how easy it was to use, and how easy it was to learn. 
-Median responses to these three questions was 6.
-On the other hand, participants responded most negatively to questions about whether the tool provided all the expected functions and capabilities and whether it would enable them to complete tasks quickly.
-To these two questions, participants' median response was 5. 
-On average, participants who used \toolName~ for Task 1 rated it more highly than those who used the tool for Task 2.
+%To understand why participants were faster for Task 1 with \toolName, we analyzed how long it took participants to navigate one step up the call graph. 
 
+%DFS exploration stategies
 
-\subsection{Qualitative Results}
+\section{Discussion}
 
-After navigating through several chains of method invocations with \toolName, some participants felt like they had reached ``dead ends'' and were unsure of how to navigate back to where they came from. After reaching a top-level method, P1 asked, ``How can I return back to where I came from?'' While working with \toolName~ P6 utilized Eclipse's back buttons to retrace his steps, but still could not reorient himself. 
-
-%All the functions I expected (Missing tracability and mark bars, ... )
-
-
-
-\section{Discussion - Scenarios}
-List scenarios when our tool worked and when it didn't
-\subsection{Wins}
-Getting started. Low barriers to invocation
-\\
-\textbf{Linear Naviagtion}
-When participants navigated linearly in one direction (as in Task 1). Our tool was most effective. 
-Few branches
-
-
-
-\subsection{Losses}
-Why were they slower and less accurate with our tool?
-Second task: 
-Lots of confounding variables meant participants spent time switching between variables.
-Requires more knowledge about iTrust. Even though we signposted all the areas that (required) knowledge about iTrust...
-
-Using our tool for task 1, everyone located a hard-coded string. But the two participants that answered incorrectly (misinterreted the information)
-
-
-
-\subsection{Systematic Evaluation}
+\subsection{Systematic Navigation}
+Participants successfully completed simple navigation tasks with \toolName, perhaps due to its minimalistic interface.
+However, when the task required participants to navigate more complex semantic structures, participants demanded features that would allow them to navigate more systematically.
+Many existing tools support systematic exploration through the use of secondary views containing either hierarchically structured lists of methods or call graph visualizations.
+In keeping with \toolName's minimalistic design and trying to preserve \toolName's \textit{Low Barriers to Invocation}, 
+Admittedly, \toolName's minimalistic interface omits many features that could help developers  
 Program navigation tools should help developers keep track of where they have been and where they are going. Especially while attempting to resolve complex defects, developers may want to thoroughly explore all program paths. Their navigation tools should help them keep track of their progress.
 
-\subsection{Design Implications}
-
 Participants were taken to new locations but couldn't backtrack.
-	Back buttons exist, but most didn't use and they didn't help the person who did use them...
-	Points to an inherent limitation of our minimalistic approach. People would be more oriented with a graph or more persistent breadcrumbs...\\
-	Especially important when participants reach ``dead ends.'' When we detect that, intervene!
+Back buttons exist, but most didn't use and they didn't help the person who did use them...
+Points to an inherent limitation of our minimalistic approach. People would be more oriented with a graph or more persistent breadcrumbs...\\
+Especially important when participants reach ``dead ends.'' When we detect that, intervene!
+
+animations, breadcrumbs, detect dead ends, reorganize links to 
+
+Couldn't keep track of where they had been.
+See systematic evaluation. Links could turn purple and get moved to the end of the list.\\
+
+
+\subsection{Synergistic Tools}
 	
 Overwhelmed when the call graph had a high branching factor.
 	Participants quickly navigated up single paths as in Task 1
 	When call paths branched in many directions our tool could reccomend more full featured tools.\\
-Couldn't keep track of where they had been.
-	See systematic evaluation. Links could turn purple and get moved to the end of the list.\\
-Performance.
-	Whenever the user clicks on a new variable \toolName~ has to search through the entire project for locations where the method is declared or invoked. We observed that participants navigated within one file more often than between files. To improve the performance of our tool, we could optimize the search to return local results before returning global search results.	Participants also repeated invocation on the same variables (we could do some caching)
+
+
+%Performance.
+%Whenever the user clicks on a new variable \toolName~ has to search through the entire project for locations where the method is declared or invoked. We observed that participants navigated within one file more often than between files. To improve the performance of our tool, we could optimize the search to return local results before returning global search results.	Participants also repeated invocation on the same variables (we could do some caching)
 
 
 \section{Limitations}
 
 \section{Conclusion}
 
-\section*{Acknowledgment}
+%\section*{Acknowledgment}
 
 The authors would like to thank...
 
