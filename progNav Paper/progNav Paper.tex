@@ -48,6 +48,9 @@ Email: \{dcbrow10, jssmit11, tralber2\}@ncsu.edu, emerson@csc.ncsu.edu}
 Program navigation is a critical task for software developers. 
 %Many tools and approaches have been proposed to aide developers in navigating programs.
 %In this work we present a tool, \toolName~, that enables developers 
+
+%
+
 Unfortunately, the current state-of-the-art tools do not adequately support developers in simultaneously navigating both control flow and data flow (i.e. program flow). 
 To assist developers in effectively navigating program flow we designed and implemented a tool that leverages powerful program analysis techniques while maintaining low barriers to invocation.
 Our tool enables developers to navigate program flow upstream and downstream within the Eclipse Integrated Development Environment (IDE).
@@ -66,10 +69,10 @@ Based on a preliminary evaluation with 8 programmers, our tool compares well to 
 
 \section{Introduction}
 Modern software systems contain millions of lines of source code. 
-As software grows in size and complexity, developers increasingly rely on tools to help them navigate the programs they create. Finding and fixing bugs has become the most common software activity taking up 70-80\% of software engineers' time \cite{Whyline}, and a software testing study described a wide variety of tools developers use to validate their code in different ways but also found that inadequate testing and debugging tools were a contributing factor to buggy poor quality software in production\cite{NIST-02-3}.
+As software grows in size and complexity, developers increasingly rely on tools to help them navigate the programs they create. Finding and fixing bugs has become the most common software activity taking up 70-80\% of software engineers' time \cite{Whyline}, and a software testing study described a wide variety of tools developers use to validate their code in different ways but also found that inadequate testing and debugging tools were a contributing factor to poor quality software in production\cite{NIST-02-3}.
 Program navigation is a central task that can help improve developers' program comprehension, which Brooks argues is vital because this type of domain-specific knowledge plays a key role in nearly every software tasks including development, code reviews, debugging, code maintenance, testing, and more \cite{BrooksComprehension}. Code navigation can also be applied to exploring new code bases and assessing security vulnerabilities. 
 
-Integrated development environments (IDEs) present code linearly in the order methods are defined. 
+Integrated development environments (IDEs) present code linearly in the order methods are defined in a file. 
 However, successful developers do not navigate source code linearly (line by line starting at the top of the file). 
 Instead, they methodically navigate the code's hierarchical semantic structures~\cite{robillard2004investigate}.
 While navigating programs, developers ask questions about control flow and data flow throughout the program~\cite{latoza2010hard, Smith2015}. 
@@ -81,21 +84,17 @@ In general, evaluations have demonstrated the effectiveness of such tools ~\cite
 
 However, these tools rely on cumbersome user interface widgets that new users might struggle to understand and occupy valuable screen real estate.
 We present a tool, \toolName, that represents a minimalistic approach to program navigation.
-\toolName~ leverages powerful program analysis techniques and integrates all of its results into the code view.
+\toolName~ leverages powerful program analysis techniques and presents its results integrated with the code.
 In evaluating \toolName, we want to understand what types of tasks it can effectively support withoult leaning on the the additional user interface elements that characterize other tools.
 %Existing tools feature many cumbersome UI widgets or seem poorly integrated into the IDE.
 %Previous approaches help developers navigate control flow by helping them visualize. 
 %The additional graphs, maps, and visualizations have been shown to help developers stay oriented. However, (occupy a lot of screen real estate, may be difficult for new users to understand, mapping stuff). 
 %Also, don't help developers navigate both flows at the same time.   
 
-In this work we designed, implemented, and evaluated a program navigation tool, \toolName.
-In contrast to existing navigation tools, \toolName~embodies four key design principles (Section \ref{DesignPrinciples}) that enable developers to simultaneously trace data flow and control flow within the code view. 
-
 %This paper makes the following contributions:
-\section{Motivating Example}
-\label{MotivatingExample}
-Consider Hillary, a professional Java developer at a large software company.
-While maintaining some old code, Hillary notices a warning from a static analysis tool --- ``This variable contains user-provided data. If it is used in a sensitive context before being sanitized, this code could be vulnerable to various security vulnerabilities.''
+
+Consider the following motivating example involving Hillary, a professional Java developer at a large software company.
+While maintaining some old code, Hillary notices a warning from a static analysis tool --- This variable contains user-provided data. If it is used in a sensitive context before being sanitized, this code could be vulnerable to various security vulnerabilities.
 
 She vaguely recalls that Eclipse provides tools to help her trace control flow and data flow throughout the program, but is unsure how to invoke them.
 She spends some time looking through various menus, tries out a few tools, but cannot locate the right tool.
@@ -103,8 +102,15 @@ Turning her attention back to the code, she begins scrolling through the current
 Satisfied she has inspected all the occurrences in the current file, she now searches globally for the variable.
 Frustratingly, her search returns an overwhelming number of irrelevant results, including references to the variable's name in comments and documentation.
 Unsure of whether the the variable gets sanitized or if it gets used in a sensitive context, she decides to ignore the warning.
-%Two months later an attacker exploits the vulnerability, costing her company hundreds of millions of dollars. Hillary gets fired for her oversight. Without her high-paying job, she can no longer afford to feed her kids and pay her mortgage. Drowning in credit card debt, homeless, and divorced, Hillary curses the Eclipse tools that let her down.   
+Two months later an attacker exploits the vulnerability, costing her company hundreds of millions of dollars. 
+Hillary gets fired for her oversight. 
+%Without her high-paying job, she can no longer afford to feed her kids and pay her mortgage. Drowning in credit card debt, homeless, and divorced, Hillary curses the Eclipse tools that let her down.   
 Though Hillary is fictional, her story is based on the experiences of real developers we observed in a previous study~\cite{Smith2015}.
+
+The contribution of this work is the design, implementation, and evaluation of a program navigation tool, \toolName.
+In contrast to existing navigation tools, \toolName~embodies four key design principles (Section \ref{DesignPrinciples}) that enable developers to simultaneously trace data flow and control flow within the code view. 
+
+
 \section{Design Principles}
 \label{DesignPrinciples}
 In this section we describe the design principles that we used to shape \toolName. We derived these design principles from a previous study \cite{Smith2015} and by examining existing program navigation tools.
@@ -328,7 +334,7 @@ Similarly, after reaching a top-level method, P1 asked, ``How can I return back 
 
 %Overall, task competion time distorts the actual time participants took to complete the task.
 %Participants who explored more of the call graph are penalized. 
-%Some participants spent additional time exploring after finding the right answer to confirm their conclusion
+%Some participants spent additional time exeploring after finding the right answer to confirm their conclusion
 
 %(Not sure how to report correctness here... 4 gave the correct answer with eclipse tools --
 %2 were correct with ours. However, the incorrect two navigated correctly, located a hard-coded %parameter, responded incorrectly, and did not justify)
