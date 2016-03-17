@@ -117,7 +117,7 @@ In this section we describe the design principles that we used to shape \toolNam
  
 \vspace{1em} 
 \noindent\textbf{Powerful Program Analysis} ---
-Simple textual analysis may lead to inaccurate results in many scenarios. For example, such analysis fails when programs include duplicated variable names that refer different variables in different scopes. Textual analysis also falls short when programs contain inheritance and when variable names are included in comments, documentation, or other syntactically irrelevant locations.
+Simple textual analysis may lead to inaccurate results in many scenarios. For example, such analysis fails when programs include duplicated variable names that refer to different variables in different scopes. Textual analysis also falls short when programs contain inheritance and when variable names are included in comments, documentation, or other syntactically irrelevant locations.
 By leveraging powerful program analysis techniques, navigation tools can provide more accurate information than simple textual analysis.
 By analyzing abstract syntax trees (ASTs) and call graphs, tools can make references to relevant variables and methods. 
 
@@ -142,10 +142,10 @@ That is, tools should highlight variable assignments and also subsequent variabl
 Switching between views in the IDE can cause disorientation~\cite{deAlwis2006disorient}. As developers navigate through code, navigation tools should present their results in that context. 
 When navigation tools present results outside the code, developers are burdened with the cognitive load of translating those results back to the code.
 
-\section{Background}
+\section{Related Work}
 %Summary of related work, including a table evaluating existing %tools on various design principles.
 %Spoiler alert, none of the tools satisfy all of the principles.
-There are a variety of tools available to help developers explore and navigate code. Here we discuss two types of tools, production tools and visualization tools and Table \ref{table:background} shows a comparison between \toolName~ and other related tools in terms of the four design principles used to implement our tool.
+There are a variety of tools available to help developers explore and navigate code. Here we discuss two types of tools, production tools and visualization tools and Table \ref{table:background} shows a comparison between \toolName~ and other related tools in terms of the four design principles used to design our tool.
 
 \subsection{Production Tools}
 Production tools are represented by plugins in integrated development environments that provide detailed information and analysis on variables and methods in the source code. Examples of these types of tools include \emph{Call Hierarchy} and \emph{Find References} in Eclipse\cite{Eclipse} and \emph{Analyze Data Flow To/From Here} and \emph{Analyze Dependencies} in IntelliJ\cite{IntelliJ}. These tools provide powerful program analysis for users to navigate throughout the entirety of a project, however they generally differ from our tool in that they may require multiple steps to start the tool or modify the user's navigation (i.e. switching between up and down search), may need repeated invocations of the plugin to track multiple paths or variables in the code, and force users to switch between the text editor of the IDE and a new panel displaying the results.
@@ -158,7 +158,7 @@ Code navigation tools that provide users with a graphical representation of the 
 \begin{table}
 	\centering
 	\caption{Design Principles}
-	\begin{tabular}{c|c|c|c|c}
+	\begin{tabular}{r|c|c|c|c}
 		\rowcolor{Gray}
 		\hline
 		Tools & Powerful & Low & Full Prog. & In Situ\\
@@ -193,21 +193,19 @@ Code navigation tools that provide users with a graphical representation of the 
 \section{\toolName}
 \toolName~was designed to realize all of the principles described in Section \ref{DesignPrinciples}. 
 We implemented \toolName~as a plugin to the Eclipse IDE~\cite{Eclipse}. 
-We chose Eclipse because of its popularity and extensibility. 
-Eclipse is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. 
+We chose Eclipse because it is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. 
 
 Figure \ref{fig:tool} depicts \toolName~invoked on a variable participants were asked to inspect as part of our evaluation. To visualize how a programmer would interact with \toolName, consider the following scenario:
 
 
-Suppose you are a programmer and you notice that by modifying the value of the \texttt{fileName} variable, users could gain access to sensitive information in the database. 
+Suppose you are a programmer and you notice that by tampering with the value of the \texttt{fileName} variable, malicious users could gain access to sensitive information in the database. 
 You want to determine whether users can modify \texttt{fileName} before it gets passed into \texttt{getQueries} or if \texttt{fileName} is always bound to hard-coded parameters. 
 First, you click on \texttt{fileName} (A). 
 To help you locate where the variable is modified and referenced, \toolName~highlights occurrences of that variable in the code.
 Since \texttt{fileName} is a formal parameter to \texttt{getQueries}, any method calling \texttt{getQueries} could modify \texttt{fileName}. 
-Those methods reside in other class files, so \toolName~ provides links to their locations (B1).
+Those methods reside in other files, so \toolName~ provides links to their locations (B1).
 Rather than move your mouse up to the top of the editor window, you click on \texttt{getQueries} (B2), which conveniently links to the first call site, \texttt{createTables}. 
-\toolName~ opens \texttt{createTables} and highlights the location in that method where fileName is passed to \texttt{getQueries} as seen in Fig. \ref{fig:tool}.  
-Additionally, if the selected variable has uses that do not appear in the user's current view of the editor then the tool will provide links to those off-screen line numbers in the top box if it appears above the current location and in the bottom box if it is used below (not shown).
+\toolName~ opens \texttt{createTables} and highlights the location in that method where \texttt{fileName} passed to \texttt{getQueries} as seen in Fig. \ref{fig:tool}.  
 
 %Something about using \toolName for down flow.
 %(A) - When a user clicks on a variable all (visible) instances of that variable are highlighted in the code. (B) - When the variable has been declared as a parameter to the current method, users can click on that method's name in the editor to navigate to a location where that method is called. (X) - When the variable is passed to an external method, users can click on that method's name to open its declaration. (C) - If the variable is passed in from another method or is defined earlier in the current file, a link to that location is displayed in the ``top box.'' (D) - If the variable is passed in to another method or referenced later in the current file, links to those locations appear in the ``bottom box.''
@@ -257,8 +255,8 @@ All participants were graduate students at the time of the study with a mean of 
 Before the study, we asked participants to report whether they were familiar with the Eclipse IDE. We used this information to balance Eclipse novices across groups.
 
 Each participant used \toolName~for one task and Eclipse's tools for the other task.
-To control for learning and fatigue effects, we used a 2x2 latin square design which permuted the order participants received each tool and performed each task. 
-Accordingly, each participant was assigned to one of four groups (Task Group column in Table \ref{table:participants}).
+To control for learning and fatigue effects, we permuted the order participants received each tool and performed each task. 
+Each participant was assigned to one of four groups (Task Group column in Table \ref{table:participants}).
 
 We based our tasks in this study on two tasks (Tasks 1 and 3) from a previous study ~\cite{Smith2015}.
 In the previous study, participants used a think-aloud protocol to, among other things, describe their program navigation strategies.
@@ -344,14 +342,14 @@ Participants completed simple navigation tasks quickly and accurately with \tool
 However, when the task required participants to navigate more complex semantic structures, participants demanded features that would allow them to navigate more systematically.
 Many existing tools support systematic exploration through the use of secondary views containing either hierarchically structured lists of methods (e.g. \textit{Call Hierarchy} and \textit{Analyze Data Flow}) or call graph visualizations (e.g. \textit{Reacher}).
 In keeping with \toolName's minimalistic design and trying to preserve \toolName's \textit{Low Barriers to Invocation}, we envision several design changes that might enable \toolName~ to support more systematic navigation.
-By tracking developers progress, \toolName~ could display already-visited locations differently than unexplored methods either positionally or through the use of colors.
+By tracking developers' progress, \toolName~ could display already-visited locations differently than unexplored methods either positionally or through the use of colors.
 Additionally, \toolName~ could use animation to transition more smoothly between locations, perhaps giving users a sense of naturally moving through the code.
 %Especially important when participants reach ``dead ends.'' When we detect that, intervene!
 %animations, breadcrumbs, detect dead ends, reorganize links to 
 
 
 \subsection{Synergistic Tools}
-Navigation without any dedicated tools can be frustrating and unfruitful (Section \ref{MotivatingExample}). 
+Navigation without tool support can be frustrating and unfruitful (See motivating example in Section \ref{MotivatingExample}). 
 However, full-featured navigation tools might be too cumbersome for simple navigation tasks and too complex for unfamiliar users.
 We envision \toolName~ serving as a stepping stone to more sophisticated navigation tools. 
 The design principles of \textit{Low Barriers to Invocation} and \textit{In Situ Navigation} enable users to quickly begin navigating using \toolName. 
