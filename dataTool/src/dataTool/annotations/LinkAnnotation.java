@@ -19,6 +19,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
@@ -49,7 +51,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	private static ASTNode searchResult;
 	public static Set<IMethod> searchResultsUp;
 	public static Set<IMethod> searchResultsDown;
-	public String searchMethod = "";
+	public IMethod searchMethod = null;
 	private IEditorPart editor = null;
 	private boolean load = true;
 	
@@ -65,6 +67,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 		style.underline = true;
 		style.underlineStyle = SWT.UNDERLINE_LINK;
 		textWidget.setStyleRange(style);
+
 		textWidget.addMouseListener(new MouseListener(){
 
 			@Override
@@ -81,7 +84,17 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 			public void mouseUp(MouseEvent arg0) {
 				int click = textWidget.getOffsetAtLocation(new Point(arg0.x,arg0.y));
 				if(click >= style.start && click <= style.start+style.length && load){
-					load = false;
+					if(linkNode == null) {
+						return;
+					}
+					ArrayList<IMethod> search = new ArrayList<IMethod>();
+					if(searchResultsDown != null) {
+						search.addAll(searchResultsDown);
+					}
+					if(searchResultsUp != null) {
+						search.addAll(searchResultsUp);
+					}
+					/*load = false;
 					Object[] search;
 					IMethod im;
 					if(linkNode.getInvocationMethod() != null) {
@@ -90,7 +103,11 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 							im = (IMethod) o;
 							if(im.getElementName().equals(linkNode.getInvocationMethod().getName().getIdentifier())) {
 								try {
-									JavaUI.openInEditor(im, true, true);
+									if(im.getParameters().length > 0)
+										JavaUI.openInEditor(im.getParameters()[linkNode.getParameterIndex()], true, true);
+									else {
+										JavaUI.openInEditor(im, true, true);
+									}
 									load = true;
 								} catch (PartInitException | JavaModelException e) {
 									// Auto-generated catch block
@@ -104,20 +121,64 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 							search = searchResultsUp.toArray();
 							im = (IMethod)search[0];
 							searchMethod = linkNode.getDeclarationMethod().getName().getIdentifier();
-							editor = JavaUI.openInEditor(im, true, true);
-							if(editor != null) {
-								String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
-								lineSearch(code.toCharArray(), im);
-								goToLine(editor);
+							if(im.getParameters().length > 0) {
+								JavaUI.openInEditor(im.getParameters()[linkNode.getParameterIndex()], true, true);
+								load = true;
+							}
+							else {
+								editor = JavaUI.openInEditor(im, true, true);
+								if(editor != null) {
+									String code = JDTUtils.getCUSource((AbstractTextEditor) editor);
+									lineSearch(code.toCharArray(), im);
+									goToLine(editor);
+								}
 								load = true;
 							}
 						} catch (Exception e) {
 							// Auto-generated catch block
 							e.printStackTrace();
 						}
+					}*/
+					IMethod i = null;
+					for(IMethod im: search) {
+						if(linkNode.getInvocationMethod() != null) {
+							if (im.getElementName().equals(linkNode.getInvocationMethod().getName().getIdentifier())) {
+								i = im;
+								break;
+							}
+						}
+						
+					}
+					if (i == null) {
+						if(linkNode.getDeclarationMethod() != null && searchResultsUp != null) {
+							i = search.get(0);
+						}
+						else {
+							return;
+						}
+					}
+						IEditorPart editor = null;
+						try {
+							if(i.getParameters().length > 0 && linkNode.getParameterIndex() >= 0) {
+								editor = JavaUI.openInEditor(i.getParameters()[linkNode.getParameterIndex()], true, true);
+							}
+							else {
+								editor = JavaUI.openInEditor(i, true, true);
+								if(searchMethod != null && editor != null) {
+									String code = ((AbstractTextEditor)editor).getDocumentProvider().getDocument(editor.getEditorInput()).get();
+									lineSearch(code.toCharArray(), i);
+									goToLine(editor);
+								}
+							}
+						} catch (JavaModelException e) {
+							// Auto-generated catch block
+							e.printStackTrace();
+						} catch (PartInitException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					}
 				}
-			}
 		});
 	}
 	
@@ -182,6 +243,10 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	
 	public void setDataNode(DataNode node) {
 		linkNode = node;
+	}
+
+	public void setSearchMethod(IMethod currentMethod) {
+		searchMethod = currentMethod;		
 	}
 
 }

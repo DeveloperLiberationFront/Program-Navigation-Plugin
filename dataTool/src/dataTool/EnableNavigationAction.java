@@ -46,7 +46,9 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	
 	//whether the listener is currently enabled
 	private boolean isEnabled = false;
-		
+	
+	private String previous = "";
+	
 	public void dispose() {
 		if(annotationManager!=null)
 			annotationManager.dispose();
@@ -75,14 +77,17 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 			@Override
 			public void partBroughtToTop(IWorkbenchPart arg0) {
 				// Auto-generated method stub
-				arg0.getSite().getPage().activate(arg0);
-				try {
-					dispose();
-					isEnabled = false;
-					reset(arg0.getSite().getPage());
-				} catch (JavaModelException e) {
-					// Auto-generated catch block
-					e.printStackTrace();
+				if(!previous.equals(arg0.getTitle())) {
+					previous = arg0.getTitle();
+					arg0.getSite().getPage().activate(arg0);
+					try {
+						dispose();
+						isEnabled = false;
+						reset(arg0.getSite().getPage());
+					} catch (JavaModelException e) {
+						// Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 
