@@ -213,18 +213,10 @@ Additionally, if the selected variable has uses that do not appear in the user's
 %(A) - When a user clicks on a variable all (visible) instances of that variable are highlighted in the code. (B) - When the variable has been declared as a parameter to the current method, users can click on that method's name in the editor to navigate to a location where that method is called. (X) - When the variable is passed to an external method, users can click on that method's name to open its declaration. (C) - If the variable is passed in from another method or is defined earlier in the current file, a link to that location is displayed in the ``top box.'' (D) - If the variable is passed in to another method or referenced later in the current file, links to those locations appear in the ``bottom box.''
 
 \begin{figure*}
-\begin{subfigure}{\textwidth}
-  \includegraphics[width=.4\linewidth, height=3cm]{images/toolScreenshot1}
-  \label{fig:sub1}
-\end{subfigure}%
-\begin{subfigure}{\textwidth}
-  \includegraphics[width=.6\linewidth, height=3cm]{images/toolScreenshot2}
-  \label{fig:sub2}
-\end{subfigure}
-\caption{Code view in the Eclipse IDE with \toolName~invoked on the method \texttt{getQueries} from Task 1}
-\label{fig:tool}
+ 	\includegraphics[width=\textwidth]{images/toolScreenshot}
+ 	\caption{Code view in the Eclipse IDE with \toolName~invoked during Task 1. The image on the left shows the tool running in the method \texttt{parseAndCache}. When the user clicks on the link in the editor (B1), they are taken to the function \texttt{getQueries}, which is a caller of \texttt{parseAndCache}.}	
+	\label{fig:tool} 
 \end{figure*}
-
 
 \begin{table}
 \centering
