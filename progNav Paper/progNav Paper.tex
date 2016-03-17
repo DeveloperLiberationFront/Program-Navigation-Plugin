@@ -150,7 +150,7 @@ Code navigation tools that provide users with a graphical representation of the 
 \begin{table}
 	\centering
 	\caption{Design Principles}
-	\begin{tabular}{|c|c|c|c|c|}
+	\begin{tabular}{c|c|c|c|c}
 		\rowcolor{Gray}
 		\hline
 		Tools & Powerful & Low & Full Prog. & In Situ\\
@@ -198,18 +198,25 @@ To help you locate where the variable is modified and referenced, \toolName~high
 Since \texttt{fileName} is a formal parameter to \texttt{getQueries}, any method calling \texttt{getQueries} could modify \texttt{fileName}. 
 Those methods reside in other class files, so \toolName~ provides links to their locations (B1).
 Rather than move your mouse up to the top of the editor window, you click on \texttt{getQueries} (B2), which conveniently links to the first call site, \texttt{createTables}. 
-\toolName~ opens \texttt{createTables} and highlights the location in that method where fileName is passed to \texttt{getQueries}.  
+\toolName~ opens \texttt{createTables} and highlights the location in that method where fileName is passed to \texttt{getQueries} as seen in Fig. \ref{fig:tool}.  
 Additionally, if the selected variable has uses that do not appear in the user's current view of the editor then the tool will provide links to those off-screen line numbers in the top box if it appears above the current location and in the bottom box if it is used below (not shown).
 
 %Something about using \toolName for down flow.
 %(A) - When a user clicks on a variable all (visible) instances of that variable are highlighted in the code. (B) - When the variable has been declared as a parameter to the current method, users can click on that method's name in the editor to navigate to a location where that method is called. (X) - When the variable is passed to an external method, users can click on that method's name to open its declaration. (C) - If the variable is passed in from another method or is defined earlier in the current file, a link to that location is displayed in the ``top box.'' (D) - If the variable is passed in to another method or referenced later in the current file, links to those locations appear in the ``bottom box.''
 
 \begin{figure*}
-	\centering
-	\includegraphics[width=0.75\textwidth]{images/toolScreenshot}
-	\caption{Code view in the Eclipse IDE with \toolName~invoked on Task 1}	
-	\label{fig:tool} 
+\begin{subfigure}{\textwidth}
+  \includegraphics[width=.4\linewidth, height=3cm]{images/toolScreenshot1}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{\textwidth}
+  \includegraphics[width=.6\linewidth, height=3cm]{images/toolScreenshot2}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{Code view in the Eclipse IDE with \toolName~invoked on the method \texttt{getQueries} from Task 1}
+\label{fig:tool}
 \end{figure*}
+
 
 \begin{table}
 \centering
@@ -217,9 +224,9 @@ Additionally, if the selected variable has uses that do not appear in the user's
 \begin{tabular}{cSScc}
 \rowcolor{Gray}
 \hline
-\multicolumn{1}{|c}{\textbf{Participants}} & \multicolumn{1}{c}{\textbf{Industry}} & \multicolumn{1}{c}{\textbf{Java}} &\multicolumn{1}{c}{\textbf{Used}} & \multicolumn{1}{c|}{\textbf{Task}} \\
+\multicolumn{1}{c}{\textbf{Participants}} & \multicolumn{1}{c}{\textbf{Industry}} & \multicolumn{1}{c}{\textbf{Java}} &\multicolumn{1}{c}{\textbf{Used}} & \multicolumn{1}{c}{\textbf{Task}} \\
 \rowcolor{Gray}
-\multicolumn{1}{|c}{ } & \multicolumn{1}{c}{\textbf{Exp.} \textit{(years)}} & \multicolumn{1}{c}{\textbf{Exp.} \textit{(years)}} & \multicolumn{1}{c}{\textbf{Eclipse}} & \multicolumn{1}{c|}{\textbf{Group}}\\
+\multicolumn{1}{c}{ } & \multicolumn{1}{c}{\textbf{Exp.} \textit{(years)}} & \multicolumn{1}{c}{\textbf{Exp.} \textit{(years)}} & \multicolumn{1}{c}{\textbf{Eclipse}} & \multicolumn{1}{c}{\textbf{Group}}\\
 \hline
 P1 & 9 & 5 & \checkmark & T1* - T2 \\
 \rowcolor{Gray}
