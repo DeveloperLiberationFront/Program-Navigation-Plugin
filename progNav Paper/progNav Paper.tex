@@ -115,7 +115,7 @@ In this section we describe the design principles that we used to shape \toolNam
 \noindent\textbf{Powerful Program Analysis} ---
 Simple textual analysis may lead to inaccurate results in many scenarios. For example, such analysis fails when programs include duplicated variable names that refer different variables in different scopes. Textual analysis also falls short when programs contain inheritance and when variable names are included in comments, documentation, or other syntactically irrelevant locations.
 By leveraging powerful program analysis techniques, navigation tools can provide more accurate information than simple textual analysis.
-By analyzing abstract syntax trees (ASTs) and call graphs, tools can make proper references to variables and methods. 
+By analyzing abstract syntax trees (ASTs) and call graphs, tools can make references to relevant variables and methods. 
 
 \vspace{1em} 
 \noindent\textbf{Low Barriers to Invocation} ---
