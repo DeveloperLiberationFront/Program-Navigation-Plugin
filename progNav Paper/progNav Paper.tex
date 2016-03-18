@@ -89,21 +89,31 @@ We present a tool, \toolName (pronounced flow-er), that represents a minimalisti
 %This paper makes the following contributions:
 
 Consider the following motivating example involving Hillary, a professional Java developer at a large software company.
-While maintaining some old code, Hillary notices a warning from a static analysis tool --- This variable contains user-provided data. If it is used in a sensitive context before being sanitized, this code could be vulnerable to various security vulnerabilities.
+While maintaining some old code, Hillary notices a warning from a static analysis tool --- This variable contains user-provided data. 
+If it is used in a sensitive context before being sanitized, this code could be vulnerable to various security vulnerabilities.
 
-She vaguely recalls using an Eclipse tool to help her trace control flow through a program, but is unsure how to invoke it.
+Hillary sets out to determine if the variable is sanitized on all paths leading to the sensitive context.
+She vaguely recalls using an Eclipse tool to help her trace control flow through a program, but is unsure how to invoke it or whether it would help her trace data flow.
 She spends some time looking through various menus, tries out a few tools, but cannot locate the right tool.
-Turning her attention back to the code, she begins scrolling through the current file, scanning for uses of the variable. 
-Satisfied she has inspected all the occurrences in the current file, she now searches globally for the variable.
-Frustratingly, her search returns an overwhelming number of irrelevant results, including references to the variable's name in comments and documentation.
-Unsure of whether the the variable gets sanitized or if it gets used in a sensitive context, she decides to ignore the warning.
+Turning her attention back to the code, she begins scrolling through the current file, unknowingly using Eclipse's \emph{Mark Occurrences} tool while scanning for uses of the variable. 
+Satisfied she has inspected all the occurrences in the current file, she now begins searching for methods that take the variable as input.
+She stumbles upon Eclipse's \emph{Call Hierarchy} tool, which seems helpful, but she is unable to specify the variable she is interested in when invoking the tool.
+
+Undeterred, she finds a method that takes the variable as a parameter and invokes \emph{Call Hierarchy} on that method.
+Eclipse opens a new view containing \emph{Call Hierarchy's} representation of the call graph.
+Hillary continuously switches back and forth between the \emph{Call Hierarchy} view and the code.
+She uses the \emph{Call Hierarchy} view to navigate chains of method calls and inspects the code in each method to check whether the variable gets sanitized correctly.
+She repeats this process for a few more call sites, but grows tired. 
+Unsure of whether the the variable gets sanitized along all paths, she decides to ignore the warning.
 Two months later an attacker exploits the vulnerability, costing her company hundreds of millions of dollars. 
 Hillary gets fired for her oversight. 
 %Without her high-paying job, she can no longer afford to feed her kids and pay her mortgage. Drowning in credit card debt, homeless, and divorced, Hillary curses the Eclipse tools that let her down.   
 Though Hillary is fictional, her story is based on the experiences of real developers we observed in a previous study~\cite{Smith2015}.
 
-The contribution of this work is the design, implementation, and evaluation of a program navigation tool, \toolName.
-By evaluating \toolName, we can better understand what types of tasks it effectively supports. In contrast to existing navigation tools, \toolName~embodies four key design principles (Section \ref{DesignPrinciples}) that enable developers to simultaneously trace data flow and control flow within the code view. 
+The contribution of this work is the design, implementation, and evaluation of a new program navigation tool, \toolName.
+As we will discuss, \toolName~ addresses many of the types of issues that Hillary faced by implementing four key design principles (Section \ref{DesignPrinciples}).
+We evaluate \toolName, to better understand what types of tasks it effectively supports. 
+In contrast to existing navigation tools, \toolName~ enables developers to simultaneously trace data flow and control flow within the code view. 
 
 
 \section{Design Principles}
