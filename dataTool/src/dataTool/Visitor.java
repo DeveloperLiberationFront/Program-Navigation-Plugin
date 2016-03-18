@@ -177,7 +177,7 @@ class Visitor extends ASTVisitor {
 						addedNode = getNodeFromName(sn);
 						if( addedNode != null ) {
 							for( DataNode dn : params ) {
-								if( addedNode.getKey().equals(dn.getKey() ) ) {
+								if( addedNode.getKey().equals(dn.getKey() )) {
 									addedNode.setDeclarationMethod(methodDeclaration);
 									addedNode.setParameterIndex(dn.getParameterIndex());
 								}
@@ -202,7 +202,8 @@ class Visitor extends ASTVisitor {
 								SimpleName n = (SimpleName) e;
 								addedNode = getNodeFromName(n);
 								// TODO shouldn't need a check here
-								if( addedNode != null ) {
+								if( addedNode != null) {
+									addedNode.setDeclarationMethod(null);
 									addedNode.setInvocationMethod(methodInvocation);
 									addedNode.setParameterIndex(i);
 									nodeArgs.add( addedNode );

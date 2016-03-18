@@ -35,6 +35,7 @@ import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.ui.JavaUI;
 
 import dataTool.DataCallHierarchy;
@@ -51,7 +52,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	private static ASTNode searchResult;
 	public static Set<IMethod> searchResultsUp;
 	public static Set<IMethod> searchResultsDown;
-	public IMethod searchMethod = null;
+	public String searchMethod = null;
 	private IEditorPart editor = null;
 	private boolean load = true;
 	
@@ -84,6 +85,8 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 			public void mouseUp(MouseEvent arg0) {
 				int click = textWidget.getOffsetAtLocation(new Point(arg0.x,arg0.y));
 				if(click >= style.start && click <= style.start+style.length && load){
+					load = false;
+					boolean up = false;
 					if(linkNode == null) {
 						return;
 					}
@@ -140,8 +143,8 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 						}
 					}*/
 					IMethod i = null;
-					for(IMethod im: search) {
-						if(linkNode.getInvocationMethod() != null) {
+					if(linkNode.getInvocationMethod() != null && linkNode.getDeclarationMethod() == null) {
+						for(IMethod im: search) {
 							if (im.getElementName().equals(linkNode.getInvocationMethod().getName().getIdentifier())) {
 								i = im;
 								break;
@@ -149,21 +152,25 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 						}
 						
 					}
-					if (i == null) {
-						if(linkNode.getDeclarationMethod() != null && searchResultsUp != null) {
-							i = search.get(0);
+					if (i == null || linkNode.getDeclarationMethod() != null) {
+						if(searchResultsUp != null) {
+							i = (IMethod) searchResultsUp.toArray()[0];
+							searchMethod = linkNode.getDeclarationMethod().getName().getIdentifier();
+							up = true;
 						}
-						else {
+						else if (i == null){
 							return;
 						}
 					}
 						IEditorPart editor = null;
 						try {
-							if(i.getParameters().length > 0 && linkNode.getParameterIndex() >= 0) {
+							if(i.getParameters().length > 0 && linkNode.getParameterIndex() >= 0 && !up) {
 								editor = JavaUI.openInEditor(i.getParameters()[linkNode.getParameterIndex()], true, true);
+								load = true;
 							}
 							else {
 								editor = JavaUI.openInEditor(i, true, true);
+								load = true;
 								if(searchMethod != null && editor != null) {
 									String code = ((AbstractTextEditor)editor).getDocumentProvider().getDocument(editor.getEditorInput()).get();
 									lineSearch(code.toCharArray(), i);
@@ -194,7 +201,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 				public boolean visit(MethodInvocation m) {
 					if(method.getElementName().equals(methodName)) {
 						if(m.getName().getIdentifier().equals(searchMethod)) {
-							searchResult = m;
+							searchResult = (SimpleName) m.arguments().get(linkNode.getParameterIndex());
 						}
 					}
 					return true;
@@ -246,7 +253,7 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 	}
 
 	public void setSearchMethod(IMethod currentMethod) {
-		searchMethod = currentMethod;		
+		searchMethod = currentMethod.getElementName();		
 	}
 
 }
