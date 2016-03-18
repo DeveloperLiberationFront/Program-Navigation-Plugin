@@ -205,6 +205,13 @@ Additionally, most of these tools implement some aspects of \textit{Full Program
 
 
 \section{\toolName}
+
+\begin{figure*}
+	\includegraphics[width=\textwidth]{images/toolScreenshot}
+	\caption{Code view in the Eclipse IDE with \toolName~invoked during Task 1. The image on the left shows the tool running in the method \texttt{parseAndCache}. When the user clicks on the link in the editor (B1 or B2), they are taken to the function \texttt{getQueries}, which is a caller of \texttt{parseAndCache}.}	
+	\label{fig:tool} 
+\end{figure*}
+
 \toolName~was designed to realize all of the principles described in Section \ref{DesignPrinciples}. 
 We implemented \toolName~as a plugin to the Eclipse IDE~\cite{Eclipse}. 
 We chose Eclipse because it is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. 
@@ -223,12 +230,6 @@ Rather than move your mouse up to the top of the editor window, you click on \te
 
 %Something about using \toolName for down flow.
 %(A) - When a user clicks on a variable all (visible) instances of that variable are highlighted in the code. (B) - When the variable has been declared as a parameter to the current method, users can click on that method's name in the editor to navigate to a location where that method is called. (X) - When the variable is passed to an external method, users can click on that method's name to open its declaration. (C) - If the variable is passed in from another method or is defined earlier in the current file, a link to that location is displayed in the ``top box.'' (D) - If the variable is passed in to another method or referenced later in the current file, links to those locations appear in the ``bottom box.''
-
-\begin{figure*}
- 	\includegraphics[width=\textwidth]{images/toolScreenshot}
- 	\caption{Code view in the Eclipse IDE with \toolName~invoked during Task 1. The image on the left shows the tool running in the method \texttt{parseAndCache}. When the user clicks on the link in the editor (B1 or B2), they are taken to the function \texttt{getQueries}, which is a caller of \texttt{parseAndCache}.}	
-	\label{fig:tool} 
-\end{figure*}
 
 \begin{table}
 \centering
