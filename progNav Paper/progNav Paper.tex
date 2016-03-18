@@ -303,12 +303,12 @@ To prompt discussion about the usability of \toolName, we also asked participant
 Here we present the results of our preliminary evaluation. 
 We present our results thematically to illustrate the types of activities \toolName~ effectively supported.
 
-\begin{figure}
-	\centering
-	\includegraphics[width=\columnwidth]{images/taskTime}
-	\caption{Mean time to complete each task with and without \toolName}
-	\label{fig:taskTime} 
-\end{figure}
+%\begin{figure}
+%	\centering
+%	\includegraphics[width=\columnwidth]{images/taskTime}
+%	\caption{Mean time to complete each task with and without \toolName}
+%	\label{fig:taskTime} 
+%\end{figure}
 
 \textbf{Approachable Interface:}
 Compared to other PSSUQ questions, participants responded most positively to the three questions about \toolName's simplicity, how easy it was to use, and how easy it was to learn. 
@@ -317,7 +317,9 @@ Participants reiterated these sentiments in their responses to the open-ended qu
 For the most part, participants felt it was easy to remember how to use \toolName~and that it featured a ``consistent interface.''
 
 \textbf{Branchless Navigation:}
-For Task 1, all participants correctly navigated up the call graph.
+For Task 1, all participants correctly navigated up the call graph and did so faster with \toolName~ compared to the Eclipse tools.
+With \toolName, participants' mean completion time was 276 seconds, compared to 402 seconds with the Eclipse tools.
+
 The first two steps in this task involved navigating a portion of the call graph that did not include any branches.
 In other words, participants started in the \texttt{parseSQLFile} method, which was only called in one location, \texttt{parseAndCache}. 
 The \texttt{parseAndCache} method was itself only called in one method \texttt{getQueries}.
@@ -330,7 +332,7 @@ For Task 2, participants were more accurate with \toolName.
 Two participants (P3 and P6) navigated to the correct validation method with \toolName.
 Only one (P8) did so with the Eclipse tools.
 
-However, the mean completion time for Task 2 with \toolName~was higher (Figure \ref{fig:taskTime}).
+However, the mean completion time for Task 2 with \toolName~was higher (385 seconds) compared to the Eclipse tools (251 seconds).
 Additionally, participants who used \toolName~ for Task 2 scored the tool lower on the PSSUQ than those who used it for Task 1.
 Based on open-ended responses and our observations of participants, we provide one likely explanation for this deficiency.
 Participants were required to sift through more variable references and method calls to complete Task 2.
