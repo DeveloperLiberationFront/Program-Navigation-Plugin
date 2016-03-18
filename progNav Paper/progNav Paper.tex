@@ -16,7 +16,6 @@
 \hyphenation{op-tical net-works semi-conduc-tor}
 
 
-\newcommand{\toolName}{Flower}
 
 \begin{document}
 %
@@ -26,7 +25,7 @@
 % not capitalized unless they are the first or last word of the title.
 % Linebreaks \\ can be used within to get better formatting as desired.
 % Do not put math or special symbols in the title.
-\title{\toolName: Navigating Program Flow in the IDE}
+\title{Flower: Navigating Program Flow in the IDE}
 
 
 % author names and affiliations
@@ -47,7 +46,7 @@ Email: \{dcbrow10, jssmit11, tralber2\}@ncsu.edu, emerson@csc.ncsu.edu}
 \begin{abstract}
 Program navigation is a critical task for software developers. 
 %Many tools and approaches have been proposed to aide developers in navigating programs.
-%In this work we present a tool, \toolName~, that enables developers 
+%In this work we present a tool, Flower, that enables developers 
 The current state-of-the-art tools support program navigation by leaning heavily on visualizations and cumbersome interface widgets.
 To assist developers in effectively navigating program flow, we designed and implemented a new tool that leverages powerful program analysis techniques while maintaining a minimalistic interface.
 Our tool enables developers to simultaneously navigate control flow and data flow within the Eclipse Integrated Development Environment (IDE).
@@ -79,8 +78,8 @@ Many existing tools do so by displaying call graph visualizations or adding view
 In general, evaluations have demonstrated the effectiveness of such tools ~\cite{Reacher,Whyline,Relo,Stacksplorer}.
 
 However, these tools rely on cumbersome user interface widgets that new users might struggle to understand and occupy valuable screen real estate.
-We present a tool, \toolName (pronounced flow-er), that represents a minimalistic approach to program navigation.
-\toolName~ leverages powerful program analysis techniques, leans on relatively few cumbersome interface elements, and presents its results integrated within the code.
+We present a tool, Flower (pronounced flow-er), that represents a minimalistic approach to program navigation.
+Flower  leverages powerful program analysis techniques, leans on relatively few cumbersome interface elements, and presents its results integrated within the code.
 %Existing tools feature many cumbersome UI widgets or seem poorly integrated into the IDE.
 %Previous approaches help developers navigate control flow by helping them visualize. 
 %The additional graphs, maps, and visualizations have been shown to help developers stay oriented. However, (occupy a lot of screen real estate, may be difficult for new users to understand, mapping stuff). 
@@ -110,15 +109,15 @@ Hillary gets fired for her oversight.
 %Without her high-paying job, she can no longer afford to feed her kids and pay her mortgage. Drowning in credit card debt, homeless, and divorced, Hillary curses the Eclipse tools that let her down.   
 Though Hillary is fictional, her story is based on the experiences of real developers we observed in a previous study~\cite{Smith2015}.
 
-The contribution of this work is the design, implementation, and evaluation of a new program navigation tool, \toolName.
-As we will discuss, \toolName~ addresses many of the types of issues that Hillary faced by implementing four key design principles (Section \ref{DesignPrinciples}).
-We evaluate \toolName, to better understand what types of tasks it effectively supports. 
-In contrast to existing navigation tools, \toolName~ enables developers to simultaneously trace data flow and control flow within the code view. 
+The contribution of this work is the design, implementation, and evaluation of a new program navigation tool, Flower.
+As we will discuss, Flower  addresses many of the types of issues that Hillary faced by implementing four key design principles (Section \ref{DesignPrinciples}).
+We evaluate Flower, to better understand what types of tasks it effectively supports. 
+In contrast to existing navigation tools, Flower  enables developers to simultaneously trace data flow and control flow within the code view. 
 
 
 \section{Design Principles}
 \label{DesignPrinciples}
-In this section we describe the design principles that we used to shape \toolName. We derived these design principles from a previous study \cite{Smith2015} and by examining existing program navigation tools.
+In this section we describe the design principles that we used to shape Flower. We derived these design principles from a previous study \cite{Smith2015} and by examining existing program navigation tools.
  
 \vspace{1em} 
 \noindent\textbf{Powerful Program Analysis} ---
@@ -163,14 +162,14 @@ When users invoke \emph{Call Hierarchy}, Eclipse opens a new view that displays 
 IntelliJ~\cite{IntelliJ} also provides navigation tools, namely \emph{Analyze Data Flow To/From Here} and \emph{Analyze Dependencies}.
 Much like Eclipse's \emph{Call Hierarchy}, the \emph{Analyze Data Flow} tools display their results in external views. 
 These tools provide \textit{Powerful Program Analysis} for users to navigate throughout the entirety of a project. 
-However they generally differ from \toolName~ in that they lack \textit{Low Barriers to Invocation} and \textit{In Situ Navigation}.
+However they generally differ from Flower  in that they lack \textit{Low Barriers to Invocation} and \textit{In Situ Navigation}.
 
 There are also several tools that reside strictly within the code editor, enabling a form of \textit{In Situ Navigation}.
 Two examples of these tools are Eclipse's \emph{Mark Occurrences} and \emph{Open Declaration}. 
 Eclipse automatically invokes \emph{Mark Occurrences} whenever a user clicks on a variable or method name in the code.
 The tool then highlights occurrences of that element elsewhere in the current file.
 \emph{Mark Occurrences} epitomizes \textit{Low Barriers to Invocation}.
-These approaches are similar to \toolName~ in that they display the results within the editor rather than a separate view or panel.
+These approaches are similar to Flower  in that they display the results within the editor rather than a separate view or panel.
 However, they do not provide \textit{Powerful Program Analysis} or enable \textit{Full Program Analysis}.
 
 
@@ -178,7 +177,7 @@ Many other tools help developers navigate code by representing the code graphica
 These works provide various views of control flow graphs, class and UML-like diagrams, trees, call graphs, and other images to describe the hierarchy and relationship between different variables or functions within the code. 
 To generate accurate visualizations, these types of tools utilize \textit{Powerful Program Analysis}.
 Additionally, most of these tools implement some aspects of \textit{Full Program Navigation}.
-\toolName~differs because from these tools in the way it presents results (\textit{In Situ Navigation}) and because it has \textit{Low Barriers to Invocation}.
+Flower differs because from these tools in the way it presents results (\textit{In Situ Navigation}) and because it has \textit{Low Barriers to Invocation}.
 
 %\begin{table}
 %	\centering
@@ -215,46 +214,46 @@ Additionally, most of these tools implement some aspects of \textit{Full Program
 %\end{table}
 %
 
-\section{\toolName}
-\toolName~was designed to realize all of the principles described in Section \ref{DesignPrinciples}. 
-We implemented \toolName~as a plugin to the Eclipse IDE~\cite{Eclipse}. 
+\section{Flower}
+Flower was designed to realize all of the principles described in Section \ref{DesignPrinciples}. 
+We implemented Flower as a plugin to the Eclipse IDE~\cite{Eclipse}. 
 We chose Eclipse because it is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. 
 
-Figure \ref{fig:tool} depicts \toolName~invoked on a variable participants were asked to inspect as part of our evaluation. To visualize how a programmer would interact with \toolName, consider the following scenario:
+Figure \ref{fig:tool} depicts Flower invoked on a variable participants were asked to inspect as part of our evaluation. To visualize how a programmer would interact with Flower, consider the following scenario:
 
 
 Suppose you are a programmer and you notice that by tampering with the value of the \texttt{fileName} variable, malicious users could gain access to sensitive information in the database. 
 You want to determine whether users can modify \texttt{fileName} before it gets passed into \texttt{parseAndCache}. 
 First, you click on \texttt{fileName} (A).
-Much like \emph{Mark Occurrences}, \toolName is automatically invoked.
-To help you locate where the variable is modified and referenced, \toolName~highlights occurrences of that variable in the code.
+Much like \emph{Mark Occurrences}, Flower is automatically invoked.
+To help you locate where the variable is modified and referenced, Flower highlights occurrences of that variable in the code.
 Since \texttt{fileName} is a formal parameter to \texttt{parseAndCache}, any method calling \texttt{parseAndCache} could modify \texttt{fileName}. 
-Those methods reside in other files, so \toolName~ provides links to their locations (B1).
+Those methods reside in other files, so Flower  provides links to their locations (B1).
 Rather than move your mouse up to the top of the editor window, you click on \texttt{parseAndCache} (B2), which conveniently links to the first call site, \texttt{getQueries}. 
-\toolName~ opens \texttt{getQueries} and highlights the location in that method where \texttt{fileName} passed to \texttt{parseAndCache} and shows that the value is passed to \texttt{getQueries} from \texttt{createTables}, \texttt{createProcedures}, \texttt{executeSQLFile}, and \texttt{dropTables} as seen in Fig. \ref{fig:tool}.  
+Flower  opens \texttt{getQueries} and highlights the location in that method where \texttt{fileName} passed to \texttt{parseAndCache} and shows that the value is passed to \texttt{getQueries} from \texttt{createTables}, \texttt{createProcedures}, \texttt{executeSQLFile}, and \texttt{dropTables} as seen in Fig. \ref{fig:tool}.  
 
-%Something about using \toolName for down flow.
+%Something about using Flower for down flow.
 %(A) - When a user clicks on a variable all (visible) instances of that variable are highlighted in the code. (B) - When the variable has been declared as a parameter to the current method, users can click on that method's name in the editor to navigate to a location where that method is called. (X) - When the variable is passed to an external method, users can click on that method's name to open its declaration. (C) - If the variable is passed in from another method or is defined earlier in the current file, a link to that location is displayed in the ``top box.'' (D) - If the variable is passed in to another method or referenced later in the current file, links to those locations appear in the ``bottom box.''
 
 \begin{figure*}
  	\includegraphics[width=\textwidth]{images/toolScreenshot}
- 	\caption{Code view in the Eclipse IDE with \toolName~invoked during Task 1. The image on the left shows the tool running in the method \texttt{parseAndCache}. When the user clicks on the link in the editor (B1 or B2), they are taken to the function \texttt{getQueries}, which is a caller of \texttt{parseAndCache}.}	
+ 	\caption{Code view in the Eclipse IDE with Flower invoked during Task 1. The image on the left shows the tool running in the method \texttt{parseAndCache}. When the user clicks on the link in the editor (B1 or B2), they are taken to the function \texttt{getQueries}, which is a caller of \texttt{parseAndCache}.}	
 	\label{fig:tool} 
 \end{figure*}
 
 
 
 \section{Preliminary Evaluation}
-We performed a preliminary evaluation of \toolName~ with eight programmers performing two code navigation tasks.
+We performed a preliminary evaluation of Flower  with eight programmers performing two code navigation tasks.
 As a baseline, we compare our tool against the existing suite of tools available in Eclipse (Open Declaration, Mark Occurrences, and Call Hierarchy).
-Our goals in this study were to (a) determine what types of navigation activities \toolName~ effectively supports and fails to support and (b) get feedback on the usability of \toolName~.
+Our goals in this study were to (a) determine what types of navigation activities Flower  effectively supports and fails to support and (b) get feedback on the usability of Flower.
 To answer (a), we measured how quickly and accurately participants completed different activities.
 The remainder of this section describes our participants, study design, and task selection, and concludes with our approach to answer (b).
 
 All participants were graduate students at the time of the study with a mean of 5 years of professional programming experience; Table \ref{table:participants} provides additional information about each participant. We recruited participants using a convenience sampling approach. 
 Before the study, we asked participants to report whether they were familiar with the Eclipse IDE. We used this information to balance Eclipse novices across groups.
 
-Each participant used \toolName~for one task and Eclipse's tools for the other task.
+Each participant used Flower for one task and Eclipse's tools for the other task.
 To control for learning and fatigue effects, we permuted the order participants received each tool and performed each task. 
 Each participant was assigned to one of four groups (Task Group column in Table \ref{table:participants}).
 
@@ -273,8 +272,8 @@ To evaluate the effectiveness of the navigation tools rather than participants' 
 
 %We chose two tasks that (differentiate between the two tasks... up and down?)
 
-To evaluate the usability of \toolName, we administered an adapted version of the Post-Study System Usability Questionnaire (PSSUQ)~\cite{Lewis95ibmcomputer} after participants had completed both tasks. We modified the questionnaire by replacing ``this system'' with ``this tool'' and asked questions from the System Quality and Interface Quality categories.
-To prompt discussion about the usability of \toolName, we also asked participants open-ended questions based on applicable categories from Nielsen's usability heuristics~\cite{Nielsen1992}.
+To evaluate the usability of Flower, we administered an adapted version of the Post-Study System Usability Questionnaire (PSSUQ)~\cite{Lewis95ibmcomputer} after participants had completed both tasks. We modified the questionnaire by replacing ``this system'' with ``this tool'' and asked questions from the System Quality and Interface Quality categories.
+To prompt discussion about the usability of Flower, we also asked participants open-ended questions based on applicable categories from Nielsen's usability heuristics~\cite{Nielsen1992}.
 %To capture participant's experiences that these two metrics overlooked, two of the authors independently examined each audio/video recording and recorded memos. 
 
 \begin{table}
@@ -299,52 +298,52 @@ To prompt discussion about the usability of \toolName, we also asked participant
 		P7 & 1 & 9 & \checkmark & T1 - T2*\\
 		\rowcolor{Gray}
 		P8 & 5.5 & 3.5 & \checkmark & T2 - T1*\\
-		\multicolumn{5}{c}{* Used \toolName~for task}
+		\multicolumn{5}{c}{* Used Flower for task}
 	\end{tabular}
 	\label{table:participants}
 \end{table}
 
 \section{Results}
 Here we present the results of our preliminary evaluation. 
-We present our results thematically to illustrate the types of activities \toolName~ effectively supported.
+We present our results thematically to illustrate the types of activities Flower  effectively supported.
 
 %\begin{figure}
 %	\centering
 %	\includegraphics[width=\columnwidth]{images/taskTime}
-%	\caption{Mean time to complete each task with and without \toolName}
+%	\caption{Mean time to complete each task with and without Flower}
 %	\label{fig:taskTime} 
 %\end{figure}
 
 \textbf{Approachable Interface:}
-Compared to other PSSUQ questions, participants responded most positively to the three questions about \toolName's simplicity, how easy it was to use, and how easy it was to learn. 
-These responses seem to indicate that participants were most enthusiastic about \toolName's minimalistic interface. 
+Compared to other PSSUQ questions, participants responded most positively to the three questions about Flower's simplicity, how easy it was to use, and how easy it was to learn. 
+These responses seem to indicate that participants were most enthusiastic about Flower's minimalistic interface. 
 Participants reiterated these sentiments in their responses to the open-ended questions. 
-For the most part, participants felt it was easy to remember how to use \toolName~and that it featured a ``consistent interface.''
+For the most part, participants felt it was easy to remember how to use Flower and that it featured a ``consistent interface.''
 
 \textbf{Branchless Navigation:}
-For Task 1, all participants correctly navigated up the call graph and did so faster with \toolName~ compared to the Eclipse tools.
-With \toolName, participants' mean completion time was 276 seconds, compared to 402 seconds with the Eclipse tools.
+For Task 1, all participants correctly navigated up the call graph and did so faster with Flower  compared to the Eclipse tools.
+With Flower, participants' mean completion time was 276 seconds, compared to 402 seconds with the Eclipse tools.
 
 The first two steps in this task involved navigating a portion of the call graph that did not include any branches.
 In other words, participants started in the \texttt{parseSQLFile} method, which was only called in one location, \texttt{parseAndCache}. 
 The \texttt{parseAndCache} method was itself only called in one method \texttt{getQueries}.
 Participants equipped with our tool were strictly faster in navigating the first step up this branchless chain. 
-The mean times for participants to reach \texttt{parseAndCache} with \toolName~and the Eclipse tools were 8 seconds and 44 seconds, respectively.
-These two results suggest that \toolName~successfully adhered to the \textit{Low Barriers to Invocation} design principle. 
+The mean times for participants to reach \texttt{parseAndCache} with Flower and the Eclipse tools were 8 seconds and 44 seconds, respectively.
+These two results suggest that Flower successfully adhered to the \textit{Low Barriers to Invocation} design principle. 
 
 \textbf{Branching and Backtracking:}
-For Task 2, participants were more accurate with \toolName.
-Two participants (P3 and P6) navigated to the correct validation method with \toolName.
+For Task 2, participants were more accurate with Flower.
+Two participants (P3 and P6) navigated to the correct validation method with Flower.
 Only one (P8) did so with the Eclipse tools.
 
-However, the mean completion time for Task 2 with \toolName~was higher (385 seconds) compared to the Eclipse tools (251 seconds).
-Additionally, participants who used \toolName~ for Task 2 scored the tool lower on the PSSUQ than those who used it for Task 1.
+However, the mean completion time for Task 2 with Flower was higher (385 seconds) compared to the Eclipse tools (251 seconds).
+Additionally, participants who used Flower  for Task 2 scored the tool lower on the PSSUQ than those who used it for Task 1.
 Based on open-ended responses and our observations of participants, we provide one likely explanation for this deficiency.
 Participants were required to sift through more variable references and method calls to complete Task 2.
 In navigating this more complex program structure, when participants took missteps they found it difficult to backtrack.
-While working on Task 2 with \toolName~P6 attempted to use Eclipse's built-in back buttons to backtrack, but still had difficulty reorienting himself. 
+While working on Task 2 with Flower P6 attempted to use Eclipse's built-in back buttons to backtrack, but still had difficulty reorienting himself. 
 To a lesser extent, we observed this same difficulty during Task 1.
-After navigating through several chains of method invocations with \toolName, P7 felt like she had reached a ``dead end'' and was unsure of how to navigate back to where she came from.
+After navigating through several chains of method invocations with Flower, P7 felt like she had reached a ``dead end'' and was unsure of how to navigate back to where she came from.
 Similarly, after reaching a top-level method, P1 asked, ``How can I return back to where I came from?''
 
 %PSSUQ responses support this. Could talk about the low categories
@@ -362,19 +361,19 @@ Similarly, after reaching a top-level method, P1 asked, ``How can I return back 
 %However, participants were Y\% slower for Task 2.
 %(Correctness in terms of navigation was even split. One with our tool guessed correctly)
 
-%To understand why participants were faster for Task 1 with \toolName, we analyzed how long it took participants to navigate one step up the call graph. 
+%To understand why participants were faster for Task 1 with Flower, we analyzed how long it took participants to navigate one step up the call graph. 
 
 %DFS exploration stategies
 
 \section{Discussion}
 
 \subsection{Systematic Navigation}
-Participants completed simple navigation tasks quickly and accurately with \toolName, perhaps due to its minimalistic interface.
+Participants completed simple navigation tasks quickly and accurately with Flower, perhaps due to its minimalistic interface.
 However, when the task required participants to navigate more complex semantic structures, participants demanded features that would allow them to navigate more systematically.
 Many existing tools support systematic exploration through the use of secondary views containing either hierarchically structured lists of methods (e.g. \textit{Call Hierarchy} and \textit{Analyze Data Flow}) or call graph visualizations (e.g. \textit{Reacher}).
-In keeping with \toolName's minimalistic design and trying to preserve \toolName's \textit{Low Barriers to Invocation}, we envision several design changes that might enable \toolName~ to support more systematic navigation.
-By tracking developers' progress, \toolName~ could display already-visited locations differently than unexplored methods either positionally or through the use of colors.
-Additionally, in a similar approach to that of Whyline~\cite{Whyline}, \toolName~ could use animation to transition more smoothly between locations, perhaps giving users a sense of naturally moving through the code.
+In keeping with Flower's minimalistic design and trying to preserve Flower's \textit{Low Barriers to Invocation}, we envision several design changes that might enable Flower  to support more systematic navigation.
+By tracking developers' progress, Flower  could display already-visited locations differently than unexplored methods either positionally or through the use of colors.
+Additionally, in a similar approach to that of Whyline~\cite{Whyline}, Flower  could use animation to transition more smoothly between locations, perhaps giving users a sense of naturally moving through the code.
 %Especially important when participants reach ``dead ends.'' When we detect that, intervene!
 %animations, breadcrumbs, detect dead ends, reorganize links to 
 
@@ -382,11 +381,11 @@ Additionally, in a similar approach to that of Whyline~\cite{Whyline}, \toolName
 \subsection{Synergistic Tools}
 Navigation without tool support can be frustrating and unfruitful.
 However, full-featured navigation tools might be too cumbersome for simple navigation tasks and too complex for unfamiliar users.
-We envision \toolName~ serving as a stepping stone to more sophisticated navigation tools. 
-The design principles of \textit{Low Barriers to Invocation} and \textit{In Situ Navigation} enable users to quickly begin navigating using \toolName. 
-We imagine that \toolName~ could detect when users reach ``dead ends'' or code that contains many complex branches.
-Upon detecting one of these situations, \toolName~ could facilitate the user's transition to a more heavy-weight tool by either recommending or automatically invoking a tool that features additional navigation visualizations.
-%For the purposes of this evaluation we observed programmers using \toolName~ in isolation.   
+We envision Flower  serving as a stepping stone to more sophisticated navigation tools. 
+The design principles of \textit{Low Barriers to Invocation} and \textit{In Situ Navigation} enable users to quickly begin navigating using Flower. 
+We imagine that Flower  could detect when users reach ``dead ends'' or code that contains many complex branches.
+Upon detecting one of these situations, Flower  could facilitate the user's transition to a more heavy-weight tool by either recommending or automatically invoking a tool that features additional navigation visualizations.
+%For the purposes of this evaluation we observed programmers using Flower  in isolation.   
 
 	
 %Overwhelmed when the call graph had a high branching factor.
@@ -395,22 +394,22 @@ Upon detecting one of these situations, \toolName~ could facilitate the user's t
 
 
 %Performance.
-%Whenever the user clicks on a new variable \toolName~ has to search through the entire project for locations where the method is declared or invoked. We observed that participants navigated within one file more often than between files. To improve the performance of our tool, we could optimize the search to return local results before returning global search results.	Participants also repeated invocation on the same variables (we could do some caching)
+%Whenever the user clicks on a new variable Flower  has to search through the entire project for locations where the method is declared or invoked. We observed that participants navigated within one file more often than between files. To improve the performance of our tool, we could optimize the search to return local results before returning global search results.	Participants also repeated invocation on the same variables (we could do some caching)
 
 
 \section{Limitations}
 Our study had several limitations.
 Due to the preliminary nature of this study, we recruited relatively few participants and only had them perform two tasks.
-Although our study materials do not indicate we created \toolName, some participants may have deduced it was our tool.
+Although our study materials do not indicate we created Flower, some participants may have deduced it was our tool.
 As a result, participants may have unnaturally inflated their positive responses to the PSSUQ due to social desirability bias.
 Accordingly, we focus on participants' relative responses rather than their absolute values.
 %Finally, we asked participants to navigate unfamiliar code.
 
 \section{Conclusion}
 
-In this work we presented a new tool, \toolName~, that helps developers navigate program flow with its minimalistic interface. 
-\toolName~ fills a void between ad-hoc, tool-less, navigation strategies and cumbersome flow visualization tools.
-Based on our preliminary evaluation, \toolName~ was most effective when developers wished to navigate program structures with few branches.\footnote{This work is supported by NSF grant number 131832}
+In this work we presented a new tool, Flower, that helps developers navigate program flow with its minimalistic interface. 
+Flower  fills a void between ad-hoc, tool-less, navigation strategies and cumbersome flow visualization tools.
+Based on our preliminary evaluation, Flower  was most effective when developers wished to navigate program structures with few branches.\footnote{This work is supported by NSF grant number 131832}
 
 
 
