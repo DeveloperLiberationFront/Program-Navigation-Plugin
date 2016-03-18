@@ -212,7 +212,7 @@ Figure \ref{fig:tool} depicts \toolName~invoked on a variable participants were 
 
 
 Suppose you are a programmer and you notice that by tampering with the value of the \texttt{fileName} variable, malicious users could gain access to sensitive information in the database. 
-You want to determine whether users can modify \texttt{fileName} before it gets passed into \texttt{parseAndCache} or if \texttt{fileName} is always bound to hard-coded parameters. 
+You want to determine whether users can modify \texttt{fileName} before it gets passed into \texttt{parseAndCache}. 
 First, you click on \texttt{fileName} (A). 
 To help you locate where the variable is modified and referenced, \toolName~highlights occurrences of that variable in the code.
 Since \texttt{fileName} is a formal parameter to \texttt{parseAndCache}, any method calling \texttt{parseAndCache} could modify \texttt{fileName}. 
