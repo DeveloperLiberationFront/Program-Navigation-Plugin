@@ -129,6 +129,8 @@ By analyzing abstract syntax trees (ASTs) and call graphs, tools can make refere
 \vspace{1em} 
 \noindent\textbf{Low Barriers to Invocation} ---
 Some tools are easier to invoke than others. 
+Take Hillary's case for example.
+She easily invoked \emph{Mark Occurrence}, but initially struggled to locate and invoke \emph{Call Hierarchy}.
 Tools with high barriers to invocation require users to sift through menus and include unintuitive widgets. 
 Barriers to invocation inhibit adoption~\cite{johnson2013don}.
 As developers navigate multiple program paths concurrently, repetitively invoking tools may be cumbersome, especially if barriers are high. 
@@ -139,12 +141,15 @@ As developers navigate multiple program paths concurrently, repetitively invokin
 Developers are not only interested in traversing programs' call graphs, but also how data flows through the call graph~\cite{Smith2015}.
 To do so, developers must inspect the relationship between methods as well as the methods themselves.
 Often the methods of interest span across multiple source files.
+For Hillary, \emph{Mark Occurrences} helped her navigate a single file, but fell short when she wanted to inspect methods in other files.
 Furthermore, program navigation tools should support this traversal both upstream and downstream. 
 That is, tools should highlight variable assignments and also subsequent variable uses. 
 
 \vspace{1em} 
 \noindent\textbf{In Situ Navigation}  ---
-Switching between views in the IDE can cause disorientation~\cite{deAlwis2006disorient}. As developers navigate through code, navigation tools should present their results in that context. 
+Switching between views in the IDE can cause disorientation~\cite{deAlwis2006disorient}. 
+As developers navigate through code, navigation tools should present their results in that context. 
+This was a problem for Hillary, who had to constantly switch between the \emph{Call Hirerchy} view and the code view.
 When navigation tools present results outside the code, developers are burdened with the cognitive load of translating those results back to the code.
 
 \section{Related Work}
