@@ -155,7 +155,7 @@ When navigation tools present results outside the code, developers are burdened 
 \section{Related Work}
 %Summary of related work, including a table evaluating existing %tools on various design principles.
 %Spoiler alert, none of the tools satisfy all of the principles.
-Here we discuss many of the various existing tools that help developers explore and navigate code. Table \ref{table:background} summarizes the tools we discuss in terms of the four design principles from Section \ref{DesignPrinciples}.
+Here we discuss many of the various existing tools that help developers explore and navigate code. We also relate the exiting tools back to Design Principles Described in Section \ref{DesignPrinciples}.
 
 Many modern IDEs provide tools that help developers navigate through their code. 
 For example, Eclipse~\cite{Eclipse} includes \emph{Call Hierarchy} and \emph{Find References}. 
@@ -179,40 +179,41 @@ These works provide various views of control flow graphs, class and UML-like dia
 To generate accurate visualizations, these types of tools utilize \textit{Powerful Program Analysis}.
 Additionally, most of these tools implement some aspects of \textit{Full Program Navigation}.
 \toolName~differs because from these tools in the way it presents results (\textit{In Situ Navigation}) and because it has \textit{Low Barriers to Invocation}.
-\begin{table}
-	\centering
-	\caption{Design Principles}
-	\begin{tabular}{r|c|c|c|c}
-		\rowcolor{Gray}
-		\hline
-		Tools & Powerful & Low & Full Prog. & In Situ\\
-		\rowcolor{Gray}
-		 & Analysis & Barriers & Nav. & Nav.\\
-		\hline
-		Call Hierarchy & \checkmark & - & \checkmark & -\\
-		\rowcolor{Gray}
-		Find References & \checkmark & - & \checkmark & -\\
-		Analyze Data Flow & \checkmark & - & \checkmark & -\\
-		\rowcolor{Gray}
-		Analyze Dependencies & \checkmark & - & \checkmark & -\\
-		Mark Occurrences & - & \checkmark & - & \checkmark \\
-		\rowcolor{Gray}
-		Open Declaration & \checkmark & - & \checkmark & \checkmark \\
-		Code Bubbles & \checkmark & - & \checkmark & \checkmark \\
-		\rowcolor{Gray}
-		Code Canvas & \checkmark & - & \checkmark & \checkmark \\
-		Code Surfer & \checkmark & - & \checkmark & Sometimes \\
-		\rowcolor{Gray}
-		Dora & \checkmark & - & \checkmark & - \\
-		Reacher & \checkmark & - & \checkmark & - \\
-		\rowcolor{Gray}
-		Relo & \checkmark & - & \checkmark & - \\
-		Whyline & \checkmark & - & \checkmark & - \\
-		\hline
-	\end{tabular}
-	\label{table:background}
-\end{table}
 
+%\begin{table}
+%	\centering
+%	\caption{Design Principles}
+%	\begin{tabular}{r|c|c|c|c}
+%		\rowcolor{Gray}
+%		\hline
+%		Tools & Powerful & Low & Full Prog. & In Situ\\
+%		\rowcolor{Gray}
+%		 & Analysis & Barriers & Nav. & Nav.\\
+%		\hline
+%		Call Hierarchy & \checkmark & - & \checkmark & -\\
+%		\rowcolor{Gray}
+%		Find References & \checkmark & - & \checkmark & -\\
+%		Analyze Data Flow & \checkmark & - & \checkmark & -\\
+%		\rowcolor{Gray}
+%		Analyze Dependencies & \checkmark & - & \checkmark & -\\
+%		Mark Occurrences & - & \checkmark & - & \checkmark \\
+%		\rowcolor{Gray}
+%		Open Declaration & \checkmark & - & \checkmark & \checkmark \\
+%		Code Bubbles & \checkmark & - & \checkmark & \checkmark \\
+%		\rowcolor{Gray}
+%		Code Canvas & \checkmark & - & \checkmark & \checkmark \\
+%		Code Surfer & \checkmark & - & \checkmark & Sometimes \\
+%		\rowcolor{Gray}
+%		Dora & \checkmark & - & \checkmark & - \\
+%		Reacher & \checkmark & - & \checkmark & - \\
+%		\rowcolor{Gray}
+%		Relo & \checkmark & - & \checkmark & - \\
+%		Whyline & \checkmark & - & \checkmark & - \\
+%		\hline
+%	\end{tabular}
+%	\label{table:background}
+%\end{table}
+%
 
 \section{\toolName}
 \toolName~was designed to realize all of the principles described in Section \ref{DesignPrinciples}. 
