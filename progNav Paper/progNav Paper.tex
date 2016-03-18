@@ -78,7 +78,7 @@ Instead, they methodically navigate the code's hierarchical semantic structures~
 While navigating programs, developers ask questions about control flow and data flow throughout the program~\cite{latoza2010hard, Smith2015}. 
 We will refer to these two concepts together as \textit{program flow}. 
 
-To realize their ideal program flow navigation strategies, developers rely on navigation tools that expose the links between sometimes distant locations in the source code. 
+To realize their ideal program flow navigation strategies, developers rely on navigation tools that expose the links between distant locations in the source code. 
 Many existing tools do so by displaying call graph visualizations or adding views to the the screen.
 In general, evaluations have demonstrated the effectiveness of such tools ~\cite{Reacher,Whyline,Relo,Stacksplorer}.
 
@@ -205,13 +205,6 @@ Additionally, most of these tools implement some aspects of \textit{Full Program
 
 
 \section{\toolName}
-
-\begin{figure*}
-	\includegraphics[width=\textwidth]{images/toolScreenshot}
-	\caption{Code view in the Eclipse IDE with \toolName~invoked during Task 1. The image on the left shows the tool running in the method \texttt{parseAndCache}. When the user clicks on the link in the editor (B1 or B2), they are taken to the function \texttt{getQueries}, which is a caller of \texttt{parseAndCache}.}	
-	\label{fig:tool} 
-\end{figure*}
-
 \toolName~was designed to realize all of the principles described in Section \ref{DesignPrinciples}. 
 We implemented \toolName~as a plugin to the Eclipse IDE~\cite{Eclipse}. 
 We chose Eclipse because it is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. 
@@ -220,16 +213,22 @@ Figure \ref{fig:tool} depicts \toolName~invoked on a variable participants were 
 
 
 Suppose you are a programmer and you notice that by tampering with the value of the \texttt{fileName} variable, malicious users could gain access to sensitive information in the database. 
-You want to determine whether users can modify \texttt{fileName} before it gets passed into \texttt{getQueries} or if \texttt{fileName} is always bound to hard-coded parameters. 
+You want to determine whether users can modify \texttt{fileName} before it gets passed into \texttt{parseAndCache} or if \texttt{fileName} is always bound to hard-coded parameters. 
 First, you click on \texttt{fileName} (A). 
 To help you locate where the variable is modified and referenced, \toolName~highlights occurrences of that variable in the code.
-Since \texttt{fileName} is a formal parameter to \texttt{getQueries}, any method calling \texttt{getQueries} could modify \texttt{fileName}. 
+Since \texttt{fileName} is a formal parameter to \texttt{parseAndCache}, any method calling \texttt{parseAndCache} could modify \texttt{fileName}. 
 Those methods reside in other files, so \toolName~ provides links to their locations (B1).
-Rather than move your mouse up to the top of the editor window, you click on \texttt{getQueries} (B2), which conveniently links to the first call site, \texttt{createTables}. 
-\toolName~ opens \texttt{createTables} and highlights the location in that method where \texttt{fileName} passed to \texttt{getQueries} as seen in Fig. \ref{fig:tool}.  
+Rather than move your mouse up to the top of the editor window, you click on \texttt{parseAndCache} (B2), which conveniently links to the first call site, \texttt{getQueries}. 
+\toolName~ opens \texttt{getQueries} and highlights the location in that method where \texttt{fileName} passed to \texttt{parseAndCache} and shows that the value is passed to \texttt{getQueries} from \texttt{createTables}, \texttt{createProcedures}, \texttt{executeSQLFile}, and \texttt{dropTables} as seen in Fig. \ref{fig:tool}.  
 
 %Something about using \toolName for down flow.
 %(A) - When a user clicks on a variable all (visible) instances of that variable are highlighted in the code. (B) - When the variable has been declared as a parameter to the current method, users can click on that method's name in the editor to navigate to a location where that method is called. (X) - When the variable is passed to an external method, users can click on that method's name to open its declaration. (C) - If the variable is passed in from another method or is defined earlier in the current file, a link to that location is displayed in the ``top box.'' (D) - If the variable is passed in to another method or referenced later in the current file, links to those locations appear in the ``bottom box.''
+
+\begin{figure*}
+ 	\includegraphics[width=\textwidth]{images/toolScreenshot}
+ 	\caption{Code view in the Eclipse IDE with \toolName~invoked during Task 1. The image on the left shows the tool running in the method \texttt{parseAndCache}. When the user clicks on the link in the editor (B1 or B2), they are taken to the function \texttt{getQueries}, which is a caller of \texttt{parseAndCache}.}	
+	\label{fig:tool} 
+\end{figure*}
 
 \begin{table}
 \centering
@@ -261,9 +260,10 @@ P8 & 5.5 & 3.5 & \checkmark & T2 - T1*\\
 \section{Preliminary Evaluation}
 We performed a preliminary evaluation of \toolName~ with eight programmers performing two code navigation tasks.
 As a baseline, we compare our tool against the existing suite of tools available in Eclipse (Open Declaration, Mark Occurrences, and Call Hierarchy).
-Our goals in this study were to (a) determine what types of navigation activities \toolName~ effectively supports and fails to support and (b) get feedback on the usability of \toolName~.
-To answer (a), we measured how quickly and accurately participants completed different activities.
-The remainder of this section describes our participants, study design, and task selection, and concludes with our approach to answer (b).
+Our goals in this study were to (a) get feedback on the usability of \toolName~ and (b) determine what types of navigation activities \toolName~ effectively supports.
+Section \ref{UsabilityMethodology} outlines our approach to answering (a).
+To answer (b), we measured how quickly and accurately participants completed different activities.
+The remainder of this section describes our participants, study design, and task selection.
 
 All participants were graduate students at the time of the study with a mean of 5 years of professional programming experience; Table \ref{table:participants} provides additional information about each participant. We recruited participants using a convenience sampling approach. 
 Before the study, we asked participants to report whether they were familiar with the Eclipse IDE. We used this information to balance Eclipse novices across groups.
@@ -285,7 +285,9 @@ To evaluate the effectiveness of the navigation tools rather than participants' 
 
 %We chose two tasks that (differentiate between the two tasks... up and down?)
 
-To evaluate the usability of \toolName, we administered an adapted version of the Post-Study System Usability Questionnaire (PSSUQ)~\cite{Lewis95ibmcomputer} after participants had completed both tasks. We modified the questionnaire by replacing ``this system'' with ``this tool'' and asked questions from the System Quality and Interface Quality categories.
+\subsection{Usability Evaluation}
+\label{UsabilityMethodology}
+To evaluate the usability of \toolName, we administered an adapted version of the Post-Study System Usability Questionnaire (PSSUQ)~\cite{Lewis95ibmcomputer} after participants had completed both tasks. We modified the questionnaire by replacing ``this system'' with ``this tool'' and asked questions from the System Quality and Interface Quality categories. We asked 10 questions; participants responded on a 7-point Likert scale from ``Strongly Disagree'' to ``Strongly Agree.'' 	
 To prompt discussion about the usability of \toolName, we also asked participants open-ended questions based on applicable categories from Nielsen's usability heuristics~\cite{Nielsen1992}.
 %To capture participant's experiences that these two metrics overlooked, two of the authors independently examined each audio/video recording and recorded memos. 
 
