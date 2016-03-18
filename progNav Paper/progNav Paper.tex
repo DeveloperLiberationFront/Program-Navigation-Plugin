@@ -145,16 +145,30 @@ When navigation tools present results outside the code, developers are burdened 
 \section{Related Work}
 %Summary of related work, including a table evaluating existing %tools on various design principles.
 %Spoiler alert, none of the tools satisfy all of the principles.
-There are a variety of tools available to help developers explore and navigate code. Here we discuss two types of tools, production tools and visualization tools and Table \ref{table:background} shows a comparison between \toolName~ and other related tools in terms of the four design principles used to design our tool.
+Here we discuss many of the various existing tools that help developers explore and navigate code. Table \ref{table:background} summarizes the tools we discuss in terms of the four design principles from Section \ref{DesignPrinciples}.
 
-\subsection{Production Tools}
-Production tools are represented by plugins in integrated development environments that provide detailed information and analysis on variables and methods in the source code. Examples of these types of tools include \emph{Call Hierarchy} and \emph{Find References} in Eclipse\cite{Eclipse} and \emph{Analyze Data Flow To/From Here} and \emph{Analyze Dependencies} in IntelliJ\cite{IntelliJ}. These tools provide powerful program analysis for users to navigate throughout the entirety of a project, however they generally differ from our tool in that they may require multiple steps to start the tool or modify the user's navigation (i.e. switching between up and down search), may need repeated invocations of the plugin to track multiple paths or variables in the code, and force users to switch between the text editor of the IDE and a new panel displaying the results.
+Many modern IDEs provide tools that help developers navigate through their code. 
+For example, Eclipse~\cite{Eclipse} includes \emph{Call Hierarchy} and \emph{Find References}. 
+When users invoke \emph{Call Hierarchy}, Eclipse opens a new view that displays the callers and callees for a selected method.  
+IntelliJ~\cite{IntelliJ} also provides navigation tools, namely \emph{Analyze Data Flow To/From Here} and \emph{Analyze Dependencies}.
+Much like Eclipse's \emph{Call Hierarchy}, the \emph{Analyze Data Flow} tools display their results in external views. 
+These tools provide \textit{Powerful Program Analysis} for users to navigate throughout the entirety of a project. 
+However they generally differ from \toolName~ in that they lack \textit{Low Barriers to Invocation} and \textit{In Situ Navigation}.
 
-There are also several production tools that are strictly consolidated within the editor. Two examples of these types of commercial tools include \emph{Mark Occurrences}\cite{MarkOccurrences} and \emph{Open Declaration} in the Eclipse IDE. These approaches are similar to our tool in that they display the results within the editor rather than a separate view or panel, but in some cases they may not provide a detailed enough analysis to explore the entire program or provide extra unnecessary information, for example Mark Occurrences only highlighting the instances of data within a class in addition to highlighting the value in a comment. These can require repeated work to start the tool, such as Open Declaration requiring the user to right-click or enter a keyboard shortcut for each method or variable declaration the user wants to open.
+There are also several tools that reside strictly within the code editor, enabling a form of \textit{In Situ Navigation}.
+Two examples of these tools are Eclipse's \emph{Mark Occurrences} and \emph{Open Declaration}. 
+Eclipse automatically invokes \emph{Mark Occurrences} whenever a user clicks on a variable or method name in the code.
+The tool then highlights occurrences of that element elsewhere in the current file.
+\emph{Mark Occurrences} epitomizes \textit{Low Barriers to Invocation}.
+These approaches are similar to \toolName~ in that they display the results within the editor rather than a separate view or panel.
+However, they do not provide \textit{Powerful Program Analysis} or enable \textit{Full Program Analysis}.
 
-\subsection{Visualization Tools}
-Code navigation tools that provide users with a graphical representation of the results are visualization tools. Some examples of these types of tools include \emph{Code Bubbles}\cite{CodeBubbles}, \emph{Code Canvas}\cite{CodeCanvas}, \emph{Code Surfer}\cite{CodeSurfer}, \emph{Dora}\cite{Dora}, \emph{Reacher}\cite{Reacher}, \emph{Relo}\cite{Relo}, \emph{Whyline}\cite{Whyline}, and many more research tools. These works provide various views of control flow graphs, class and UML-like diagrams, trees, call graphs, and other images to describe the hierarchy and relationship between different variables or functions within the code. \toolName~differs because, while all visualization tools can provide powerful data analysis, but we desire minimal steps to invoke the tool and present the information inside of the editor.
 
+Many other tools help developers navigate code by representing the code graphically and allowing developers to navigate those graphs~\cite{CodeBubbles,CodeCanvas,CodeSurfer,Dora,Reacher,Relo,Whyline}. 
+These works provide various views of control flow graphs, class and UML-like diagrams, trees, call graphs, and other images to describe the hierarchy and relationship between different variables or functions within the code. 
+To generate accurate visualizations, these types of tools utilize \textit{Powerful Program Analysis}.
+Additionally, most of these tools implement some aspects of \textit{Full Program Navigation}.
+\toolName~differs because from these tools in the way it presents results (\textit{In Situ Navigation}) and because it has \textit{Low Barriers to Invocation}.
 \begin{table}
 	\centering
 	\caption{Design Principles}
