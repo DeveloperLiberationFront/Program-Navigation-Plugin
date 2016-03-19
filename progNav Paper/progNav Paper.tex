@@ -6,11 +6,16 @@
 \usepackage{siunitx}
 \usepackage{dcolumn}
 \usepackage{color, colortbl}
-
+\usepackage{balance}
 \usepackage{caption}
+\usepackage{url}
 \usepackage{subcaption}
 \definecolor{Gray}{gray}{0.9}
 
+
+\clubpenalty = 10000
+\widowpenalty = 10000
+\displaywidowpenalty = 10000
 
 % correct bad hyphenation here
 \hyphenation{op-tical net-works semi-conduc-tor}
@@ -88,8 +93,8 @@ Flower  leverages powerful program analysis techniques, leans on relatively few 
 %This paper makes the following contributions:
 
 Consider the following motivating example involving Hillary, a professional Java developer at a large software company.
-While maintaining some old code, Hillary notices a warning from a static analysis tool --- This variable contains user-provided data. 
-If it is used in a sensitive context before being sanitized, this code could be vulnerable to various security vulnerabilities.
+While maintaining some old code, Hillary notices a warning from a static analysis tool --- this variable contains user-provided data. 
+If it is used in a sensitive context before being sanitized, this code could be vulnerable to security vulnerabilities.
 
 Hillary sets out to determine if the variable is sanitized on all paths leading to the sensitive context.
 She vaguely recalls using an Eclipse tool to help her trace control flow through a program, but is unsure how to invoke it or whether it would help her trace data flow.
@@ -102,7 +107,7 @@ Undeterred, she finds a method that takes the variable as a parameter and invoke
 Eclipse opens a new view containing \emph{Call Hierarchy's} representation of the call graph.
 Hillary continuously switches back and forth between the \emph{Call Hierarchy} view and the code.
 She uses the \emph{Call Hierarchy} view to navigate chains of method calls and inspects the code in each method to check whether the variable gets sanitized correctly.
-She repeats this process for a few more call sites, but grows tired. 
+She repeats this process for a few more call sites, but grows fatigued. 
 Unsure of whether the the variable gets sanitized along all paths, she decides to ignore the warning.
 Two months later an attacker exploits the vulnerability, costing her company hundreds of millions of dollars. 
 Hillary gets fired for her oversight. 
@@ -129,7 +134,7 @@ By analyzing abstract syntax trees (ASTs) and call graphs, tools can make refere
 \noindent\textbf{Low Barriers to Invocation} ---
 Some tools are easier to invoke than others. 
 Take Hillary's case for example.
-She easily invoked \emph{Mark Occurrence}, but initially struggled to locate and invoke \emph{Call Hierarchy}.
+She easily invoked \emph{Mark Occurrences}, but initially struggled to locate and invoke \emph{Call Hierarchy}.
 Tools with high barriers to invocation require users to sift through menus and include unintuitive widgets. 
 Barriers to invocation inhibit adoption~\cite{johnson2013don}.
 As developers navigate multiple program paths concurrently, repetitively invoking tools may be cumbersome, especially if barriers are high. 
@@ -162,7 +167,7 @@ When users invoke \emph{Call Hierarchy}, Eclipse opens a new view that displays 
 IntelliJ~\cite{IntelliJ} also provides navigation tools, namely \emph{Analyze Data Flow To/From Here} and \emph{Analyze Dependencies}.
 Much like Eclipse's \emph{Call Hierarchy}, the \emph{Analyze Data Flow} tools display their results in external views. 
 These tools provide \textit{Powerful Program Analysis} for users to navigate throughout the entirety of a project. 
-However they generally differ from Flower  in that they lack \textit{Low Barriers to Invocation} and \textit{In Situ Navigation}.
+However, they generally differ from Flower because they lack \textit{Low Barriers to Invocation} and \textit{In Situ Navigation}.
 
 There are also several tools that reside strictly within the code editor, enabling a form of \textit{In Situ Navigation}.
 Two examples of these tools are Eclipse's \emph{Mark Occurrences} and \emph{Open Declaration}. 
@@ -170,7 +175,7 @@ Eclipse automatically invokes \emph{Mark Occurrences} whenever a user clicks on 
 The tool then highlights occurrences of that element elsewhere in the current file.
 \emph{Mark Occurrences} epitomizes \textit{Low Barriers to Invocation}.
 These approaches are similar to Flower  in that they display the results within the editor rather than a separate view or panel.
-However, they do not provide \textit{Powerful Program Analysis} or enable \textit{Full Program Analysis}.
+However, they do not provide \textit{Powerful Program Analysis} or enable \textit{Full Program Navigation}.
 
 
 Many other tools help developers navigate code by representing the code graphically and allowing developers to navigate those graphs~\cite{CodeBubbles,CodeCanvas,CodeSurfer,Dora,Reacher,Relo,Whyline}. 
@@ -244,8 +249,8 @@ Flower  opens \texttt{getQueries} and highlights the location in that method whe
 
 
 \section{Preliminary Evaluation}
-We performed a preliminary evaluation of Flower  with eight programmers performing two code navigation tasks.
-As a baseline, we compare our tool against the existing suite of tools available in Eclipse (Open Declaration, Mark Occurrences, and Call Hierarchy).
+We performed a preliminary evaluation of Flower with eight programmers performing two code navigation tasks.\footnote{Materials available online at \url{tinyurl.com/flowerTool}}
+As a baseline, we compare our tool against the existing suite of tools available in Eclipse (\emph{Open Declaration}, \emph{Mark Occurrences}, and \emph{Call Hierarchy}).
 Our goals in this study were to (a) determine what types of navigation activities Flower  effectively supports and fails to support and (b) get feedback on the usability of Flower.
 To answer (a), we measured how quickly and accurately participants completed different activities.
 The remainder of this section describes our participants, study design, and task selection, and concludes with our approach to answer (b).
@@ -282,9 +287,9 @@ To prompt discussion about the usability of Flower, we also asked participants o
 	\begin{tabular}{cSScc}
 		\rowcolor{Gray}
 		\hline
-		\multicolumn{1}{c}{\textbf{Participants}} & \multicolumn{1}{c}{\textbf{Industry}} & \multicolumn{1}{c}{\textbf{Java}} &\multicolumn{1}{c}{\textbf{Used}} & \multicolumn{1}{c}{\textbf{Task}} \\
+		\multicolumn{1}{c}{\textbf{Participants}} & \multicolumn{1}{c}{\textbf{Industry}} & \multicolumn{1}{c}{\textbf{Java}} &\multicolumn{1}{c}{\textbf{Eclipse}} & \multicolumn{1}{c}{\textbf{Task}} \\
 		\rowcolor{Gray}
-		\multicolumn{1}{c}{ } & \multicolumn{1}{c}{\textbf{Exp.} \textit{(years)}} & \multicolumn{1}{c}{\textbf{Exp.} \textit{(years)}} & \multicolumn{1}{c}{\textbf{Eclipse}} & \multicolumn{1}{c}{\textbf{Group}}\\
+		\multicolumn{1}{c}{ } & \multicolumn{1}{c}{\textbf{Exp.} \textit{(years)}} & \multicolumn{1}{c}{\textbf{Exp.} \textit{(years)}} & \multicolumn{1}{c}{\textbf{Exp.}} & \multicolumn{1}{c}{\textbf{Group}}\\
 		\hline
 		P1 & 9 & 5 & \checkmark & T1* - T2 \\
 		\rowcolor{Gray}
@@ -326,7 +331,7 @@ With Flower, participants' mean completion time was 276 seconds, compared to 402
 
 The first two steps in this task involved navigating a portion of the call graph that did not include any branches.
 In other words, participants started in the \texttt{parseSQLFile} method, which was only called in one location, \texttt{parseAndCache}. 
-The \texttt{parseAndCache} method was itself only called in one method \texttt{getQueries}.
+The \texttt{parseAndCache} method was only called in one method \texttt{getQueries}.
 Participants equipped with our tool were strictly faster in navigating the first step up this branchless chain. 
 The mean times for participants to reach \texttt{parseAndCache} with Flower and the Eclipse tools were 8 seconds and 44 seconds, respectively.
 These two results suggest that Flower successfully adhered to the \textit{Low Barriers to Invocation} design principle. 
@@ -429,11 +434,10 @@ Based on our preliminary evaluation, Flower  was most effective when developers 
 % http://mirror.ctan.org/biblio/bibtex/contrib/doc/
 % The IEEEtran BibTeX style support page is at:
 % http://www.michaelshell.org/tex/ieeetran/bibtex/
+\balance
 \bibliographystyle{IEEEtran}
 % argument is your BibTeX string definitions and bibliography database(s)
 \bibliography{progNavPaper}
-
-
 
 
 % that's all folks
