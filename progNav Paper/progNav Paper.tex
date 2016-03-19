@@ -100,10 +100,10 @@ While maintaining some old code, Hillary notices a warning from a static analysi
 If it is used in a sensitive context before being sanitized, this code could be vulnerable to security vulnerabilities.
 
 Hillary sets out to determine if the variable is sanitized on all paths leading to the sensitive context.
-She vaguely recalls using an Eclipse tool to help her trace control flow through a program, but is unsure how to invoke it or whether it would help her trace data flow.
-She spends some time looking through various menus, tries out a few tools, but cannot locate the right tool.
+She vaguely recalls using an Eclipse tool to help her trace control flow through a program, but is unsure how to invoke it or whether it also traces data flow.
+She looks through various menus, tries out a few tools, but cannot locate the right tool.
 Turning her attention back to the code, she begins scrolling through the current file, unknowingly using Eclipse's \emph{Mark Occurrences} tool while scanning for uses of the variable. 
-Satisfied she has inspected all the occurrences in the current file, she now begins searching for methods that take the variable as input.
+After inspecting all the occurrences in the current file, she now begins searching for methods that take the variable as input.
 She stumbles upon Eclipse's \emph{Call Hierarchy} tool, which seems helpful, but she is unable to specify the variable she is interested in when invoking the tool.
 
 Undeterred, she finds a method that takes the variable as a parameter and invokes \emph{Call Hierarchy} on that method.
@@ -258,7 +258,7 @@ To answer (a), we measured how quickly and accurately participants completed dif
 The remainder of this section describes our participants, study design, and task selection, and concludes with our approach to answer (b).
 
 All participants were graduate students at the time of the study with a mean of 5 years of professional programming experience; Table \ref{table:participants} provides additional information about each participant. We recruited participants using a convenience sampling approach. 
-Before the study, we asked participants to report whether they were familiar with the Eclipse IDE. We used this information to balance Eclipse novices across groups.
+Before the study, we asked participants to report whether they were familiar with the Eclipse IDE. This information helped us balance Eclipse novices across groups.
 
 Each participant used Flower for one task and Eclipse's tools for the other task.
 To control for learning and fatigue effects, we permuted the order participants received each tool and performed each task. 
@@ -410,7 +410,7 @@ Upon detecting one of these situations, Flower  could facilitate the user's tran
 Our study had several limitations.
 Due to the preliminary nature of this study, we recruited relatively few participants and only had them perform two tasks.
 Although our study materials do not indicate we created Flower, some participants may have deduced it was our tool.
-As a result, participants may have unnaturally inflated their positive responses to the PSSUQ due to social desirability bias.
+As a result, participants may have inflated their positive responses to the PSSUQ due to social desirability bias.
 Accordingly, we focus on participants' relative responses rather than their absolute values.
 %Finally, we asked participants to navigate unfamiliar code.
 
