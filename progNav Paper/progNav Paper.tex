@@ -219,6 +219,12 @@ Flower differs because from these tools in the way it presents results (\textit{
 %\end{table}
 %
 
+\begin{figure*}
+	\includegraphics[width=\textwidth]{images/toolScreenshot}
+	\caption{Code view in the Eclipse IDE with Flower invoked during Task 1. The image on the left shows the tool running in the method \texttt{parseAndCache}. When the user clicks on the link in the editor (B1 or B2), they are taken to the function \texttt{getQueries}, which is a caller of \texttt{parseAndCache}.}	
+	\label{fig:tool} 
+\end{figure*}
+
 \section{Flower}
 Flower was designed to realize all of the principles described in Section \ref{DesignPrinciples}. 
 We implemented Flower as a plugin to the Eclipse IDE~\cite{Eclipse}. 
@@ -239,13 +245,6 @@ Flower  opens \texttt{getQueries} and highlights the location in that method whe
 
 %Something about using Flower for down flow.
 %(A) - When a user clicks on a variable all (visible) instances of that variable are highlighted in the code. (B) - When the variable has been declared as a parameter to the current method, users can click on that method's name in the editor to navigate to a location where that method is called. (X) - When the variable is passed to an external method, users can click on that method's name to open its declaration. (C) - If the variable is passed in from another method or is defined earlier in the current file, a link to that location is displayed in the ``top box.'' (D) - If the variable is passed in to another method or referenced later in the current file, links to those locations appear in the ``bottom box.''
-
-\begin{figure*}
- 	\includegraphics[width=\textwidth]{images/toolScreenshot}
- 	\caption{Code view in the Eclipse IDE with Flower invoked during Task 1. The image on the left shows the tool running in the method \texttt{parseAndCache}. When the user clicks on the link in the editor (B1 or B2), they are taken to the function \texttt{getQueries}, which is a caller of \texttt{parseAndCache}.}	
-	\label{fig:tool} 
-\end{figure*}
-
 
 
 \section{Preliminary Evaluation}
@@ -281,32 +280,6 @@ To evaluate the usability of Flower, we administered an adapted version of the P
 To prompt discussion about the usability of Flower, we also asked participants open-ended questions based on applicable categories from Nielsen's usability heuristics~\cite{Nielsen1992}.
 %To capture participant's experiences that these two metrics overlooked, two of the authors independently examined each audio/video recording and recorded memos. 
 
-\begin{table}
-	\centering
-	\caption{Participant Demographics}
-	\begin{tabular}{cSScc}
-		\rowcolor{Gray}
-		\hline
-		\multicolumn{1}{c}{\textbf{Participants}} & \multicolumn{1}{c}{\textbf{Industry}} & \multicolumn{1}{c}{\textbf{Java}} &\multicolumn{1}{c}{\textbf{Eclipse}} & \multicolumn{1}{c}{\textbf{Task}} \\
-		\rowcolor{Gray}
-		\multicolumn{1}{c}{ } & \multicolumn{1}{c}{\textbf{Exp.} \textit{(years)}} & \multicolumn{1}{c}{\textbf{Exp.} \textit{(years)}} & \multicolumn{1}{c}{\textbf{Exp.}} & \multicolumn{1}{c}{\textbf{Group}}\\
-		\hline
-		P1 & 9 & 5 & \checkmark & T1* - T2 \\
-		\rowcolor{Gray}
-		P2 & 0 & 6 & \checkmark & T2* - T1\\
-		P3 & 3 & 2 & - & T1 - T2*\\
-		\rowcolor{Gray}
-		P4 & 5 & 0 & - & T2 - T1*\\
-		P5 & 12 & 10 & \checkmark & T1* - T2\\
-		\rowcolor{Gray}
-		P6 & 0 & 3.5 & \checkmark & T2* - T1\\
-		P7 & 1 & 9 & \checkmark & T1 - T2*\\
-		\rowcolor{Gray}
-		P8 & 5.5 & 3.5 & \checkmark & T2 - T1*\\
-		\multicolumn{5}{c}{* Used Flower for task}
-	\end{tabular}
-	\label{table:participants}
-\end{table}
 
 \section{Results}
 Here we present the results of our preliminary evaluation. 
@@ -369,6 +342,34 @@ Similarly, after reaching a top-level method, P1 asked, ``How can I return back 
 %To understand why participants were faster for Task 1 with Flower, we analyzed how long it took participants to navigate one step up the call graph. 
 
 %DFS exploration stategies
+
+
+\begin{table}
+	\centering
+	\caption{Participant Demographics}
+	\begin{tabular}{cSScc}
+		\rowcolor{Gray}
+		\hline
+		\multicolumn{1}{c}{\textbf{Participants}} & \multicolumn{1}{c}{\textbf{Industry}} & \multicolumn{1}{c}{\textbf{Java}} &\multicolumn{1}{c}{\textbf{Eclipse}} & \multicolumn{1}{c}{\textbf{Task}} \\
+		\rowcolor{Gray}
+		\multicolumn{1}{c}{ } & \multicolumn{1}{c}{\textbf{Exp.} \textit{(years)}} & \multicolumn{1}{c}{\textbf{Exp.} \textit{(years)}} & \multicolumn{1}{c}{\textbf{Exp.}} & \multicolumn{1}{c}{\textbf{Group}}\\
+		\hline
+		P1 & 9 & 5 & \checkmark & T1* - T2 \\
+		\rowcolor{Gray}
+		P2 & 0 & 6 & \checkmark & T2* - T1\\
+		P3 & 3 & 2 & - & T1 - T2*\\
+		\rowcolor{Gray}
+		P4 & 5 & 0 & - & T2 - T1*\\
+		P5 & 12 & 10 & \checkmark & T1* - T2\\
+		\rowcolor{Gray}
+		P6 & 0 & 3.5 & \checkmark & T2* - T1\\
+		P7 & 1 & 9 & \checkmark & T1 - T2*\\
+		\rowcolor{Gray}
+		P8 & 5.5 & 3.5 & \checkmark & T2 - T1*\\
+		\multicolumn{5}{c}{* Used Flower for task}
+	\end{tabular}
+	\label{table:participants}
+\end{table}
 
 \section{Discussion}
 
