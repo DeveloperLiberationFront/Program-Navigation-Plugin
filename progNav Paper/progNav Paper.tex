@@ -53,7 +53,7 @@ Program navigation is a critical task for software developers.
 %Many tools and approaches have been proposed to aide developers in navigating programs.
 %In this work we present a tool, Flower, that enables developers 
 The current state-of-the-art tools support program navigation by leaning heavily on visualizations and cumbersome interface widgets.
-To assist developers in effectively navigating program flow, we designed and implemented a new tool that leverages powerful program analysis techniques while maintaining a minimalistic interface.
+To assist developers in effectively navigating program flow, we designed and implemented a new tool that leverages program analysis techniques while maintaining a minimalistic interface.
 Our tool enables developers to simultaneously navigate control flow and data flow within the Eclipse Integrated Development Environment (IDE).
 Based on a preliminary evaluation with 8 programmers, our tool succeeds when call graphs contained relatively few branches, but was strained by complex program structures. 
 %We present a different way to do things... enable the navigation control flow and data flow simultaneously using minimal interface alterations.
@@ -87,7 +87,7 @@ In general, evaluations have demonstrated the effectiveness of such tools ~\cite
 
 However, these tools rely on cumbersome user interface widgets that new users might struggle to understand and occupy valuable screen real estate.
 We present a tool, Flower (pronounced flow-er), that represents a minimalistic approach to program navigation.
-Flower  leverages powerful program analysis techniques, leans on relatively few cumbersome interface elements, and presents its results integrated within the code.
+Flower  leverages program analysis techniques, leans on relatively few cumbersome interface elements, and presents its results integrated within the code.
 %Existing tools feature many cumbersome UI widgets or seem poorly integrated into the IDE.
 %Previous approaches help developers navigate control flow by helping them visualize. 
 %The additional graphs, maps, and visualizations have been shown to help developers stay oriented. However, (occupy a lot of screen real estate, may be difficult for new users to understand, mapping stuff). 
@@ -128,9 +128,9 @@ In contrast to existing navigation tools, Flower  enables developers to simultan
 In this section we describe the design principles that we used to shape Flower. We derived these design principles from a previous study \cite{Smith2015} and by examining existing program navigation tools.
  
 \vspace{1em} 
-\noindent\textbf{Powerful Program Analysis} ---
+\noindent\textbf{Program Analysis} ---
 Simple textual analysis may lead to inaccurate results in many scenarios. For example, such analysis fails when programs include duplicated variable names that refer to different variables in different scopes. Textual analysis also falls short when programs contain inheritance and when variable names are included in comments, documentation, or other syntactically irrelevant locations.
-By leveraging powerful program analysis techniques, navigation tools can provide more accurate information than simple textual analysis.
+By leveraging program analysis techniques, navigation tools can provide more accurate information than simple textual analysis.
 By analyzing abstract syntax trees (ASTs) and call graphs, tools can make references to relevant variables and methods. 
 
 \vspace{1em} 
@@ -169,7 +169,7 @@ For example, Eclipse~\cite{Eclipse} includes \emph{Call Hierarchy} and \emph{Fin
 When users invoke \emph{Call Hierarchy}, Eclipse opens a new view that displays the callers and callees for a selected method.  
 IntelliJ~\cite{IntelliJ} also provides navigation tools, namely \emph{Analyze Data Flow To/From Here} and \emph{Analyze Dependencies}.
 Much like Eclipse's \emph{Call Hierarchy}, the \emph{Analyze Data Flow} tools display their results in external views. 
-These tools provide \textit{Powerful Program Analysis} for users to navigate throughout the entirety of a project. 
+These tools provide \textit{Program Analysis} for users to navigate throughout the entirety of a project. 
 However, they generally differ from Flower because they lack \textit{Low Barriers to Invocation} and \textit{In Situ Navigation}.
 
 There are also several tools that reside strictly within the code editor, enabling a form of \textit{In Situ Navigation}.
@@ -178,12 +178,12 @@ Eclipse automatically invokes \emph{Mark Occurrences} whenever a user clicks on 
 The tool then highlights occurrences of that element elsewhere in the current file.
 \emph{Mark Occurrences} epitomizes \textit{Low Barriers to Invocation}.
 These approaches are similar to Flower  in that they display the results within the editor rather than a separate view or panel.
-However, they do not provide \textit{Powerful Program Analysis} or enable \textit{Full Program Navigation}.
+However, they do not provide \textit{Program Analysis} or enable \textit{Full Program Navigation}.
 
 
 Many other tools help developers navigate code by representing the code graphically and allowing developers to navigate those graphs~\cite{CodeBubbles,CodeCanvas,CodeSurfer,Dora,Reacher,Relo,Whyline}. 
 These works provide various views of control flow graphs, class and UML-like diagrams, trees, call graphs, and other images to describe the hierarchy and relationship between different variables or functions within the code. 
-To generate accurate visualizations, these types of tools utilize \textit{Powerful Program Analysis}.
+To generate accurate visualizations, these types of tools utilize \textit{Program Analysis}.
 Additionally, most of these tools implement some aspects of \textit{Full Program Navigation}.
 Flower differs because from these tools in the way it presents results (\textit{In Situ Navigation}) and because it has \textit{Low Barriers to Invocation}.
 
@@ -193,7 +193,7 @@ Flower differs because from these tools in the way it presents results (\textit{
 %	\begin{tabular}{r|c|c|c|c}
 %		\rowcolor{Gray}
 %		\hline
-%		Tools & Powerful & Low & Full Prog. & In Situ\\
+%		Tools & & Low & Full Prog. & In Situ\\
 %		\rowcolor{Gray}
 %		 & Analysis & Barriers & Nav. & Nav.\\
 %		\hline
