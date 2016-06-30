@@ -1,0 +1,18 @@
+/AbstractSpellDictionary.java/1.25/Thu Sep 11 11:59:37 2008//Tr351_v20090821-0800
+/DefaultPhoneticDistanceAlgorithm.java/1.7/Tue May 29 18:41:37 2007//Tr351_v20090821-0800
+/DefaultPhoneticHashProvider.java/1.5/Fri Jun 17 15:51:53 2005//Tr351_v20090821-0800
+/DefaultSpellChecker.java/1.16/Thu Sep 11 11:59:37 2008//Tr351_v20090821-0800
+/IPhoneticDistanceAlgorithm.java/1.5/Fri Jun 17 15:51:53 2005//Tr351_v20090821-0800
+/IPhoneticHashProvider.java/1.5/Fri Jun 17 15:51:53 2005//Tr351_v20090821-0800
+/ISpellCheckEngine.java/1.10/Wed Dec 31 21:13:23 2008//Tr351_v20090821-0800
+/ISpellCheckIterator.java/1.10/Wed Dec 31 21:13:23 2008//Tr351_v20090821-0800
+/ISpellChecker.java/1.12/Thu Sep 11 11:59:37 2008//Tr351_v20090821-0800
+/ISpellDictionary.java/1.11/Wed Dec 31 21:13:23 2008//Tr351_v20090821-0800
+/ISpellEvent.java/1.9/Wed Dec 31 21:13:23 2008//Tr351_v20090821-0800
+/ISpellEventListener.java/1.5/Fri Jun 17 15:51:53 2005//Tr351_v20090821-0800
+/LocaleSensitiveSpellDictionary.java/1.9/Tue May 29 18:41:37 2007//Tr351_v20090821-0800
+/PersistentSpellDictionary.java/1.10/Thu Sep 11 11:59:37 2008//Tr351_v20090821-0800
+/RankedWordProposal.java/1.5/Fri Jun 17 15:51:53 2005//Tr351_v20090821-0800
+/SpellEvent.java/1.8/Wed Dec 31 21:13:23 2008//Tr351_v20090821-0800
+/package.html/1.1/Mon Feb  9 03:20:10 2004//Tr351_v20090821-0800
+D
