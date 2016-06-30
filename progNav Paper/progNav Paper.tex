@@ -96,6 +96,7 @@ Flower  leverages program analysis techniques, leans on relatively few cumbersom
 %This paper makes the following contributions:
 
 Consider the following motivating example involving Roxanne, a professional Java developer at a large software company.
+Though Roxanne is fictional, her story is based on the experiences of real developers we observed in a previous study~\cite{Smith2015}.
 While maintaining some old code, Roxanne notices a warning from a static analysis tool --- this variable contains user-provided data. 
 If it is used in a sensitive context before being sanitized, this code could be vulnerable to security vulnerabilities.
 
@@ -115,7 +116,6 @@ Unsure of whether the the variable gets sanitized along all paths, she decides t
 Two months later an attacker exploits the vulnerability, costing her company hundreds of millions of dollars. 
 Roxanne gets fired for her oversight. 
 %Without her high-paying job, she can no longer afford to feed her kids and pay her mortgage. Drowning in credit card debt, homeless, and divorced, Roxanne curses the Eclipse tools that let her down.   
-Though Roxanne is fictional, her story is based on the experiences of real developers we observed in a previous study~\cite{Smith2015}.
 
 The contribution of this work is the design, implementation, and evaluation of a new program navigation tool, Flower.
 As we will discuss, Flower  addresses many of the types of issues that Roxanne faced by implementing four key design principles (Section \ref{DesignPrinciples}).
