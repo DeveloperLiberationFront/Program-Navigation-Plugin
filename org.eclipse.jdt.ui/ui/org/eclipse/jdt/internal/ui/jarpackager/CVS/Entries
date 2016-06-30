@@ -1,0 +1,23 @@
+/AbstractJarDestinationWizardPage.java/1.7/Thu Sep 11 11:59:44 2008//Tr351_v20090821-0800
+/CheckboxTreeAndListGroup.java/1.28/Thu Sep 11 11:59:44 2008/-ko/Tr351_v20090821-0800
+/ContainerFilter.java/1.14/Wed Dec 31 21:13:14 2008/-ko/Tr351_v20090821-0800
+/CreateJarActionDelegate.java/1.27/Thu Sep 11 11:59:44 2008/-ko/Tr351_v20090821-0800
+/IJarPackageWizardPage.java/1.11/Fri Jun 17 15:51:51 2005/-ko/Tr351_v20090821-0800
+/JarBuilder.java/1.3/Wed Dec 31 21:13:13 2008//Tr351_v20090821-0800
+/JarFileExportOperation.java/1.117/Tue Mar 10 11:19:48 2009/-ko/Tr351_v20090821-0800
+/JarManifestWizardPage.java/1.76/Thu Sep 11 11:59:44 2008/-ko/Tr351_v20090821-0800
+/JarOptionsPage.java/1.38/Thu Sep 11 11:59:44 2008/-ko/Tr351_v20090821-0800
+/JarPackageActionDelegate.java/1.18/Thu Sep 11 11:59:44 2008/-ko/Tr351_v20090821-0800
+/JarPackageReader.java/1.45/Tue May 26 13:36:50 2009/-ko/Tr351_v20090821-0800
+/JarPackageWizard.java/1.49/Thu Sep 11 11:59:44 2008/-ko/Tr351_v20090821-0800
+/JarPackageWizardPage.java/1.81/Thu Sep 11 11:59:44 2008/-ko/Tr351_v20090821-0800
+/JarPackageWriter.java/1.42/Wed Feb 18 16:52:13 2009/-ko/Tr351_v20090821-0800
+/JarPackagerMessages.java/1.24/Tue May 26 13:36:50 2009/-ko/Tr351_v20090821-0800
+/JarPackagerMessages.properties/1.69/Tue May 26 13:36:50 2009/-ko/Tr351_v20090821-0800
+/JarPackagerUtil.java/1.34/Tue May 26 13:36:50 2009/-ko/Tr351_v20090821-0800
+/JarRefactoringDialog.java/1.8/Wed Dec 31 21:13:13 2008//Tr351_v20090821-0800
+/ManifestProvider.java/1.14/Thu Sep 11 11:59:44 2008/-ko/Tr351_v20090821-0800
+/OpenJarExportWizardEditorLauncher.java/1.1/Fri Sep 12 12:53:28 2008//Tr351_v20090821-0800
+/PlainJarBuilder.java/1.4/Wed Dec 31 21:13:13 2008//Tr351_v20090821-0800
+/SealPackagesFilter.java/1.12/Wed Dec 31 21:13:13 2008/-ko/Tr351_v20090821-0800
+D
