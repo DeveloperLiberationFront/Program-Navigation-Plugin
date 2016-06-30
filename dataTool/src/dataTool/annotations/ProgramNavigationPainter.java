@@ -60,9 +60,9 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	private Set<ISelectionChangedListener> listeners = new HashSet<ISelectionChangedListener>();
 	private SourceViewer viewer;
 	private Map<ISelfDrawingAnnotation, Position> anns = new HashMap<ISelfDrawingAnnotation, Position>();
-	private Map<ISelfDrawingAnnotation, Position> linkAnns = new HashMap<ISelfDrawingAnnotation, Position>();
 	private boolean isActive = false;
 	private boolean painted = false;
+	private LinkAnnotation linkAnnotation = new LinkAnnotation();
 
 
 	public ProgramNavigationPainter(SourceViewer v) {
@@ -151,9 +151,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 
 	public void removeAllAnnotations() {
 		Collection<Position> positions = new ArrayList<Position>(anns.values());
-		positions.addAll(linkAnns.values());
 		anns.clear();
-		linkAnns.clear();
 		fireAnnotationChangedEvent(positions);
 	}
 
@@ -192,10 +190,10 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	public void paint(int reason) {
 
 		switch (reason) {
-		case IPainter.KEY_STROKE:
-		case IPainter.MOUSE_BUTTON:
-		case IPainter.SELECTION:
-		case IPainter.TEXT_CHANGE:
+		case IPainter.KEY_STROKE: 	//2
+		case IPainter.MOUSE_BUTTON: //4
+		case IPainter.SELECTION: 	//0
+		case IPainter.TEXT_CHANGE: 	//1
 			fireSelectionEvent();
 		}
 	}
@@ -215,6 +213,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 	 * Controls what is painted in the display.
 	 */
 	public void paintControl(PaintEvent e) {
+		
 		IRegion r;
 		ISelfDrawingAnnotation ann = null;
 		Position p;
@@ -229,8 +228,18 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 			if (r != null) {
 				ann.draw(e.gc, viewer.getTextWidget(), r.getOffset(), r.getLength());
 				// Highlight all instances in class
-				for (DataNode node : finder.getOccurrences(word, p)) {
+				for (DataNode node : finder.getOccurrences(p)) {
 					ann.draw(e.gc, viewer.getTextWidget(), node.getStartPosition(), node.getLength());
+					if(node.getInvocationMethod() != null) {
+						linkAnnotation.setDataNode(node);
+						linkAnnotation.draw(e.gc, viewer.getTextWidget(), 
+								node.getInvocationMethod().getName().getStartPosition(), node.getInvocationMethod().getName().getLength());
+					}
+					if(node.getDeclarationMethod() != null) {
+						linkAnnotation.setDataNode(node);
+						linkAnnotation.draw(e.gc, viewer.getTextWidget(), 
+								node.getDeclarationMethod().getName().getStartPosition(), node.getDeclarationMethod().getName().getLength());
+					}
 				}
 			}
 		}

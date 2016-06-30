@@ -48,6 +48,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 	private static boolean isActive = false;
 	private IBreadcrumb upBreadcrumb;
 	private IBreadcrumb downBreadcrumb;
+	private ShowDataInBreadcrumbAction crumbs;
 
 	// the visitor for the editor
 	private Visitor visitor;
@@ -76,7 +77,8 @@ public class AnnotationManager implements ISelectionChangedListener {
 			Finder finder = Finder.getInstance();
 			if(one != null) {
 				addAnnotation(one);
-				currentSearch = one.getBinding();
+				currentSearch = one.getKey();
+				linkAnnotation.setDataNode(one);
 				IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
 				IEditorPart activeEditor = activePage.getActiveEditor();
 				JavaEditor j = (JavaEditor) activeEditor;
@@ -86,7 +88,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 					isActive = true;
 					upBreadcrumb.setText(null);
 					downBreadcrumb.setText(null);
-					ShowDataInBreadcrumbAction crumbs = new ShowDataInBreadcrumbAction(j, activePage);
+					crumbs = new ShowDataInBreadcrumbAction(j, activePage);
 					crumbs.run();	
 				}
 				DataCallHierarchy call = new DataCallHierarchy();
@@ -98,7 +100,6 @@ public class AnnotationManager implements ISelectionChangedListener {
 					if(one.isParameterSelected(selection.getOffset())) {
 						linkAnnotation.searchResultsDown = searchDown;
 						linkAnnotation.searchResultsUp = searchUp;
-						linkAnnotation.setDataNode(one);
 						addLinkAnnotation(one);
 					}
 				}
@@ -106,7 +107,8 @@ public class AnnotationManager implements ISelectionChangedListener {
 				//Adds all occurrences of data node off screen
 				ArrayList<Object> textUp = new ArrayList<Object>();
 				ArrayList<Object> textDown = new ArrayList<Object>();
-				for(DataNode dn: finder.getOccurrences(one.getValue(), new Position(one.getStartPosition(), one.getLength()))) {
+				for(DataNode dn: finder.getOccurrences(new Position(one.getStartPosition(), one.getLength()))) {
+					addLinkAnnotation(dn);
 					int[] offScreen = new int[3];
 					int line = sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1;
 					offScreen[0] = line;
@@ -122,9 +124,12 @@ public class AnnotationManager implements ISelectionChangedListener {
 				if(searchUp != null) {
 					textUp.addAll(searchUp);
 					((EditorBreadcrumb)upBreadcrumb).setSearchMethod(call.getCurrentMethod(one.getStartPosition()));
+					((EditorBreadcrumb)upBreadcrumb).setSearchIndex(one.getParameterIndex());
+					linkAnnotation.setSearchMethod(call.getCurrentMethod(one.getStartPosition()));
 				}
 				if(searchDown != null) {
 					textDown.addAll(searchDown);
+					((EditorBreadcrumb)downBreadcrumb).setSearchIndex(one.getParameterIndex());
 				}
 				upBreadcrumb.setText(textUp);
 				downBreadcrumb.setText(textDown);
@@ -150,14 +155,19 @@ public class AnnotationManager implements ISelectionChangedListener {
 		SimpleName method;
 		if(node.getInvocationMethod() != null) {
 			method = node.getInvocationMethod().getName();
+			int start = method.getStartPosition();
+			int end = method.getStartPosition() + method.getLength();
+			if(!isAlreadyAnnotated(start, end)) {
+				addAnnotationsAt(start, end - start, false);
+			}
 		}
-		else {
+		if(node.getDeclarationMethod() != null) {
 			method = node.getDeclarationMethod().getName();
-		}
-		int start = method.getStartPosition();
-		int end = method.getStartPosition() + method.getLength();
-		if(!isAlreadyAnnotated(start, end)) {
-			addAnnotationsAt(start, end - start, false);
+			int start = method.getStartPosition();
+			int end = method.getStartPosition() + method.getLength();
+			if(!isAlreadyAnnotated(start, end)) {
+				addAnnotationsAt(start, end - start, false);
+			}
 		}
 	}
 
@@ -241,8 +251,11 @@ public class AnnotationManager implements ISelectionChangedListener {
 	
 	public void deactivate() {
 		isActive = false;
+		crumbs.stop();
 		upBreadcrumb.dispose();
 		downBreadcrumb.dispose();
+		removeAnnotations();
+		dispose();
 	}
 
 	public void selectionChanged(SelectionChangedEvent event) {

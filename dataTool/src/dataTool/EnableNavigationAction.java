@@ -46,7 +46,9 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	
 	//whether the listener is currently enabled
 	private boolean isEnabled = false;
-		
+	
+	private String previous = "";
+	
 	public void dispose() {
 		if(annotationManager!=null)
 			annotationManager.dispose();
@@ -62,6 +64,14 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 			annotationManager = new AnnotationManager((AbstractDecoratedTextEditor)activeEditor);
 		}
 	}
+	
+	/**
+	 * Disables the plugin
+	 */
+	private void disable() {
+		if(annotationManager!=null)
+			annotationManager.deactivate();
+	}
 
 	public void init(IWorkbenchWindow window) {
 		this.page = window.getActivePage();
@@ -75,14 +85,17 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 			@Override
 			public void partBroughtToTop(IWorkbenchPart arg0) {
 				// Auto-generated method stub
-				arg0.getSite().getPage().activate(arg0);
-				try {
-					dispose();
-					isEnabled = false;
-					reset(arg0.getSite().getPage());
-				} catch (JavaModelException e) {
-					// Auto-generated catch block
-					e.printStackTrace();
+				if(!previous.equals(arg0.getTitle())) {
+					previous = arg0.getTitle();
+					arg0.getSite().getPage().activate(arg0);
+					try {
+						dispose();
+						isEnabled = false;
+						reset(arg0.getSite().getPage());
+					} catch (JavaModelException e) {
+						// Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 			}
 
@@ -110,16 +123,17 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	public void run(IAction action) {
 		//JavaCore.cre
 		try {
-			if(!isEnabled )
-				enable(page.getActiveEditor());	
-				
-			else
-				dispose();
-
+			if(!isEnabled) {
+				enable(page.getActiveEditor());
+				isEnabled = true;
+			}
+			else {
+				isEnabled = false;
+				disable();
+				Activator.getDefault().shutdown();
+			}
 		} catch (Exception e) {
 			Activator.logError(e);
-		} finally {
-			isEnabled = !isEnabled;
 		}
 	}
 	
