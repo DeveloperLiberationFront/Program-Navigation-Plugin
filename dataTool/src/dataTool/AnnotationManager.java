@@ -48,6 +48,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 	private static boolean isActive = false;
 	private IBreadcrumb upBreadcrumb;
 	private IBreadcrumb downBreadcrumb;
+	private ShowDataInBreadcrumbAction crumbs;
 
 	// the visitor for the editor
 	private Visitor visitor;
@@ -87,7 +88,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 					isActive = true;
 					upBreadcrumb.setText(null);
 					downBreadcrumb.setText(null);
-					ShowDataInBreadcrumbAction crumbs = new ShowDataInBreadcrumbAction(j, activePage);
+					crumbs = new ShowDataInBreadcrumbAction(j, activePage);
 					crumbs.run();	
 				}
 				DataCallHierarchy call = new DataCallHierarchy();
@@ -250,8 +251,11 @@ public class AnnotationManager implements ISelectionChangedListener {
 	
 	public void deactivate() {
 		isActive = false;
+		crumbs.stop();
 		upBreadcrumb.dispose();
 		downBreadcrumb.dispose();
+		removeAnnotations();
+		dispose();
 	}
 
 	public void selectionChanged(SelectionChangedEvent event) {

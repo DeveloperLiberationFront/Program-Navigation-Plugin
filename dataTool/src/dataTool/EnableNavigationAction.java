@@ -64,6 +64,14 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 			annotationManager = new AnnotationManager((AbstractDecoratedTextEditor)activeEditor);
 		}
 	}
+	
+	/**
+	 * Disables the plugin
+	 */
+	private void disable() {
+		if(annotationManager!=null)
+			annotationManager.deactivate();
+	}
 
 	public void init(IWorkbenchWindow window) {
 		this.page = window.getActivePage();
@@ -115,16 +123,17 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	public void run(IAction action) {
 		//JavaCore.cre
 		try {
-			if(!isEnabled )
-				enable(page.getActiveEditor());	
-				
-			else
-				dispose();
-
+			if(!isEnabled) {
+				enable(page.getActiveEditor());
+				isEnabled = true;
+			}
+			else {
+				isEnabled = false;
+				disable();
+				Activator.getDefault().shutdown();
+			}
 		} catch (Exception e) {
 			Activator.logError(e);
-		} finally {
-			isEnabled = !isEnabled;
 		}
 	}
 	

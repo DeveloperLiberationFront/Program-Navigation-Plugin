@@ -22,6 +22,9 @@ public class SuggestedSelectionAnnotation extends Annotation implements ISelfDra
 	 * Function that creates highlight on appropriate word.
 	 */
 	public void draw(GC gc, StyledText textWidget, int offset, int length) {
+		if(gc.getBackground()==color) {
+			return;
+		}
 		gc.setBackground(color);
 		gc.setAlpha(50);
 		

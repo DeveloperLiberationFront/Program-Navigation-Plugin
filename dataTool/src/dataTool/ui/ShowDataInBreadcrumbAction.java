@@ -58,18 +58,27 @@ public class ShowDataInBreadcrumbAction extends ShowInBreadcrumbAction {
 	 */
 	public void run() {
 		IBreadcrumb breadcrumb = fEditor.getBreadcrumb();
-		JavaEditorBreadcrumb j = (JavaEditorBreadcrumb)breadcrumb;
 		IBreadcrumb breadcrumb2 = fEditor.getBreadcrumb2();
-		JavaEditorBreadcrumb j2 = (JavaEditorBreadcrumb)breadcrumb2;
 		if (breadcrumb2 == null || breadcrumb2 == null) {
 			return;
 		}
 		
-		IPreferenceStore store= JavaPlugin.getDefault().getPreferenceStore();
+		IPreferenceStore store = JavaPlugin.getDefault().getPreferenceStore();
 		store.setValue(getPreferenceKey(), true);
 		fEditor.showBreadcrumbs();
 		breadcrumb.activate();
 		breadcrumb2.activate();
+	}
+	
+	public void stop() {
+		IBreadcrumb breadcrumb = fEditor.getBreadcrumb();
+		IBreadcrumb breadcrumb2 = fEditor.getBreadcrumb2();
+		if (breadcrumb != null && breadcrumb2 != null) {
+			breadcrumb.dispose();
+			breadcrumb2.dispose();
+		}
+		IPreferenceStore store = JavaPlugin.getDefault().getPreferenceStore();
+		store.setValue(getPreferenceKey(), false);
 	}
 
 	/**
