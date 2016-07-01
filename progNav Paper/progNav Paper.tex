@@ -232,13 +232,13 @@ Flower differs because from these tools in the way it presents results (\textit{
 Flower was designed to realize all of the principles described in Section \ref{DesignPrinciples}. 
 We implemented Flower as a plugin to the Eclipse IDE~\cite{Eclipse}. 
 We chose Eclipse because it is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. 
-Flower extends \emph{Call Hierarchy}, which allows it to reason about variables that are passed between methods. 
+Flower extends \emph{Call Hierarchy}, using its search functionality to track the flow of data across methods. 
 Leveraging Eclipse's incremental compiler and JDT core, Flower also implements several AST visitors to detect proper and up-to-date variable references.
 
 When active, Flower makes two modifications to Eclipse's user interface. 
-First, it highlights on-screen references to selected variables. 
-Secondly, when references to the selected variable appear off-screen -- either elsewhere in the current method or in other methods -- Flower adds links to those locations to the code view. 
-Figure \ref{fig:tool} depicts Flower invoked on a variable participants were asked to inspect as part of our evaluation. To visualize how a programmer would interact with Flower, consider the following scenario:
+First, it highlights on-screen references to selected variables.
+Secondly, when references to the selected variable appear off-screen -- either elsewhere in the current method or in other methods -- Flower adds links to those locations above and bellow the code view as well as to the code itself. 
+Figure \ref{fig:tool} depicts Flower invoked on a variable participants were asked to inspect as part of our evaluation. We also provide a video demonstrating Flower online.\footnote{Screen cast of Flower in action: \url{tinyurl.com/FlowerDemo}} To visualize how a programmer would interact with Flower, consider the following scenario:
 
 Suppose you are a programmer and you notice that by tampering with the value of the \texttt{fileName} variable, malicious users could gain access to sensitive information in the database. 
 You want to determine whether users can modify \texttt{fileName} before it gets passed into \texttt{parseAndCache}. 
