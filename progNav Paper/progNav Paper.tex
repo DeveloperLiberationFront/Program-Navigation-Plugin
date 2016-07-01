@@ -98,8 +98,8 @@ Flower  leverages program analysis techniques, leans on relatively few cumbersom
 
 Consider the following motivating example involving Roxanne, a professional Java developer at a large software company.
 Though Roxanne is fictional, her story is based on the experiences of real developers we observed in a previous study~\cite{Smith2015}.
-While maintaining some old code, Roxanne notices a warning from a static analysis tool --- this variable contains user-provided data. 
-If it is used in a sensitive context before being sanitized, this code could be vulnerable to security vulnerabilities.
+While maintaining some old code, Roxanne notices her static analysis tool has put a light red warning indicator onto a variable --- This variable contains user-provided data. 
+If it is used in a sensitive context before being sanitized, the code could be vulnerable.
 
 Roxanne sets out to determine if the variable is sanitized on all paths leading to the sensitive context.
 She vaguely recalls using an Eclipse tool to help her trace control flow through a program, but is unsure how to invoke it or whether it also traces data flow.
