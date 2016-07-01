@@ -80,6 +80,7 @@ import org.eclipse.jface.text.link.LinkedModeUI.IExitPolicy;
 import org.eclipse.jface.text.source.IOverviewRuler;
 import org.eclipse.jface.text.source.ISourceViewer;
 import org.eclipse.jface.text.source.IVerticalRuler;
+import org.eclipse.jface.text.source.SourceViewer;
 import org.eclipse.jface.text.source.SourceViewerConfiguration;
 
 import org.eclipse.ui.IEditorInput;
@@ -1539,7 +1540,7 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 
 		try {
 
-			AdaptedSourceViewer asv= (AdaptedSourceViewer) getSourceViewer();
+			SourceViewer asv= (SourceViewer)getSourceViewer();
 			if (asv != null) {
 
 				String p= event.getProperty();
@@ -1574,11 +1575,11 @@ public class CompilationUnitEditor extends JavaEditor implements IJavaReconcilin
 						removeActionActivationCode("IndentOnTab"); //$NON-NLS-1$
 					}
 				}
-
-				IContentAssistant c= asv.getContentAssistant();
-				if (c instanceof ContentAssistant)
-					ContentAssistPreference.changeConfiguration((ContentAssistant) c, getPreferenceStore(), event);
-
+				if (asv instanceof AdaptedSourceViewer) {
+					IContentAssistant c = ((AdaptedSourceViewer)asv).getContentAssistant();
+					if (c instanceof ContentAssistant)
+						ContentAssistPreference.changeConfiguration((ContentAssistant) c, getPreferenceStore(), event);
+				}
 				if (CODE_FORMATTER_TAB_SIZE.equals(p) && isTabsToSpacesConversionEnabled()) {
 					uninstallTabsToSpacesConverter();
 					installTabsToSpacesConverter();
