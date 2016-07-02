@@ -82,7 +82,7 @@ While navigating programs, developers ask questions about control flow and data 
 We will refer to these two concepts together as \textit{program flow}. 
 
 To realize their ideal program flow navigation strategies, developers rely on navigation tools that expose the links between sometimes distant locations in the source code. 
-Many existing tools do so by displaying call graph visualizations or adding views to the the screen.
+Many existing tools do so by displaying call graph visualizations or adding views to the screen.
 In general, evaluations have demonstrated the effectiveness of such tools ~\cite{Reacher,Whyline,Relo,Stacksplorer}.
 
 However, these tools rely on cumbersome user interface widgets that new users might struggle to understand and occupy valuable screen real estate.
@@ -163,7 +163,7 @@ When navigation tools present results outside the code, developers are burdened 
 \section{Related Work}
 %Summary of related work, including a table evaluating existing %tools on various design principles.
 %Spoiler alert, none of the tools satisfy all of the principles.
-Here we discuss some of the existing tools that help developers navigate code. We also relate the exiting tools back to Design Principles Described in Section \ref{DesignPrinciples}.
+Here we discuss some of the existing tools that help developers navigate code. We also relate the existing tools back to Design Principles Described in Section \ref{DesignPrinciples}.
 
 Many modern IDEs provide tools that help developers navigate source code. 
 For example, Eclipse~\cite{Eclipse} includes \emph{Call Hierarchy} and \emph{Find References}. 
@@ -238,7 +238,7 @@ Leveraging Eclipse's incremental compiler and JDT core, Flower also implements s
 
 When active, Flower makes two modifications to Eclipse's user interface. 
 First, it highlights on-screen references to selected variables.
-Secondly, when references to the selected variable appear off-screen -- either elsewhere in the current method or in other methods -- Flower adds links to those locations above and bellow the code view as well as to the code itself. 
+Secondly, when references to the selected variable appear off-screen -- either elsewhere in the current method or in other methods -- Flower adds links to those locations above and below the code view as well as to the code itself. 
 Figure \ref{fig:tool} depicts Flower invoked on a variable participants were asked to inspect as part of our evaluation. We also provide a video demonstrating Flower online.\footnote{Screen cast of Flower in action: \url{tinyurl.com/FlowerDemo}} To visualize how a programmer would interact with Flower, consider the following scenario:
 
 Suppose you are a programmer and you notice that by tampering with the value of the \texttt{fileName} variable, malicious users could gain access to sensitive information in the database. 
