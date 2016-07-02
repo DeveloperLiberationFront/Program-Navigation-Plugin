@@ -21,6 +21,11 @@
                toolbarPath="TempGroup"
                tooltip="Highlights flow of data within your code"/>
       </actionSet>
+      <command id="org.eclipse.example.command.toggle"
+         name="Toggle Me">
+	  <state class="org.eclipse.jface.commands.ToggleState"
+	         id="org.eclipse.example.command.toggleState:true" />
+	</command>
    </extension>
    <extension
          point="org.eclipse.ui.commands">

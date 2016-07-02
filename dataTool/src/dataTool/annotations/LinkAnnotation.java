@@ -105,8 +105,8 @@ public class LinkAnnotation extends Annotation implements ISelfDrawingAnnotation
 					else if (linkNode.getDeclarationMethod() == null) {
 						up = true;
 					}
-					else if (click - linkNode.getDeclarationMethod().getName().getStartPosition() >
-							click - linkNode.getInvocationMethod().getName().getStartPosition()) {
+					else if (Math.abs(click - linkNode.getDeclarationMethod().getName().getStartPosition()) >
+							Math.abs(click - linkNode.getInvocationMethod().getName().getStartPosition())) {
 						up = false;
 					}
 					else {

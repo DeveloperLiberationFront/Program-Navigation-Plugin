@@ -73,12 +73,10 @@ public class ShowDataInBreadcrumbAction extends ShowInBreadcrumbAction {
 	public void stop() {
 		IBreadcrumb breadcrumb = fEditor.getBreadcrumb();
 		IBreadcrumb breadcrumb2 = fEditor.getBreadcrumb2();
-		if (breadcrumb != null && breadcrumb2 != null) {
-			breadcrumb.dispose();
-			breadcrumb2.dispose();
-		}
 		IPreferenceStore store = JavaPlugin.getDefault().getPreferenceStore();
 		store.setValue(getPreferenceKey(), false);
+		breadcrumb.dispose();
+		breadcrumb2.dispose();
 	}
 
 	/**

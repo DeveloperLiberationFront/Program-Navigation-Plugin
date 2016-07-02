@@ -46,9 +46,9 @@ public class AnnotationManager implements ISelectionChangedListener {
 	private SourceViewer sourceViewer;
 	private ProgramNavigationPainter painter;
 	private static boolean isActive = false;
+	private boolean isEnabled;
 	private IBreadcrumb upBreadcrumb;
 	private IBreadcrumb downBreadcrumb;
-	private ShowDataInBreadcrumbAction crumbs;
 
 	// the visitor for the editor
 	private Visitor visitor;
@@ -62,6 +62,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 	 * @param anEditor
 	 */
 	public AnnotationManager(AbstractDecoratedTextEditor anEditor) {
+		isEnabled = true;
 		parseCU(anEditor);
 		sourceViewer = EclipseHacks.getSourceViewer(anEditor);
 		painter = new ProgramNavigationPainter(sourceViewer);
@@ -72,74 +73,74 @@ public class AnnotationManager implements ISelectionChangedListener {
 
 	public void selectionChanged(ITextSelection selection) {
 		painter.removeAllAnnotations();
-		try {
-			DataNode one = getNode(selection.getOffset());
-			Finder finder = Finder.getInstance();
-			if(one != null) {
-				addAnnotation(one);
-				currentSearch = one.getKey();
-				linkAnnotation.setDataNode(one);
-				IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				IEditorPart activeEditor = activePage.getActiveEditor();
-				JavaEditor j = (JavaEditor) activeEditor;
-				upBreadcrumb = j.getBreadcrumb();
-				downBreadcrumb = j.getBreadcrumb2();
-				if(!isActive) {
-					isActive = true;
-					upBreadcrumb.setText(null);
-					downBreadcrumb.setText(null);
-					crumbs = new ShowDataInBreadcrumbAction(j, activePage);
-					crumbs.run();	
-				}
-				DataCallHierarchy call = new DataCallHierarchy();
-				Set<IMethod> searchUp = null;
-				Set<IMethod> searchDown = null;
-				if((finder.upSearch(one) != null || finder.downSearch(one) != null || one.getInvocationMethod() != null) && currentSearch != null) {
-					searchUp = call.searchProject(one, Finder.UP);
-					searchDown = call.searchProject(one, Finder.DOWN);
-					if(one.isParameterSelected(selection.getOffset())) {
-						linkAnnotation.searchResultsDown = searchDown;
-						linkAnnotation.searchResultsUp = searchUp;
-						addLinkAnnotation(one);
+		if(isEnabled) {
+			try {
+				DataNode one = getNode(selection.getOffset());
+				Finder finder = Finder.getInstance();
+				if(one != null) {
+					addAnnotation(one);
+					currentSearch = one.getKey();
+					linkAnnotation.setDataNode(one);
+					IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+					IEditorPart activeEditor = activePage.getActiveEditor();
+					JavaEditor j = (JavaEditor) activeEditor;
+					upBreadcrumb = j.getBreadcrumb();
+					downBreadcrumb = j.getBreadcrumb2();
+					if(!isActive) {
+						isActive = true;
+						upBreadcrumb.setText(null);
+						downBreadcrumb.setText(null);
 					}
-				}
-
-				//Adds all occurrences of data node off screen
-				ArrayList<Object> textUp = new ArrayList<Object>();
-				ArrayList<Object> textDown = new ArrayList<Object>();
-				for(DataNode dn: finder.getOccurrences(new Position(one.getStartPosition(), one.getLength()))) {
-					addLinkAnnotation(dn);
-					int[] offScreen = new int[3];
-					int line = sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1;
-					offScreen[0] = line;
-					offScreen[1] = dn.getStartPosition();
-					offScreen[2] = dn.getLength();
-					if(dn.getStartPosition() < sourceViewer.getTopIndexStartOffset()) {
-						textUp.add(offScreen);
+					DataCallHierarchy call = new DataCallHierarchy();
+					Set<IMethod> searchUp = null;
+					Set<IMethod> searchDown = null;
+					if((finder.upSearch(one) != null || finder.downSearch(one) != null || one.getInvocationMethod() != null) && currentSearch != null) {
+						searchUp = call.searchProject(one, Finder.UP);
+						searchDown = call.searchProject(one, Finder.DOWN);
+						if(one.isParameterSelected(selection.getOffset())) {
+							linkAnnotation.searchResultsDown = searchDown;
+							linkAnnotation.searchResultsUp = searchUp;
+							addLinkAnnotation(one);
+						}
 					}
-					else if(dn.getStartPosition() > sourceViewer.getBottomIndexEndOffset()) {
-						textDown.add(offScreen);
+	
+					//Adds all occurrences of data node off screen
+					ArrayList<Object> textUp = new ArrayList<Object>();
+					ArrayList<Object> textDown = new ArrayList<Object>();
+					for(DataNode dn: finder.getOccurrences(new Position(one.getStartPosition(), one.getLength()))) {
+						addLinkAnnotation(dn);
+						int[] offScreen = new int[3];
+						int line = sourceViewer.widgetLineOfWidgetOffset(dn.getStartPosition())+1;
+						offScreen[0] = line;
+						offScreen[1] = dn.getStartPosition();
+						offScreen[2] = dn.getLength();
+						if(dn.getStartPosition() < sourceViewer.getTopIndexStartOffset()) {
+							textUp.add(offScreen);
+						}
+						else if(dn.getStartPosition() > sourceViewer.getBottomIndexEndOffset()) {
+							textDown.add(offScreen);
+						}
 					}
+					if(searchUp != null) {
+						textUp.addAll(searchUp);
+						((EditorBreadcrumb)upBreadcrumb).setSearchMethod(call.getCurrentMethod(one.getStartPosition()));
+						((EditorBreadcrumb)upBreadcrumb).setSearchIndex(one.getParameterIndex());
+						linkAnnotation.setSearchMethod(call.getCurrentMethod(one.getStartPosition()));
+					}
+					if(searchDown != null) {
+						textDown.addAll(searchDown);
+						((EditorBreadcrumb)downBreadcrumb).setSearchIndex(one.getParameterIndex());
+					}
+					upBreadcrumb.setText(textUp);
+					downBreadcrumb.setText(textDown);
 				}
-				if(searchUp != null) {
-					textUp.addAll(searchUp);
-					((EditorBreadcrumb)upBreadcrumb).setSearchMethod(call.getCurrentMethod(one.getStartPosition()));
-					((EditorBreadcrumb)upBreadcrumb).setSearchIndex(one.getParameterIndex());
-					linkAnnotation.setSearchMethod(call.getCurrentMethod(one.getStartPosition()));
+				else {
+					removeAnnotations();
 				}
-				if(searchDown != null) {
-					textDown.addAll(searchDown);
-					((EditorBreadcrumb)downBreadcrumb).setSearchIndex(one.getParameterIndex());
-				}
-				upBreadcrumb.setText(textUp);
-				downBreadcrumb.setText(textDown);
-			}
-			else {
+			} catch (Exception e) {
+				Activator.logError(e);
 				removeAnnotations();
 			}
-		} catch (Exception e) {
-			Activator.logError(e);
-			removeAnnotations();
 		}
 	}
 	
@@ -239,11 +240,20 @@ public class AnnotationManager implements ISelectionChangedListener {
 		try {
 			if (highlightAnnotation != null) {
 				painter.removeAllAnnotations();
+				painter.dispose();
 			}
 		} catch (Exception ignore) {
+			System.out.println("ignore");
 		}
 	}
 
+	/**
+	 * Keeps track of if tool is enabled or disabled.
+	 */
+	public void setEnabled(boolean flag){
+		isEnabled = flag;
+	}
+	
 	public void dispose() {
 		painter.dispose();
 		currentSearch = null;
@@ -251,13 +261,10 @@ public class AnnotationManager implements ISelectionChangedListener {
 	
 	public void deactivate() {
 		isActive = false;
-		crumbs.stop();
-		upBreadcrumb.dispose();
-		downBreadcrumb.dispose();
+		isEnabled = false;
 		removeAnnotations();
-		dispose();
 	}
-
+	
 	public void selectionChanged(SelectionChangedEvent event) {
 		selectionChanged((ITextSelection) event.getSelection());
 	}

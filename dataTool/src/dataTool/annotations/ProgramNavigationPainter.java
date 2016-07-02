@@ -230,6 +230,7 @@ public class ProgramNavigationPainter extends AnnotationPainter {
 				// Highlight all instances in class
 				for (DataNode node : finder.getOccurrences(p)) {
 					ann.draw(e.gc, viewer.getTextWidget(), node.getStartPosition(), node.getLength());
+					System.out.println(node.getInvocationMethod());
 					if(node.getInvocationMethod() != null) {
 						linkAnnotation.setDataNode(node);
 						linkAnnotation.draw(e.gc, viewer.getTextWidget(), 

@@ -2,6 +2,8 @@ package dataTool;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.State;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jdt.core.JavaModelException;
@@ -24,6 +26,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 
 import dataTool.ui.ShowDataInBreadcrumbAction;
@@ -46,8 +49,9 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	
 	//whether the listener is currently enabled
 	private boolean isEnabled = false;
-	
 	private String previous = "";
+	private String toggleId = "org.eclipse.example.command.toggleState";
+	private ShowDataInBreadcrumbAction crumbs;
 	
 	public void dispose() {
 		if(annotationManager!=null)
@@ -70,6 +74,7 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	 */
 	private void disable() {
 		if(annotationManager!=null)
+			annotationManager.setEnabled(false);
 			annotationManager.deactivate();
 	}
 
@@ -123,22 +128,35 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	public void run(IAction action) {
 		//JavaCore.cre
 		try {
-			if(!isEnabled) {
+			ICommandService service = (ICommandService) PlatformUI.getWorkbench().getService(ICommandService.class);
+			Command command = service.getCommand("org.eclipse.example.command.toggle");
+			State state = command.getState("org.eclipse.example.command.toggleState");
+			if (state == null) {
+				state = new State();
+				state.setValue(true);
+				state.setId("org.eclipse.example.command.toggleState");
+				command.addState("org.eclipse.example.command.toggleState", state);
+			}
+			else {
+				state.setValue(!(Boolean) state.getValue());
+			}
+			if((boolean) state.getValue()) {
+				IWorkbenchPage activePage = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+				IEditorPart activeEditor = activePage.getActiveEditor();
+				JavaEditor j = (JavaEditor) activeEditor;
+				crumbs = new ShowDataInBreadcrumbAction(j, activePage);
+				crumbs.run();
 				enable(page.getActiveEditor());
 				isEnabled = true;
 			}
 			else {
+				crumbs.stop();
 				isEnabled = false;
 				disable();
-				Activator.getDefault().shutdown();
 			}
 		} catch (Exception e) {
 			Activator.logError(e);
 		}
-	}
-	
-	public boolean isEnabled() {
-		return isEnabled;
 	}
 	
 	public void selectionChanged(IAction action, ISelection selection) {
@@ -160,6 +178,7 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 		}
 		JavaEditor editor = (JavaEditor)newPage.getActiveEditor();
         init(newPage.getWorkbenchWindow());
-        run(null);
+        enable(page.getActiveEditor());
+		isEnabled = true;
 	}
 }
