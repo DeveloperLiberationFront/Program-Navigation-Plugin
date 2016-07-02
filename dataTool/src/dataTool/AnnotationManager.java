@@ -1,10 +1,8 @@
 package dataTool;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
-
 import org.eclipse.jdt.core.IMethod;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.core.dom.AST;
@@ -28,11 +26,9 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
 import org.eclipse.ui.texteditor.AbstractTextEditor;
-
 import dataTool.annotations.LinkAnnotation;
 import dataTool.annotations.ProgramNavigationPainter;
 import dataTool.annotations.SuggestedSelectionAnnotation;
-import dataTool.ui.ShowDataInBreadcrumbAction;
 import edu.pdx.cs.multiview.jdt.util.JDTUtils;
 import edu.pdx.cs.multiview.jface.annotation.AnnTransaction;
 import edu.pdx.cs.multiview.jface.annotation.AnnotationPainter;
@@ -49,10 +45,8 @@ public class AnnotationManager implements ISelectionChangedListener {
 	private boolean isEnabled;
 	private IBreadcrumb upBreadcrumb;
 	private IBreadcrumb downBreadcrumb;
+	private Visitor visitor; // the visitor for the editor
 
-	// the visitor for the editor
-	private Visitor visitor;
-	
 	public static String currentSearch = null;
 
 	/**
@@ -205,7 +199,7 @@ public class AnnotationManager implements ISelectionChangedListener {
 	private void parseCU(AbstractTextEditor editor) {
 		try {
 			visitor = parse(JDTUtils.getCUSource(editor));
-		} catch (JavaModelException e) {
+		} catch (JavaModelException | ClassCastException e) {
 			Activator.logError(e);
 		}
 	}
@@ -240,10 +234,9 @@ public class AnnotationManager implements ISelectionChangedListener {
 		try {
 			if (highlightAnnotation != null) {
 				painter.removeAllAnnotations();
-				painter.dispose();
+				//painter.dispose();
 			}
 		} catch (Exception ignore) {
-			System.out.println("ignore");
 		}
 	}
 

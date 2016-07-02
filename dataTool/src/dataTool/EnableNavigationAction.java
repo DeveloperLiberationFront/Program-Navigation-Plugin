@@ -28,7 +28,6 @@ import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.commands.ICommandService;
 import org.eclipse.ui.texteditor.AbstractDecoratedTextEditor;
-
 import dataTool.ui.ShowDataInBreadcrumbAction;
 
 /**
@@ -73,9 +72,11 @@ public class EnableNavigationAction implements IWorkbenchWindowActionDelegate {
 	 * Disables the plugin
 	 */
 	private void disable() {
-		if(annotationManager!=null)
+		if(annotationManager!=null) {
 			annotationManager.setEnabled(false);
 			annotationManager.deactivate();
+			annotationManager.dispose();
+		}
 	}
 
 	public void init(IWorkbenchWindow window) {
