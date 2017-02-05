@@ -12,3 +12,11 @@ Our tool has many different features to help developers navigate their source co
 - A Source Not Found error will be thrown if you click on a link in the breadcrumbs or the editor that is outside the scope of the project.
 
 			
+# Setup Instructions
+1. Install [Eclipse Mars 2(Java EE Developers)](https://eclipse.org/downloads/packages/eclipse-ide-java-ee-developers/mars2).
+2. In Menus: File -> Import -> Existing Projects into Workspace
+3. Select the "Select root Directory" option and add the path to the this project folder.
+4. Three projects will appear in "Projects:" section, Select All and click "Next".
+5. Right click "dataTool" in "Package Explorer" of eclipse, select "Run As" --> "Eclipse Application"
+
+Voila!
