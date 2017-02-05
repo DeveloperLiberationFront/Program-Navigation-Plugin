@@ -119,7 +119,7 @@ public class WorkingSetConfigurationDialog extends SelectionDialog {
 			IAdaptable[] elements= set.getElements();
 			for (int i= 0; i < elements.length; i++) {
 				IAdaptable element= elements[i];
-				IProject p= (IProject)element.getAdapter(IProject.class);
+				IProject p= element.getAdapter(IProject.class);
 				if (p != null && p.exists())
 					return true;
 			}

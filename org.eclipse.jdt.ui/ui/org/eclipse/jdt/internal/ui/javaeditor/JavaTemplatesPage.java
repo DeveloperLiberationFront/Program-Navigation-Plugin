@@ -164,7 +164,7 @@ public class JavaTemplatesPage extends AbstractTemplatesPage {
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.texteditor.templates.AbstractTemplatesPage#getTemplateStore()
 	 */
-	protected TemplateStore getTemplateStore() {
+	public TemplateStore getTemplateStore() {
 		return TEMPLATE_STORE;
 	}
 

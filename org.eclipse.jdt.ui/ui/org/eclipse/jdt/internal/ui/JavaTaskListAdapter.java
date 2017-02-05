@@ -19,13 +19,21 @@ import org.eclipse.ui.views.tasklist.ITaskListResourceAdapter;
 import org.eclipse.jdt.core.ICompilationUnit;
 import org.eclipse.jdt.core.IJavaElement;
 
+import org.eclipse.jdt.internal.ui.javaeditor.InternalClassFileEditorInput;
+
 public class JavaTaskListAdapter implements ITaskListResourceAdapter {
 
 	/*
 	 * @see ITaskListResourceAdapter#getAffectedResource(IAdaptable)
 	 */
 	public IResource getAffectedResource(IAdaptable element) {
-		IJavaElement java = (IJavaElement) element;
+		IJavaElement java = null;
+		if(!(element instanceof InternalClassFileEditorInput)) {
+			java = (IJavaElement) element;
+		}
+		else {
+			java = element.getAdapter(IJavaElement.class);
+		}
 		IResource resource= java.getResource();
 		if (resource != null)
 			return resource;

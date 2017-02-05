@@ -251,7 +251,7 @@ public class SurroundWithTemplateMenuAction implements IWorkbenchWindowPulldownD
 		}
 
 		CompilationUnitEditor editor= (CompilationUnitEditor)activePart;
-		if (editor.isBreadcrumbActive()) {
+		if (editor.areBreadcrumbsActive()) {
 			ActionContributionItem item= new ActionContributionItem(NONE_APPLICABLE_ACTION);
 			item.fill(menu, -1);
 			return;

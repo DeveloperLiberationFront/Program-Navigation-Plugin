@@ -51,11 +51,11 @@ public class WorkingSetFilter extends JavaViewerFilter {
 				IResource fakeInternal= proj.getProject().getFile(wrapper.getProject().getElementName() + "-fake-jar.jar"); //$NON-NLS-1$
 				init(proj.getPackageFragmentRoot(fakeInternal));
 			} else {
-				IJavaElement je= (IJavaElement) a.getAdapter(IJavaElement.class);
+				IJavaElement je= a.getAdapter(IJavaElement.class);
 				if (je != null) {
 					init(je);
 				} else {
-					IResource resource= (IResource) a.getAdapter(IResource.class);
+					IResource resource= a.getAdapter(IResource.class);
 					if (resource != null) {
 						init(resource);
 					} else {

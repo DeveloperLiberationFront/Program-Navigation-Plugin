@@ -368,7 +368,7 @@ public class GenerateActionGroup extends ActionGroup {
 	}
 
 	private void installQuickAccessAction() {
-		fHandlerService= (IHandlerService)fSite.getService(IHandlerService.class);
+		fHandlerService= fSite.getService(IHandlerService.class);
 		if (fHandlerService != null) {
 			IHandler handler= new JDTQuickMenuCreator(fEditor) {
 				protected void fillMenu(IMenuManager menu) {
@@ -428,7 +428,7 @@ public class GenerateActionGroup extends ActionGroup {
 
 	private void fillQuickMenu(IMenuManager menu) {
 		if (isEditorOwner()) {
-			if (!fEditor.isBreadcrumbActive())
+			if (!fEditor.areBreadcrumbsActive())
 				fillEditorSubMenu(menu);
 		} else {
 			fillViewSubMenu(menu);

@@ -54,7 +54,7 @@ public class AddTaskAction extends SelectionDispatchAction {
 		Object element= selection.getFirstElement();
 		if (!(element instanceof IAdaptable))
 			return null;
-		IResource resource= (IResource) ((IAdaptable)element).getAdapter(IResource.class);
+		IResource resource= ((IAdaptable)element).getAdapter(IResource.class);
 		if (resource instanceof IProject && !((IProject) resource).isOpen()) {
 			return null;
 		}

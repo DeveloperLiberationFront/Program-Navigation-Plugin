@@ -844,7 +844,7 @@ public class JavaSearchPage extends DialogPage implements ISearchPage {
 			IWorkbenchPart activePart= activePage.getActivePart();
 			if (activePart instanceof JavaEditor) {
 				JavaEditor javaEditor= (JavaEditor) activePart;
-				if (javaEditor.isBreadcrumbActive()) {
+				if (javaEditor.areBreadcrumbsActive()) {
 					sel= javaEditor.getBreadcrumb().getSelectionProvider().getSelection();
 				}
 			}
@@ -907,13 +907,13 @@ public class JavaSearchPage extends DialogPage implements ISearchPage {
 			LogicalPackage lp= (LogicalPackage)o;
 			return new SearchPatternData(PACKAGE, REFERENCES, 0, fIsCaseSensitive, lp.getElementName(), null, getLastIncludeMask());
 		} else if (o instanceof IAdaptable) {
-			IJavaElement element= (IJavaElement) ((IAdaptable) o).getAdapter(IJavaElement.class);
+			IJavaElement element= ((IAdaptable) o).getAdapter(IJavaElement.class);
 			if (element != null) {
 				res= determineInitValuesFrom(element);
 			}
 		}
 		if (res == null && o instanceof IAdaptable) {
-			IWorkbenchAdapter adapter= (IWorkbenchAdapter)((IAdaptable)o).getAdapter(IWorkbenchAdapter.class);
+			IWorkbenchAdapter adapter= ((IAdaptable)o).getAdapter(IWorkbenchAdapter.class);
 			if (adapter != null) {
 				return new SearchPatternData(TYPE, REFERENCES, 0, fIsCaseSensitive, adapter.getLabel(o), null, getLastIncludeMask());
 			}

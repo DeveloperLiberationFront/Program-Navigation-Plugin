@@ -813,7 +813,7 @@ public class JavaOutlinePage extends Page implements IContentOutlinePage, IAdapt
 
 		registerToolbarActions(actionBars);
 
-		IHandlerService handlerService= (IHandlerService)site.getService(IHandlerService.class);
+		IHandlerService handlerService= site.getService(IHandlerService.class);
 		handlerService.activateHandler(IWorkbenchCommandConstants.NAVIGATE_TOGGLE_LINK_WITH_EDITOR, new ActionHandler(fToggleLinkingAction));
 
 

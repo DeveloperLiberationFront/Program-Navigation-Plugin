@@ -278,7 +278,7 @@ public class JavaNavigatorContentProvider extends
 			if (element instanceof IResource) {
 				resource= (IResource)element;
 			} else if (element instanceof IAdaptable) {
-				resource= (IResource)((IAdaptable)element).getAdapter(IResource.class);
+				resource= ((IAdaptable)element).getAdapter(IResource.class);
 			}
 			if (resource != null) {
 				int i= elementList.indexOf(resource);

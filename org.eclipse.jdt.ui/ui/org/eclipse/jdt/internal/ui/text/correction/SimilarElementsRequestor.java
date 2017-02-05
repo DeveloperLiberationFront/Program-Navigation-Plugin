@@ -96,7 +96,7 @@ public class SimilarElementsRequestor extends CompletionRequestor {
 	private static ICompilationUnit createPreparedCU(ICompilationUnit cu, Javadoc comment, int wordStart) throws JavaModelException {
 		int startpos= comment.getStartPosition();
 		boolean isTopLevel= comment.getParent().getParent() instanceof CompilationUnit;
-		char[] content= (char[]) cu.getBuffer().getCharacters().clone();
+		char[] content= cu.getBuffer().getCharacters().clone();
 		if (isTopLevel && (wordStart + 6 < content.length)) {
 			content[startpos++]= 'i'; content[startpos++]= 'm'; content[startpos++]= 'p';
 			content[startpos++]= 'o'; content[startpos++]= 'r'; content[startpos++]= 't';

@@ -935,7 +935,7 @@ class JarManifestWizardPage extends WizardPage implements IJarPackageWizardPage 
 	 */
 	protected IPackageFragment[] getPackagesFromDialog(SelectionDialog dialog) {
 		if (dialog.getReturnCode() == Window.OK && dialog.getResult().length > 0)
-			return (IPackageFragment[])Arrays.asList(dialog.getResult()).toArray(new IPackageFragment[dialog.getResult().length]);
+			return Arrays.asList(dialog.getResult()).toArray(new IPackageFragment[dialog.getResult().length]);
 		else
 			return new IPackageFragment[0];
 	}

@@ -702,7 +702,7 @@ public class JavadocView extends AbstractInfoView {
 			}
 		});
 
-		IHandlerService handlerService= (IHandlerService) getSite().getService(IHandlerService.class);
+		IHandlerService handlerService= getSite().getService(IHandlerService.class);
 		handlerService.activateHandler(IWorkbenchCommandConstants.NAVIGATE_TOGGLE_LINK_WITH_EDITOR, new ActionHandler(fToggleLinkAction));
 	}
 

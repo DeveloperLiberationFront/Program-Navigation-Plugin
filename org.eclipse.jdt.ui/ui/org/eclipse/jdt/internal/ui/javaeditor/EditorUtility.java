@@ -207,7 +207,7 @@ public class EditorUtility {
 					if (isCompareEditorInput || !JavaModelUtil.isPrimary(cu)) {
 						IEditorInput editorInput;
 						if (isCompareEditorInput)
-							editorInput= (IEditorInput)editor.getAdapter(IEditorInput.class);
+							editorInput= editor.getAdapter(IEditorInput.class);
 						else
 							editorInput= editor.getEditorInput();
 						IJavaElement editorCU= getEditorInputJavaElement(editorInput, false);
@@ -674,7 +674,7 @@ public class EditorUtility {
 		 * If <code>saveUnknownEditors</code> is <code>true</code>, save all editors
 		 * whose implementation is probably not based on file buffers.
 		 */
-		IResource resource= (IResource) input.getAdapter(IResource.class);
+		IResource resource= input.getAdapter(IResource.class);
 		if (resource == null)
 			return saveUnknownEditors;
 

@@ -158,7 +158,7 @@ public class RefreshAction extends SelectionDispatchAction {
 			} else if (element instanceof PackageFragmentRootContainer) {
 				// too expensive to look at children. assume we can refresh
 			} else if (element instanceof IAdaptable) { // test for IAdaptable last (types before are IAdaptable as well)
-				IResource resource= (IResource)((IAdaptable)element).getAdapter(IResource.class);
+				IResource resource= ((IAdaptable)element).getAdapter(IResource.class);
 				if (resource == null)
 					return false;
 				if (resource.getType() == IResource.PROJECT && !((IProject)resource).isOpen())

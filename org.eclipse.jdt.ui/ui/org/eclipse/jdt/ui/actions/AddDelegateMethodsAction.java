@@ -558,7 +558,7 @@ public class AddDelegateMethodsAction extends SelectionDispatchAction {
 						tuples.add(object[index]);
 				}
 				IEditorPart part= JavaUI.openInEditor(type);
-				IRewriteTarget target= (IRewriteTarget) part.getAdapter(IRewriteTarget.class);
+				IRewriteTarget target= part.getAdapter(IRewriteTarget.class);
 				try {
 					if (target != null)
 						target.beginCompoundChange();

@@ -488,7 +488,7 @@ public abstract class AbstractInfoView extends ViewPart implements ISelectionLis
 
 		IJavaElement je= null;
 		if (element instanceof IAdaptable)
-			je= (IJavaElement)((IAdaptable)element).getAdapter(IJavaElement.class);
+			je= ((IAdaptable)element).getAdapter(IJavaElement.class);
 
 		return je;
 	}

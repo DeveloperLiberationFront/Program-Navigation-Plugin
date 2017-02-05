@@ -306,7 +306,7 @@ public final class ClipboardOperationAction extends TextEditorAction {
 
 		ITextEditor editor= getTextEditor();
 		if (fOperationTarget == null && editor!= null && fOperationCode != -1)
-			fOperationTarget= (ITextOperationTarget) editor.getAdapter(ITextOperationTarget.class);
+			fOperationTarget= editor.getAdapter(ITextOperationTarget.class);
 
 		boolean isEnabled= (fOperationTarget != null && fOperationTarget.canDoOperation(fOperationCode));
 		setEnabled(isEnabled);
@@ -483,7 +483,7 @@ public final class ClipboardOperationAction extends TextEditorAction {
 			ClipboardData importsData= (ClipboardData)clipboard.getContents(fgTransferInstance);
 			if (importsData != null && inputElement instanceof ICompilationUnit && !importsData.isFromSame(inputElement)) {
 				// combine operation and adding of imports
-				IRewriteTarget target= (IRewriteTarget)editor.getAdapter(IRewriteTarget.class);
+				IRewriteTarget target= editor.getAdapter(IRewriteTarget.class);
 				if (target != null) {
 					target.beginCompoundChange();
 				}

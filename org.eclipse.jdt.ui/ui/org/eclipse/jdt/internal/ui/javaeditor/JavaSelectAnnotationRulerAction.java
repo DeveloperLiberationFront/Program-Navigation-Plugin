@@ -89,7 +89,7 @@ public class JavaSelectAnnotationRulerAction extends SelectMarkerRulerAction {
 		}
 
 		if (fHasCorrection) {
-			ITextOperationTarget operation= (ITextOperationTarget) fTextEditor.getAdapter(ITextOperationTarget.class);
+			ITextOperationTarget operation= fTextEditor.getAdapter(ITextOperationTarget.class);
 			final int opCode= ISourceViewer.QUICK_ASSIST;
 			if (operation != null && operation.canDoOperation(opCode)) {
 				fTextEditor.selectAndReveal(fPosition.getOffset(), fPosition.getLength());

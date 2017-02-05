@@ -1,0 +1,24 @@
+/ASTBatchParser.java/1.3/Wed Dec 31 21:13:23 2008//Tr351_v20090821-0800
+/ASTFlattener.java/1.34/Tue May 26 13:28:48 2009/-ko/Tr351_v20090821-0800
+/ASTNodeFactory.java/1.31/Tue May  5 13:13:58 2009/-ko/Tr351_v20090821-0800
+/ASTNodes.java/1.99.2.1/Thu Jun 25 12:54:26 2009/-ko/Tr351_v20090821-0800
+/Bindings.java/1.136/Fri Nov 14 13:01:57 2008/-ko/Tr351_v20090821-0800
+/BodyDeclarationRewrite.java/1.5/Wed Dec 31 21:13:24 2008//Tr351_v20090821-0800
+/CodeScopeBuilder.java/1.9/Wed Dec 31 21:13:23 2008//Tr351_v20090821-0800
+/GenericVisitor.java/1.15/Mon Dec  1 11:13:10 2008/-ko/Tr351_v20090821-0800
+/HierarchicalASTVisitor.java/1.11/Tue Mar 17 09:15:58 2009/-ko/Tr351_v20090821-0800
+/JdtASTMatcher.java/1.12/Wed Dec 31 21:13:24 2008/-ko/Tr351_v20090821-0800
+/LinkedNodeFinder.java/1.19/Thu Sep 11 11:59:38 2008//Tr351_v20090821-0800
+/LocalVariableIndex.java/1.15/Thu Sep 11 11:59:38 2008/-ko/Tr351_v20090821-0800
+/ModifierRewrite.java/1.16/Thu May 14 15:25:58 2009//Tr351_v20090821-0800
+/NodeFinder.java/1.18/Wed Dec 31 21:13:24 2008/-ko/Tr351_v20090821-0800
+/ReplaceRewrite.java/1.8/Wed Dec 31 21:13:24 2008//Tr351_v20090821-0800
+/ScopeAnalyzer.java/1.46/Thu Sep 11 11:59:38 2008//Tr351_v20090821-0800
+/Selection.java/1.16/Wed Dec 31 21:13:24 2008/-ko/Tr351_v20090821-0800
+/SelectionAnalyzer.java/1.17/Wed Dec 31 21:13:24 2008/-ko/Tr351_v20090821-0800
+/StatementRewrite.java/1.5/Wed Dec 31 21:13:24 2008//Tr351_v20090821-0800
+/TokenScanner.java/1.24/Wed Dec 31 21:13:23 2008//Tr351_v20090821-0800
+/TypeBindingVisitor.java/1.8/Wed Dec 31 21:13:24 2008//Tr351_v20090821-0800
+/TypeRules.java/1.16/Wed Dec 31 21:13:23 2008//Tr351_v20090821-0800
+/VariableDeclarationRewrite.java/1.7/Thu May 14 15:25:58 2009/-kk/Tr351_v20090821-0800
+D

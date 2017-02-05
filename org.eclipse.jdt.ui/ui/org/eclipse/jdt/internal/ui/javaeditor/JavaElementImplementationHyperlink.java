@@ -241,7 +241,7 @@ public class JavaElementImplementationHyperlink implements IHyperlink {
 	 * Opens a quick type hierarchy for the editor's current input.
 	 */
 	private void openQuickHierarchy() {
-		ITextOperationTarget textOperationTarget= (ITextOperationTarget)fEditor.getAdapter(ITextOperationTarget.class);
+		ITextOperationTarget textOperationTarget= fEditor.getAdapter(ITextOperationTarget.class);
 		textOperationTarget.doOperation(JavaSourceViewer.SHOW_HIERARCHY);
 	}
 }

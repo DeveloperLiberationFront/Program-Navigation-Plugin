@@ -98,65 +98,65 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 	private static int searchParamIndex = -1;
 		
 	/**
-	 * The editor inside which this breadcrumb is shown.
-	 *
-	 * @param editor the editor
-	 */
+	* The editor inside which this breadcrumb is shown.
+	*
+	* @param editor the editor
+	*/
 	public EditorBreadcrumb(ITextEditor editor) {
 		setTextEditor(editor);
 	}
 
 	/**
-	 * The active element of the editor.
-	 *
-	 * @return the active element of the editor, or <b>null</b> if none
-	 */
+	* The active element of the editor.
+	*
+	* @return the active element of the editor, or <b>null</b> if none
+	*/
 	protected abstract Object getCurrentInput();
 
 	/**
-	 * Create and configure the viewer used to display the parent chain.
-	 *
-	 * @param parent the parent composite
-	 * @return the viewer
-	 */
+	* Create and configure the viewer used to display the parent chain.
+	*
+	* @param parent the parent composite
+	* @return the viewer
+	*/
 	protected abstract BreadcrumbViewer createViewer(Composite parent);
 
 	/**
-	 * Reveal the given element in the editor if possible.
-	 *
-	 * @param element the element to reveal
-	 * @return true if the element could be revealed
-	 */
+	* Reveal the given element in the editor if possible.
+	*
+	* @param element the element to reveal
+	* @return true if the element could be revealed
+	*/
 	protected abstract boolean reveal(Object element);
 
 	/**
-	 * Open the element in a new editor if possible.
-	 *
-	 * @param element the element to open
-	 * @return true if the element could be opened
-	 */
+	* Open the element in a new editor if possible.
+	*
+	* @param element the element to open
+	* @return true if the element could be opened
+	*/
 	protected abstract boolean open(Object element);
 
 	/**
-	 * Create an action group for the context menu shown for the selection of the given selection
-	 * provider or <code>null</code> if no context menu should be shown.
-	 *
-	 * @param selectionProvider the provider of the context selection
-	 * @return action group to use to fill the context menu or <code>null</code>
-	 *
+	* Create an action group for the context menu shown for the selection of the given selection
+	* provider or <code>null</code> if no context menu should be shown.
+	*
+	* @param selectionProvider the provider of the context selection
+	* @return action group to use to fill the context menu or <code>null</code>
+	*
 	protected abstract ActionGroup createContextMenuActionGroup(ISelectionProvider selectionProvider);
 	*/
 	
 	/**
-	 * The breadcrumb has been activated. Implementors must retarget the editor actions to the
-	 * breadcrumb aware actions.
-	 */
+	* The breadcrumb has been activated. Implementors must retarget the editor actions to the
+	* breadcrumb aware actions.
+	*/
 	protected abstract void activateBreadcrumb();
 
 	/**
-	 * The breadcrumb has been deactivated. Implementors must retarget the breadcrumb actions to the
-	 * editor actions.
-	 */
+	* The breadcrumb has been deactivated. Implementors must retarget the breadcrumb actions to the
+	* editor actions.
+	*/
 	protected abstract void deactivateBreadcrumb();
 
 	public ISelectionProvider getSelectionProvider() {
@@ -168,8 +168,8 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 	}
 
 	/*
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.IBreadcrumb#setInput(java.lang.Object)
-	 */
+	* @see org.eclipse.jdt.internal.ui.javaeditor.IBreadcrumb#setInput(java.lang.Object)
+	*/
 	public void setInput(Object element) {
 		if (element == null)
 			return;
@@ -181,23 +181,23 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 	}
 
 	/*
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.IBreadcrumb#setFocus()
-	 */
+	* @see org.eclipse.jdt.internal.ui.javaeditor.IBreadcrumb#setFocus()
+	*/
 	public void activate() {
 		fBreadcrumbViewer.setFocus();
 	}
 
 	/*
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.breadcrumb.IBreadcrumb#isActive()
-	 */
+	* @see org.eclipse.jdt.internal.ui.javaeditor.breadcrumb.IBreadcrumb#isActive()
+	*/
 	public boolean isActive() {
 		return fIsActive;
 	}
 	
 	/**
-	 * Adds links for program navigation in the breadcrumbs
-	 * TODO refresh breadcrumb2, top breadcrumb go to line #
-	 */
+	* Adds links for program navigation in the breadcrumbs
+	* TODO refresh breadcrumb2, top breadcrumb go to line #
+	*/
 	public void setText(ArrayList<Object> items) {
 		if(fComposite == null) {
 			return;
@@ -221,26 +221,27 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 					link.addListener(SWT.Selection, new Listener() {
 						public void handleEvent(Event arg0) {
 						//Go to specific line
-						IEditorPart editor = null;
-						try {
-							if(i.getParameters().length > 0) {
-								editor = JavaUI.openInEditor(i.getParameters()[searchParamIndex], true, true);
-							}
-							else {
-								editor = JavaUI.openInEditor(i, true, true);
-								if(searchMethod != null && editor != null) {
-									String code = ((AbstractTextEditor)editor).getDocumentProvider().getDocument(editor.getEditorInput()).get();
-									lineSearch(code.toCharArray(), i);
-									goToLine(editor);
+							IEditorPart editor = null;
+							try {
+								if(i.getParameters().length > 0 && searchParamIndex >= 0 && searchMethod == null) {
+									editor = JavaUI.openInEditor(i.getParameters()[searchParamIndex], true, true);
 								}
+								else {
+									editor = JavaUI.openInEditor(i, true, true);
+									if(searchMethod != null && editor != null) {
+										String code = ((AbstractTextEditor)editor).getDocumentProvider().getDocument(editor.getEditorInput()).get();
+										lineSearch(code.toCharArray(), i);
+										goToLine(editor);
+										searchMethod = null;
+									}
+								}
+							} catch (JavaModelException e) {
+								// Auto-generated catch block
+								e.printStackTrace();
+							} catch (PartInitException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
-						} catch (JavaModelException e) {
-							// Auto-generated catch block
-							e.printStackTrace();
-						} catch (PartInitException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
 						}
 					});
 				}
@@ -252,7 +253,7 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 						public void handleEvent(Event arg0) {
 							link.setForeground(new Color(null, 128,0,128));
 							IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
-					    	((ITextEditor) editor).selectAndReveal(list[1], list[2]);
+					   	((ITextEditor) editor).selectAndReveal(list[1], list[2]);
 						}
 					});
 				}
@@ -278,7 +279,7 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 				public boolean visit(MethodInvocation mi) {
 					if(m.getElementName().equals(methodName)) {
 						if(mi.getName().getIdentifier().equals(searchMethod.getElementName())) {
-							searchResult = mi;
+							searchResult = (ASTNode) mi.arguments().get(searchParamIndex);
 						}
 					}
 					return true;
@@ -295,34 +296,34 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 		
 	private static void goToLine(IEditorPart editorPart) {
 		if (!(editorPart instanceof ITextEditor)) {
-		    return;
+		   return;
 		}
 		ITextEditor editor = (ITextEditor) editorPart;
 		IDocument document = editor.getDocumentProvider().getDocument(editor.getEditorInput());
 		if (document != null && searchResult != null) {
-		    editor.selectAndReveal(searchResult.getStartPosition(), searchResult.getLength());
+		   editor.selectAndReveal(searchResult.getStartPosition(), searchResult.getLength());
 		}
 	}
 	
 	/**
-	 * Sets the current method we're searching for, needed because we don't have 
-	 * access to DataNode
-	 * @param iMethod: Current method to search for
-	 */
+	* Sets the current method we're searching for, needed because we don't have 
+	* access to DataNode
+	* @param iMethod: Current method to search for
+	*/
 	public void setSearchMethod(IMethod iMethod) {
 		searchMethod = iMethod;
 	}
 	
 	/**
-	 * Sets the parameter index of the current data node to link directly to it
-	 * @param i: int index of parameter in method arguments
-	 */
+	* Sets the parameter index of the current data node to link directly to it
+	* @param i: int index of parameter in method arguments
+	*/
 	public void setSearchIndex(int i) {
 		searchParamIndex = i;
 	}
 	/*
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.IBreadcrumb#createContent(org.eclipse.swt.widgets.Composite)
-	 */
+	* @see org.eclipse.jdt.internal.ui.javaeditor.IBreadcrumb#createContent(org.eclipse.swt.widgets.Composite)
+	*/
 	public Control createContent(Composite parent) {
 		Assert.isTrue(fComposite == null, "Content must only be created once."); //$NON-NLS-1$
 		boolean rtl= (getTextEditor().getSite().getShell().getStyle() & SWT.RIGHT_TO_LEFT) != 0;
@@ -370,8 +371,8 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 	}
 
 	/*
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.IEditorViewPart#dispose()
-	 */
+	* @see org.eclipse.jdt.internal.ui.javaeditor.IEditorViewPart#dispose()
+	*/
 	public void dispose() {
 		System.out.println("dispose editor");
 		if (fPropertyChangeListener != null) {
@@ -389,11 +390,11 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 	}
 
 	/**
-	 * Either reveal the selection in the editor or open the selection in a new editor. If both fail
-	 * open the child pop up of the selected element.
-	 *
-	 * @param selection the selection to open
-	 */
+	* Either reveal the selection in the editor or open the selection in a new editor. If both fail
+	* open the child pop up of the selected element.
+	*
+	* @param selection the selection to open
+	*/
 	private void doRevealOrOpen(ISelection selection) {
 		if (doReveal(selection)) {
 			fTextViewer.getTextWidget().setFocus();
@@ -437,8 +438,8 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 	}
 
 	/**
-	 * Focus has been transfered into the breadcrumb.
-	 */
+	* Focus has been transfered into the breadcrumb.
+	*/
 	private void focusGained() {
 		if (fHasFocus)
 			focusLost();
@@ -458,8 +459,8 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 	}
 
 	/**
-	 * Focus has been revoked from the breadcrumb.
-	 */
+	* Focus has been revoked from the breadcrumb.
+	*/
 	private void focusLost() {
 		fComposite.setBackground(null);
 		fHasFocus= false;
@@ -475,8 +476,8 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 	}
 
 	/**
-	 * Installs all display listeners.
-	 */
+	* Installs all display listeners.
+	*/
 	private void installDisplayListeners() {
 		//Sanity check
 		deinstallDisplayListeners();
@@ -496,8 +497,8 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 	}
 
 	/**
-	 * Removes all previously installed display listeners.
-	 */
+	* Removes all previously installed display listeners.
+	*/
 	private void deinstallDisplayListeners() {
 		if (fDisplayKeyListener != null) {
 			Display.getDefault().removeFilter(SWT.KeyDown, fDisplayKeyListener);
@@ -506,11 +507,11 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 	}
 
 	/**
-	 * Tells whether the given event was issued inside the breadcrumb viewer's control.
-	 *
-	 * @param event the event to inspect
-	 * @return <code>true</code> if event was generated by a breadcrumb child
-	 */
+	* Tells whether the given event was issued inside the breadcrumb viewer's control.
+	*
+	* @param event the event to inspect
+	* @return <code>true</code> if event was generated by a breadcrumb child
+	*/
 	private boolean isBreadcrumbEvent(Event event) {
 		if (fBreadcrumbViewer == null)
 			return false;
@@ -533,10 +534,10 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 	}
 
 	/**
-	 * Sets the text editor for which this breadcrumb is.
-	 *
-	 * @param textEditor the text editor to be used
-	 */
+	* Sets the text editor for which this breadcrumb is.
+	*
+	* @param textEditor the text editor to be used
+	*/
 	protected void setTextEditor(ITextEditor textEditor) {
 		fTextEditor= textEditor;
 
@@ -575,10 +576,10 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 	}
 
 	/**
-	 * This breadcrumb's text editor.
-	 *
-	 * @return the text editor
-	 */
+	* This breadcrumb's text editor.
+	*
+	* @return the text editor
+	*/
 	protected ITextEditor getTextEditor() {
 		return fTextEditor;
 	}

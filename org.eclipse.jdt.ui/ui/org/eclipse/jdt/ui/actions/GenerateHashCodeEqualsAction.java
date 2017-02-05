@@ -256,7 +256,7 @@ public final class GenerateHashCodeEqualsAction extends GenerateMethodAbstractAc
 	}
 
 	IWorkspaceRunnable createOperation(Object[] selectedBindings, CodeGenerationSettings settings, boolean regenerate, IJavaElement type, IJavaElement elementPosition) {
-		final IVariableBinding[] selectedVariableBindings= (IVariableBinding[]) Arrays.asList(selectedBindings).toArray(new IVariableBinding[0]);
+		final IVariableBinding[] selectedVariableBindings= Arrays.asList(selectedBindings).toArray(new IVariableBinding[0]);
 		HashCodeEqualsGenerationSettings hashCodeEqualsGenerationSettings= (HashCodeEqualsGenerationSettings)settings;
 		GenerateHashCodeEqualsOperation operation= new GenerateHashCodeEqualsOperation(fTypeBinding, selectedVariableBindings, fUnit, elementPosition, settings,
 				hashCodeEqualsGenerationSettings.useInstanceOf, regenerate, true, false);

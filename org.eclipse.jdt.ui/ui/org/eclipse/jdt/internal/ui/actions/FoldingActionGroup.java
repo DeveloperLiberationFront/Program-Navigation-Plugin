@@ -124,7 +124,7 @@ public class FoldingActionGroup extends ActionGroup {
 			}
 
 			public void update() {
-				ITextOperationTarget target= (ITextOperationTarget) editor.getAdapter(ITextOperationTarget.class);
+				ITextOperationTarget target= editor.getAdapter(ITextOperationTarget.class);
 
 				boolean isEnabled= (target != null && target.canDoOperation(ProjectionViewer.TOGGLE));
 				setEnabled(isEnabled);

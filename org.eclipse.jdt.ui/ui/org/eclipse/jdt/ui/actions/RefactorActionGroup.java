@@ -203,7 +203,7 @@ public class RefactorActionGroup extends ActionGroup {
 	public RefactorActionGroup(IViewPart part) {
 		this(part.getSite(), null);
 
-		IUndoContext workspaceContext= (IUndoContext)ResourcesPlugin.getWorkspace().getAdapter(IUndoContext.class);
+		IUndoContext workspaceContext= ResourcesPlugin.getWorkspace().getAdapter(IUndoContext.class);
 		fUndoRedoActionGroup= new UndoRedoActionGroup(part.getViewSite(), workspaceContext, true);
 
 		installQuickAccessAction();
@@ -426,7 +426,7 @@ public class RefactorActionGroup extends ActionGroup {
 	}
 
 	private void installQuickAccessAction() {
-		fHandlerService= (IHandlerService)fSite.getService(IHandlerService.class);
+		fHandlerService= fSite.getService(IHandlerService.class);
 		if (fHandlerService != null) {
 			IHandler handler= new JDTQuickMenuCreator(fEditor) {
 				protected void fillMenu(IMenuManager menu) {
@@ -669,7 +669,7 @@ public class RefactorActionGroup extends ActionGroup {
 
 	private void fillQuickMenu(IMenuManager menu) {
 		if (fEditor != null) {
-			if (fEditor.isBreadcrumbActive())
+			if (fEditor.areBreadcrumbsActive())
 				return;
 
 			ITypeRoot element= getEditorInput();

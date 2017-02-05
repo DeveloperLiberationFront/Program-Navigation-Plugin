@@ -129,16 +129,16 @@ public class GenerateToStringDialog extends SourceActionDialog {
 
 		public GenerateToStringContentProvider(IVariableBinding[] fields, IVariableBinding[] inheritedFields, IMethodBinding[] methods, IMethodBinding[] inheritedMethods) {
 			ArrayList nodes= new ArrayList();
-			fFields= (Object[])fields.clone();
+			fFields= fields.clone();
 			if (fFields.length > 0)
 				nodes.add(fieldsNode);
-			fInheritedFields= (Object[])inheritedFields.clone();
+			fInheritedFields= inheritedFields.clone();
 			if (fInheritedFields.length > 0)
 				nodes.add(inheritedFieldsNode);
-			fMethods= (Object[])methods.clone();
+			fMethods= methods.clone();
 			if (fMethods.length > 0)
 				nodes.add(methodsNode);
-			fInheritedMethods= (Object[])inheritedMethods.clone();
+			fInheritedMethods= inheritedMethods.clone();
 			if (fInheritedMethods.length > 0)
 				nodes.add(inheritedMethodsNode);
 			mainNodes= nodes.toArray();

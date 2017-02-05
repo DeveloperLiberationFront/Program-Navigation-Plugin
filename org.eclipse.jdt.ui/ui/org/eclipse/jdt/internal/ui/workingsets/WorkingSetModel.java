@@ -168,14 +168,14 @@ public class WorkingSetModel {
 		}
 		private void addElement(IAdaptable element, IWorkingSet ws) {
 			addToMap(fElementToWorkingSet, element, ws);
-			IResource resource= (IResource)element.getAdapter(IResource.class);
+			IResource resource= element.getAdapter(IResource.class);
 			if (resource != null) {
 				addToMap(fResourceToWorkingSet, resource, ws);
 			}
 		}
 		private void removeElement(IAdaptable element, IWorkingSet ws) {
 			removeFromMap(fElementToWorkingSet, element, ws);
-			IResource resource= (IResource)element.getAdapter(IResource.class);
+			IResource resource= element.getAdapter(IResource.class);
 			if (resource != null) {
 				removeFromMap(fResourceToWorkingSet, resource, ws);
 			}

@@ -380,7 +380,7 @@ abstract class JavaBrowsingPart extends ViewPart implements IMenuListener, ISele
 		getViewSite().getPage().addPostSelectionListener(this);
 		getViewSite().getPage().addPartListener(fPartListener);
 
-		activateHandlers((IHandlerService) getViewSite().getService(IHandlerService.class));
+		activateHandlers(getViewSite().getService(IHandlerService.class));
 		fillActionBars(getViewSite().getActionBars());
 
 		setHelp();
@@ -1094,7 +1094,7 @@ abstract class JavaBrowsingPart extends ViewPart implements IMenuListener, ISele
 			if (firstElement instanceof IMarker)
 				firstElement= ((IMarker)firstElement).getResource();
 			if (firstElement instanceof IAdaptable) {
-				IJavaElement je= (IJavaElement)((IAdaptable)firstElement).getAdapter(IJavaElement.class);
+				IJavaElement je= ((IAdaptable)firstElement).getAdapter(IJavaElement.class);
 				if (je == null && firstElement instanceof IFile) {
 					IContainer parent= ((IFile)firstElement).getParent();
 					if (parent != null)
@@ -1186,12 +1186,12 @@ abstract class JavaBrowsingPart extends ViewPart implements IMenuListener, ISele
 			}
 			if (ei instanceof IFileEditorInput) {
 				IFile file= ((IFileEditorInput)ei).getFile();
-				IJavaElement je= (IJavaElement)file.getAdapter(IJavaElement.class);
+				IJavaElement je= file.getAdapter(IJavaElement.class);
 				IContainer container= null;
 				if (je == null) {
 					container= ((IFileEditorInput)ei).getFile().getParent();
 					if (container != null)
-						je= (IJavaElement)container.getAdapter(IJavaElement.class);
+						je= container.getAdapter(IJavaElement.class);
 				}
 				if (je == null && container == null) {
 					setSelection(null, false);
