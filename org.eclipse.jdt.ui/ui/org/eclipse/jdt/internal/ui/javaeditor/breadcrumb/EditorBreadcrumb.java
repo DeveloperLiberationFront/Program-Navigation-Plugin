@@ -16,12 +16,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
+
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Widget;
 
@@ -213,6 +215,20 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 			gridLayout.horizontalSpacing= 0;
 			fComposite.setLayout(gridLayout);
 			fComposite.update();
+			
+			Link link_1 = new Link(fComposite, SWT.NULL);
+			link_1.setText("<a>"+"Expand"+"</a> ");
+			link_1.addListener(SWT.Selection, new Listener(){
+
+				public void handleEvent(Event arg0) {
+					// TODO Auto-generated method stub
+					
+				    
+				}
+					
+			});
+			
+			
 			for(Object o: items) {
 				if(o instanceof IMethod) {
 					final IMethod i = (IMethod)o;
@@ -322,7 +338,8 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 		searchParamIndex = i;
 	}
 	/*
-	* @see org.eclipse.jdt.internal.ui.javaeditor.IBreadcrumb#createContent(org.eclipse.swt.widgets.Composite)
+	* @see org.eclipse.jdt.internal.ui.javaeditor.IBreadcrumb#
+(org.eclipse.swt.widgets.Composite)
 	*/
 	public Control createContent(Composite parent) {
 		Assert.isTrue(fComposite == null, "Content must only be created once."); //$NON-NLS-1$

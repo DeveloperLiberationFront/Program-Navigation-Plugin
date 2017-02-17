@@ -1960,6 +1960,7 @@ public abstract class JavaEditor extends AbstractDecoratedTextEditor implements 
 		}
 
 		((GridData) fBreadcrumbComposite.getLayoutData()).exclude= false;
+//		System.out.print("Showing the breadcrumb");
 		fBreadcrumbComposite.setVisible(true);
 		
 		((GridData) fBreadcrumbComposite2.getLayoutData()).exclude= false;

@@ -73,7 +73,7 @@ class Visitor extends ASTVisitor {
 	 * Maps the method's SimpleName.resolveBinding().toString() to the list of Method Objects where that
 	 * method is invoked.
 	 */
-	private HashMap<String, ArrayList<Method>> invocationToDeclarationMapUp = new HashMap<String, ArrayList<Method>>();
+	private HashMap<String, ArrayList<Method>> invocationToDeclarationMapUp;
 	private HashMap<SimpleName, DataNode> variableNameToNode = new HashMap<SimpleName, DataNode>();
 	private HashSet<String> localVariableSet = new HashSet<String>();
 	private Finder finder;
@@ -84,6 +84,14 @@ class Visitor extends ASTVisitor {
 		this.source = someSource;
 		parseData();
 	}
+	
+	private HashMap<String, ArrayList<Method>> getInvocationToDeclarationMapUp(){
+		if (invocationToDeclarationMapUp == null){
+			 invocationToDeclarationMapUp= new HashMap<String, ArrayList<Method>>();
+		}
+		return invocationToDeclarationMapUp;
+	}
+	
 
 	/**
 	 * Function that returns the source code
@@ -187,10 +195,11 @@ class Visitor extends ASTVisitor {
 					}
 					
 					public boolean visit(MethodInvocation mi) {
-						
 						SimpleName invokedName = mi.getName();
-						if( !invocationToDeclarationMapUp.containsKey(invokedName.resolveBinding().toString()) ) {
-							invocationToDeclarationMapUp.put(invokedName.resolveBinding().toString(), new ArrayList<Method>());
+						
+						String invokedNameString = invokedName.resolveBinding().toString();
+						if( !getInvocationToDeclarationMapUp().containsKey(invokedNameString) ) {
+							getInvocationToDeclarationMapUp().put(invokedName.resolveBinding().toString(), new ArrayList<Method>());
 						}
 						List<Expression> args = mi.arguments();
 						Method methodInvocation = new Method( mi.getName());
@@ -213,7 +222,7 @@ class Visitor extends ASTVisitor {
 							}
 						}
 						methodInvocation.setArgs(nodeArgs);
-						invocationToDeclarationMapUp.get(invokedName.resolveBinding().toString()).add(methodInvocation);
+						getInvocationToDeclarationMapUp().get(invokedName.resolveBinding().toString()).add(methodInvocation);
 						declarationToInvocationMapDown.get(methodDeclaration).add(methodInvocation);
 						
 						return true;
@@ -250,7 +259,7 @@ class Visitor extends ASTVisitor {
 		for( Entry e: variableNameToNode.entrySet() ) {
 			addOccurrences(( DataNode ) e.getValue());
 		}
-		finder.setInvocationToDeclarationMap(invocationToDeclarationMapUp);
+		finder.setInvocationToDeclarationMap(getInvocationToDeclarationMapUp());
 		finder.setDeclarationToInvocationMap(declarationToInvocationMapDown);
 	}
 

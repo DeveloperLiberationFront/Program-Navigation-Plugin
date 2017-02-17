@@ -125,7 +125,10 @@ public class AnnotationManager implements ISelectionChangedListener {
 						textDown.addAll(searchDown);
 						((EditorBreadcrumb)downBreadcrumb).setSearchIndex(one.getParameterIndex());
 					}
+					
+					System.out.println("setting upcrumb:" + textUp);
 					upBreadcrumb.setText(textUp);
+					System.out.println("setting crumb:" + textDown);
 					downBreadcrumb.setText(textDown);
 				}
 				else {
