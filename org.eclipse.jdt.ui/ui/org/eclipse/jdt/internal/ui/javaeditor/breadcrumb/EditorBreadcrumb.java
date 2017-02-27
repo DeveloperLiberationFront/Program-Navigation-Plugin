@@ -13,7 +13,11 @@ package org.eclipse.jdt.internal.ui.javaeditor.breadcrumb;
 import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -22,7 +26,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.swt.widgets.Widget;
 
 import org.eclipse.core.runtime.Assert;
@@ -68,6 +76,40 @@ import org.eclipse.jdt.ui.JavaUI;
  *
  * @since 3.4
  */
+class DropdownSelectionListener extends SelectionAdapter {
+	  private ToolItem dropdown;
+
+	  private Menu menu;
+
+	  public DropdownSelectionListener(ToolItem dropdown) {
+	    this.dropdown = dropdown;
+	    menu = new Menu(dropdown.getParent().getShell());
+	  }
+
+	  public void add(String item) {
+	    MenuItem menuItem = new MenuItem(menu, SWT.NONE);
+	    menuItem.setText(item);
+	    menuItem.addSelectionListener(new SelectionAdapter() {
+	      public void widgetSelected(SelectionEvent event) {
+	        MenuItem selected = (MenuItem) event.widget;
+	        dropdown.setText(selected.getText());
+	      }
+	    });
+	  }
+
+	  public void widgetSelected(SelectionEvent event) {
+	    if (event.detail == SWT.ARROW) {
+	      ToolItem item = (ToolItem) event.widget;
+	      Rectangle rect = item.getBounds();
+	      Point pt = item.getParent().toDisplay(new Point(rect.x, rect.y));
+	      menu.setLocation(pt.x, pt.y + rect.height);
+	      menu.setVisible(true);
+	    } else {
+	      System.out.println(dropdown.getText() + " Pressed");
+	    }
+	  }
+	}
+
 public abstract class EditorBreadcrumb implements IBreadcrumb {
 
 	private static final String ACTIVE_TAB_BG_END= "org.eclipse.ui.workbench.ACTIVE_TAB_BG_END"; //$NON-NLS-1$
@@ -205,6 +247,7 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 		for(Control c: fComposite.getChildren()) {
 			c.dispose();
 		}
+		Link link_1 = new Link(fComposite, SWT.NULL);
 		if(items != null) {
 			GridLayout gridLayout= new GridLayout(items.size(), false);
 			gridLayout.marginWidth= 0;
@@ -213,6 +256,47 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 			gridLayout.horizontalSpacing= 0;
 			fComposite.setLayout(gridLayout);
 			fComposite.update();
+			
+			
+			link_1.setText("Expand Bitch");
+			System.out.println("X:" + link_1.getLocation().x);
+//			Shell fShell= new Shell(fComposite.getShell(), SWT.RESIZE | SWT.TOOL | SWT.ON_TOP);
+			ToolBar toolBar = new ToolBar(fComposite, SWT.BORDER | SWT.VERTICAL);
+
+		    ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
+		    item.setText("One");
+
+		    DropdownSelectionListener listenerOne = new DropdownSelectionListener(item);
+		    listenerOne.add("Option One for One");
+		    listenerOne.add("Option Two for One");
+		    listenerOne.add("Option Three for One");
+		    item.addSelectionListener(listenerOne);
+
+		    toolBar.pack();
+
+		    
+
+//			GridLayout layout= new GridLayout(1, false);
+//			layout.marginHeight= 0;
+//			layout.marginWidth= 0;
+//			fShell.setLayout(layout);
+
+//			Composite composite= new Composite(fShell, SWT.NONE);
+//			composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+//			GridLayout gridLayout_1= new GridLayout(1, false);
+//			gridLayout_1.marginHeight= 0;
+//			gridLayout_1.marginWidth= 0;
+//			composite.setLayout(gridLayout_1);
+
+//			Link link_2 = new Link(composite, SWT.NULL);
+//			link_2.setText("Popup Bitches");
+
+//			fShell.setLocation(link_1.getLocation());
+//			fShell.setSize(250, 200);
+//			fShell.setVisible(true);
+//			setShellBounds()
+
+			
 			for(Object o: items) {
 				if(o instanceof IMethod) {
 					final IMethod i = (IMethod)o;
@@ -249,6 +333,10 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 					final int[] list = (int[])o;
 					final Link link = new Link(fComposite, SWT.NULL);
 					link.setText("<a>line "+list[0]+"</a> ");
+					link.pack();
+					
+					Point location = link.getLocation();
+					System.out.println("X:" + location.x + "Y:" + location.y);
 					link.addListener(SWT.Selection, new Listener(){
 						public void handleEvent(Event arg0) {
 							link.setForeground(new Color(null, 128,0,128));
@@ -260,6 +348,7 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 			}
 		}
 		fComposite.redraw();
+		
 		fComposite.layout();
 		fComposite.getShell().layout();
 	}
