@@ -247,7 +247,6 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 		for(Control c: fComposite.getChildren()) {
 			c.dispose();
 		}
-		Link link_1 = new Link(fComposite, SWT.NULL);
 		if(items != null) {
 			GridLayout gridLayout= new GridLayout(items.size(), false);
 			gridLayout.marginWidth= 0;
@@ -258,46 +257,11 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 			fComposite.update();
 			
 			
-			link_1.setText("Expand Bitch");
-			System.out.println("X:" + link_1.getLocation().x);
 //			Shell fShell= new Shell(fComposite.getShell(), SWT.RESIZE | SWT.TOOL | SWT.ON_TOP);
-			ToolBar toolBar = new ToolBar(fComposite, SWT.BORDER | SWT.VERTICAL);
 
-		    ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
-		    item.setText("One");
-
-		    DropdownSelectionListener listenerOne = new DropdownSelectionListener(item);
-		    listenerOne.add("Option One for One");
-		    listenerOne.add("Option Two for One");
-		    listenerOne.add("Option Three for One");
-		    item.addSelectionListener(listenerOne);
-
-		    toolBar.pack();
-
-		    
-
-//			GridLayout layout= new GridLayout(1, false);
-//			layout.marginHeight= 0;
-//			layout.marginWidth= 0;
-//			fShell.setLayout(layout);
-
-//			Composite composite= new Composite(fShell, SWT.NONE);
-//			composite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
-//			GridLayout gridLayout_1= new GridLayout(1, false);
-//			gridLayout_1.marginHeight= 0;
-//			gridLayout_1.marginWidth= 0;
-//			composite.setLayout(gridLayout_1);
-
-//			Link link_2 = new Link(composite, SWT.NULL);
-//			link_2.setText("Popup Bitches");
-
-//			fShell.setLocation(link_1.getLocation());
-//			fShell.setSize(250, 200);
-//			fShell.setVisible(true);
-//			setShellBounds()
-
-			
+		    int index = 0;
 			for(Object o: items) {
+				index++;
 				if(o instanceof IMethod) {
 					final IMethod i = (IMethod)o;
 					Link link = new Link(fComposite, SWT.NULL);
@@ -345,8 +309,34 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 						}
 					});
 				}
+				if (index >5){
+					break;
+				}
 			}
+			if (items.size() > 5){
+				ToolBar toolBar = new ToolBar(fComposite, SWT.BORDER | SWT.VERTICAL);
+
+			    ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
+			    item.setText(">>");
+
+			    DropdownSelectionListener listenerOne = new DropdownSelectionListener(item);
+			    for (int index_in = 6;index_in < items.size(); index_in++){
+			    	if(items.get(index_in) instanceof IMethod) {
+			    		IMethod i = (IMethod)items.get(index_in);
+			    		listenerOne.add("line " + i.getElementName());
+			    	}else if(items.get(index_in) instanceof int[]){
+			    		int[] list = (int[])items.get(index_in);
+			    		listenerOne.add("line " + String.valueOf(list[0]));
+			    	}
+			    	
+			    item.addSelectionListener(listenerOne);
+			    }
+			    toolBar.pack();
+
+			}
+			
 		}
+		
 		fComposite.redraw();
 		
 		fComposite.layout();
