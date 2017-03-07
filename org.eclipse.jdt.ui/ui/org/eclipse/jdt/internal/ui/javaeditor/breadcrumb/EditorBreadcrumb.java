@@ -261,6 +261,7 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 			
 			
 			int layoutSize = fComposite.getBounds().width;
+			// Sample link just to measure size of the view
 			Link link_sample = new Link(fComposite, SWT.NULL);
 			link_sample.setText("Line 289");
 			int linkSize = link_sample.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
