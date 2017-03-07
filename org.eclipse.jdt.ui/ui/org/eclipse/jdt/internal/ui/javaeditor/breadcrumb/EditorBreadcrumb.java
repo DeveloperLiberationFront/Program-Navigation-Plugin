@@ -260,6 +260,19 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 			fComposite.update();
 			
 			
+			int layoutSize = fComposite.getBounds().width;
+			Link link_sample = new Link(fComposite, SWT.NULL);
+			link_sample.setText("Line 289");
+			int linkSize = link_sample.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+			int no_of_items_that_can_fit = layoutSize / linkSize;
+			
+			
+			
+			System.out.println("Available:" + layoutSize + "Required" + linkSize * items.size());
+			System.out.println("Size of each link:" + linkSize + " No of items:" + items.size() +"No of items fit" + no_of_items_that_can_fit);
+			link_sample.dispose();
+			
+			
 //			Shell fShell= new Shell(fComposite.getShell(), SWT.RESIZE | SWT.TOOL | SWT.ON_TOP);
 
 		    int index = 0;
@@ -310,11 +323,12 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 						}
 					});
 				}
-				if (index >5){
+				if (index >= (no_of_items_that_can_fit)){
 					break;
 				}
 			}
-			if (items.size() > 5){
+			
+			if (index >= no_of_items_that_can_fit){
 				ToolBar toolBar = new ToolBar(fComposite, SWT.BORDER | SWT.VERTICAL);
 
 			    ToolItem item = new ToolItem(toolBar, SWT.PUSH);
@@ -373,6 +387,7 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 			    toolBar.pack();
 
 			}
+			
 			
 		}
 		
