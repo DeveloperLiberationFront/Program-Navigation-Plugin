@@ -90,16 +90,6 @@ class DropdownSelectionListener extends SelectionAdapter {
 		  return menu;
 	  }
 
-	  public void add(String item) {
-	    MenuItem menuItem = new MenuItem(menu, SWT.NONE);
-	    menuItem.setText(item);
-	    menuItem.addSelectionListener(new SelectionAdapter() {
-	      public void widgetSelected(SelectionEvent event) {
-	    	  
-	      }
-	    });
-	  }
-
 	  public void widgetSelected(SelectionEvent event) {
 	    if (event.detail == SWT.NONE) {
 	      ToolItem item = (ToolItem) event.widget;
