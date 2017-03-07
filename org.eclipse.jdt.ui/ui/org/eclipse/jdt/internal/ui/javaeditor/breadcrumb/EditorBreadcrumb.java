@@ -85,20 +85,23 @@ class DropdownSelectionListener extends SelectionAdapter {
 	    this.dropdown = dropdown;
 	    menu = new Menu(dropdown.getParent().getShell());
 	  }
+	  
+	  public Menu getMenu(){
+		  return menu;
+	  }
 
 	  public void add(String item) {
 	    MenuItem menuItem = new MenuItem(menu, SWT.NONE);
 	    menuItem.setText(item);
 	    menuItem.addSelectionListener(new SelectionAdapter() {
 	      public void widgetSelected(SelectionEvent event) {
-	        MenuItem selected = (MenuItem) event.widget;
-	        dropdown.setText(selected.getText());
+	    	  
 	      }
 	    });
 	  }
 
 	  public void widgetSelected(SelectionEvent event) {
-	    if (event.detail == SWT.ARROW) {
+	    if (event.detail == SWT.NONE) {
 	      ToolItem item = (ToolItem) event.widget;
 	      Rectangle rect = item.getBounds();
 	      Point pt = item.getParent().toDisplay(new Point(rect.x, rect.y));
@@ -299,8 +302,6 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 					link.setText("<a>line "+list[0]+"</a> ");
 					link.pack();
 					
-					Point location = link.getLocation();
-					System.out.println("X:" + location.x + "Y:" + location.y);
 					link.addListener(SWT.Selection, new Listener(){
 						public void handleEvent(Event arg0) {
 							link.setForeground(new Color(null, 128,0,128));
@@ -316,17 +317,55 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 			if (items.size() > 5){
 				ToolBar toolBar = new ToolBar(fComposite, SWT.BORDER | SWT.VERTICAL);
 
-			    ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN);
+			    ToolItem item = new ToolItem(toolBar, SWT.PUSH);
 			    item.setText(">>");
-
+			    
 			    DropdownSelectionListener listenerOne = new DropdownSelectionListener(item);
+
+			    Menu menu = listenerOne.getMenu();
+
 			    for (int index_in = 6;index_in < items.size(); index_in++){
 			    	if(items.get(index_in) instanceof IMethod) {
-			    		IMethod i = (IMethod)items.get(index_in);
-			    		listenerOne.add("line " + i.getElementName());
+			    		final IMethod i = (IMethod)items.get(index_in);
+			    	    MenuItem menuItem = new MenuItem(menu, SWT.NONE);
+			    	    menuItem.setText("line " + i.getElementName());
+			    	    menuItem.addSelectionListener(new SelectionAdapter() {
+			    	      public void widgetSelected(SelectionEvent event) {
+			    	        MenuItem selected = (MenuItem) event.widget;
+			    	        IEditorPart editor = null;
+							try {
+								if(i.getParameters().length > 0 && searchParamIndex >= 0 && searchMethod == null) {
+									editor = JavaUI.openInEditor(i.getParameters()[searchParamIndex], true, true);
+								}
+								else {
+									editor = JavaUI.openInEditor(i, true, true);
+									if(searchMethod != null && editor != null) {
+										String code = ((AbstractTextEditor)editor).getDocumentProvider().getDocument(editor.getEditorInput()).get();
+										lineSearch(code.toCharArray(), i);
+										goToLine(editor);
+										searchMethod = null;
+									}
+								}
+							} catch (JavaModelException e) {
+								// Auto-generated catch block
+								e.printStackTrace();
+							} catch (PartInitException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+			    	      }
+			    	    });
+
 			    	}else if(items.get(index_in) instanceof int[]){
-			    		int[] list = (int[])items.get(index_in);
-			    		listenerOne.add("line " + String.valueOf(list[0]));
+			    		final int[] list = (int[])items.get(index_in);
+			    		MenuItem menuItem = new MenuItem(menu, SWT.NONE);
+			    	    menuItem.setText("line " + list[0]);
+			    	    menuItem.addSelectionListener(new SelectionAdapter() {
+			    	      public void widgetSelected(SelectionEvent event) {
+								IEditorPart editor = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().getActiveEditor();
+							   	((ITextEditor) editor).selectAndReveal(list[1], list[2]);
+			    	      }
+			    	    });
 			    	}
 			    	
 			    item.addSelectionListener(listenerOne);
