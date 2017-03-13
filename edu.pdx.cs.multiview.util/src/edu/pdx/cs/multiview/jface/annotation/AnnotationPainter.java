@@ -116,6 +116,7 @@ public class AnnotationPainter implements IPainter, PaintListener, ISelectionPro
 	public void addAnnotation(ISelfDrawingAnnotation a, Position p){
 		
 		anns.put(a,p);
+		System.out.println("Yo 2");
 		System.out.println(a);
 		System.out.println(p);
 		List<Position> positions = new ArrayList<Position>(1);
