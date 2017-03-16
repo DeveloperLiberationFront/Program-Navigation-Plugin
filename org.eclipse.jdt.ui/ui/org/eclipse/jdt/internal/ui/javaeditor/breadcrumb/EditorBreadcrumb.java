@@ -304,7 +304,6 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 					final int[] list = (int[])o;
 					final Link link = new Link(fComposite, SWT.NULL);
 					link.setText("<a>line "+list[0]+"</a> ");
-//					link.pack();
 					
 					link.addListener(SWT.Selection, new Listener(){
 						public void handleEvent(Event arg0) {
