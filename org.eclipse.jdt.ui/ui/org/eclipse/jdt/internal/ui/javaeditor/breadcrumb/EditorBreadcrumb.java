@@ -319,16 +319,30 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 			}
 			
 			if (index >= no_of_items_that_can_fit){
-				ToolBar toolBar = new ToolBar(fComposite, SWT.BORDER | SWT.VERTICAL);
-
-			    ToolItem item = new ToolItem(toolBar, SWT.PUSH);
-			    item.setText(">>");
+//				ToolBar toolBar = new ToolBar(fComposite, SWT.BORDER | SWT.VERTICAL);
+//
+//			    ToolItem item = new ToolItem(toolBar, SWT.PUSH);
+//			    item.setText(">>");
+//			    
+			   
+			    final Link link = new Link(fComposite, SWT.NULL);
+			    link.setText("<a> >> </a>");
+			    final Menu menu = new Menu(link.getParent().getShell());
+			    link.addListener(SWT.Selection, new Listener(){
+			    	public void handleEvent(Event arg0){
+			    		
+			    		Rectangle rect = link.getBounds();
+			  	      Point pt = link.getParent().toDisplay(new Point(rect.x, rect.y));
+			  	      menu.setLocation(pt.x, pt.y + rect.height);
+			  	      menu.setVisible(true);
+			    	}
+			    });
 			    
-			    DropdownSelectionListener listenerOne = new DropdownSelectionListener(item);
+//			    DropdownSelectionListener listenerOne = new DropdownSelectionListener(item);
 
-			    Menu menu = listenerOne.getMenu();
+//			    Menu menu = listenerOne.getMenu();
 
-			    for (int index_in = 6;index_in < items.size(); index_in++){
+			    for (int index_in = no_of_items_that_can_fit;index_in < items.size(); index_in++){
 			    	if(items.get(index_in) instanceof IMethod) {
 			    		final IMethod i = (IMethod)items.get(index_in);
 			    	    MenuItem menuItem = new MenuItem(menu, SWT.NONE);
@@ -372,9 +386,9 @@ public abstract class EditorBreadcrumb implements IBreadcrumb {
 			    	    });
 			    	}
 			    	
-			    item.addSelectionListener(listenerOne);
+//			    item.addSelectionListener(listenerOne);
 			    }
-			    toolBar.pack();
+//			    toolBar.pack();
 
 			}
 			
