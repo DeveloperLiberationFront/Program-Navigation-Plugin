@@ -60,7 +60,7 @@ Program navigation is a critical task for software developers.
 %Many tools and approaches have been proposed to aide developers in navigating programs.
 %In this work we present a tool, Flower, that enables developers 
 The current state-of-the-art tools support program navigation, but also clutter the user interface with visualizations and cumbersome widgets.
-To assist developers in effectively navigating program flow, we designed and implemented a new tool that leverages program analysis techniques while maintaining a minimalistic interface.
+To assist developers in effectively navigating program flow, we designed and implemented a prototype tool that supports structural navigation while maintaining a minimalistic interface.
 Our tool enables developers to simultaneously navigate control flow and data flow within the Eclipse Integrated Development Environment (IDE).
 Based on a preliminary evaluation with eight programmers, our tool succeeds when call graphs contained relatively few branches, but was strained by complex program structures. 
 %We present a different way to do things... enable the navigation control flow and data flow simultaneously using minimal interface alterations.
@@ -76,12 +76,12 @@ Based on a preliminary evaluation with eight programmers, our tool succeeds when
 
 
 \section{Introduction}
-Modern software systems contain millions of lines of source code. 
-As software grows in size and complexity, developers increasingly rely on tools to help them navigate the programs they create. 
-A software testing study described a wide variety of tools developers use to validate their code, but also found that inadequate testing and debugging tools contributed to poor quality software in production\cite{NIST-02-3}.
-
-Finding, comprehending, and fixing bugs has become the most common software activity, consuming 70-80\% of software engineers' time~\cite{Whyline}. 
-Program navigation can help improve developers' program comprehension, which Brooks argues is vital because this type of domain-specific knowledge plays a key role in nearly every software task including development, code reviews, debugging, code maintenance, and testing~\cite{BrooksComprehension}. 
+%Modern software systems contain millions of lines of source code. 
+%As software grows in size and complexity, developers increasingly rely on tools to help them navigate the programs they create. 
+%A software testing study described a wide variety of tools developers use to validate their code, but also found that inadequate testing and debugging tools contributed to poor quality software in production\cite{NIST-02-3}.
+%
+%Finding, comprehending, and fixing bugs has become the most common software activity, consuming 70-80\% of software engineers' time~\cite{Whyline}. 
+%Program navigation can help improve developers' program comprehension, which Brooks argues is vital because this type of domain-specific knowledge plays a key role in nearly every software task including development, code reviews, debugging, code maintenance, and testing~\cite{BrooksComprehension}. 
 
 Although integrated development environments (IDEs) present code linearly in the order methods are defined in a file, successful developers do not navigate source code line by line starting at the top of the file. 
 Instead, they methodically navigate the code's hierarchical semantic structures~\cite{robillard2004investigate}.
