@@ -103,30 +103,30 @@ Flower  leverages program analysis techniques, avoids cluttering the IDE with su
 
 %This paper makes the following contributions:
 
-Consider the following motivating example involving Roxanne, a professional Java developer at a large software company.
-Though Roxanne is fictional, her story is based on the experiences of real developers we observed in a previous study~\cite{Smith2015}.
-While maintaining some old code, Roxanne notices her static analysis tool has put a light red warning indicator onto a variable --- This variable contains user-provided data. 
-If it is used in a sensitive context before being sanitized, the code could be vulnerable.
+Consider the following motivating example involving Charlie, a professional Java developer at a large software company.
+Though Charlie is fictional, this story is based on the experiences of real developers we observed in a previous study~\cite{Smith2015}.
+While maintaining some old code, Charlie notices a static analysis warning indicator next to a variable --- ``This variable contains user-provided data. 
+If it is used in a sensitive context before being sanitized, the code could be vulnerable.''
 
-Roxanne sets out to determine if the variable is sanitized on all paths leading to the sensitive context.
-She vaguely recalls using an Eclipse tool to help her trace control flow through a program, but is unsure how to invoke it or whether it also traces data flow.
-She looks through various menus, tries out a few tools, but cannot locate the right tool.
-Turning her attention back to the code, she begins scrolling through the current file, unknowingly using Eclipse's \emph{Mark Occurrences} tool while scanning for uses of the variable. 
-After inspecting all the occurrences in the current file, she now begins searching for methods that take the variable as input.
-She stumbles upon Eclipse's \emph{Call Hierarchy} tool, which seems helpful, but she is unable to specify the variable she is interested in when invoking the tool.
+Charlie sets out to determine if the variable is sanitized on all paths leading to the sensitive context.
+Charlie vaguely recalls using an Eclipse tool to help trace control flow through a program, but is unsure how to invoke it or whether it also traces data flow.
+Charlie looks through various menus, tries out a few tools, but cannot locate the right tool.
+Turning back to the code, Charlie begins scrolling through the current file, unknowingly using Eclipse's \emph{Mark Occurrences} tool while scanning for uses of the variable. 
+After inspecting all the occurrences in the current file, Charlie now begins searching for methods that take the variable as input.
+Charlie stumbles upon Eclipse's \emph{Call Hierarchy} tool, which seems helpful, but is unable to specify a variable when invoking the tool.
 
-Undeterred, she finds a method that takes the variable as a parameter and invokes \emph{Call Hierarchy} on that method.
+Undeterred, Charlie finds a method that takes the variable as a parameter and invokes \emph{Call Hierarchy} on that method.
 Eclipse opens a new view containing \emph{Call Hierarchy's} representation of the call graph.
-Roxanne continuously switches back and forth between the \emph{Call Hierarchy} view and the code.
-She uses the \emph{Call Hierarchy} view to navigate chains of method calls and inspects the code in each method to check whether the variable gets sanitized correctly.
-She repeats this process for a few more call sites, but grows fatigued. 
-Unsure of whether the the variable gets sanitized along all paths, she decides to ignore the warning.
-Two months later an attacker exploits the vulnerability, costing her company hundreds of millions of dollars. 
-Roxanne gets fired for her oversight. 
-%Without her high-paying job, she can no longer afford to feed her kids and pay her mortgage. Drowning in credit card debt, homeless, and divorced, Roxanne curses the Eclipse tools that let her down.   
+Charlie continuously switches back and forth between the \emph{Call Hierarchy} view and the code.
+Charlie uses the \emph{Call Hierarchy} view to navigate chains of method calls and inspects the code in each method to check whether the variable gets sanitized correctly.
+Charlie repeats this process for a few more call sites, but grows fatigued. 
+Unsure of whether the variable gets sanitized along all paths, Charlie decides to ignore the warning.
+Two months later an attacker exploits the vulnerability, costing Charlie's company greatly. 
+%Charlie gets fired for her oversight. 
+%Without her high-paying job, she can no longer afford to feed her kids and pay her mortgage. Drowning in credit card debt, homeless, and divorced, Charlie curses the Eclipse tools that let her down.   
 
 The contribution of this work is the design, implementation, and evaluation of a new program navigation tool, Flower.
-As we will discuss, Flower  addresses many of the types of issues that Roxanne faced by implementing four key design principles (Section \ref{DesignPrinciples}).
+As we will discuss, Flower  addresses many of the types of issues that Charlie faced by implementing four key design principles (Section \ref{DesignPrinciples}).
 We evaluate Flower, to better understand what types of tasks it effectively supports. 
 In contrast to existing navigation tools, Flower  enables developers to simultaneously trace data flow and control flow within the code view. 
 
@@ -144,7 +144,7 @@ By analyzing abstract syntax trees (ASTs) and call graphs, tools can make refere
 \vspace{1em} 
 \noindent\textbf{Low Barriers to Invocation} ---
 Some tools are easier to invoke than others. 
-Take Roxanne's case for example.
+Take Charlie's case for example.
 She easily invoked \emph{Mark Occurrences}, but initially struggled to locate and invoke \emph{Call Hierarchy}.
 Tools with high barriers to invocation require users to sift through menus and include unintuitive widgets. 
 Barriers to invocation inhibit adoption~\cite{johnson2013don}.
@@ -156,7 +156,7 @@ As developers navigate multiple program paths concurrently, repetitively invokin
 Developers are not only interested in traversing programs' call graphs, but also how data flows through the call graph~\cite{Smith2015}.
 To do so, developers must inspect the relationship between methods as well as the methods themselves.
 Often the methods of interest span across multiple source files.
-For Roxanne, \emph{Mark Occurrences} helped her navigate a single file, but fell short when she wanted to inspect methods in other files.
+For Charlie, \emph{Mark Occurrences} helped her navigate a single file, but fell short when she wanted to inspect methods in other files.
 Furthermore, program navigation tools should support this traversal both upstream and downstream. 
 That is, tools should highlight variable assignments and also subsequent variable uses. 
 
@@ -164,7 +164,7 @@ That is, tools should highlight variable assignments and also subsequent variabl
 \noindent\textbf{In Situ Navigation}  ---
 Switching between views in the IDE can cause disorientation~\cite{deAlwis2006disorient}. 
 As developers navigate through code, navigation tools should present their results in that context. 
-This was a problem for Roxanne, who had to constantly switch between the \emph{Call Hierarchy} view and the code view.
+This was a problem for Charlie, who had to constantly switch between the \emph{Call Hierarchy} view and the code view.
 When navigation tools present results outside the code, developers are burdened with the cognitive load of translating those results back to the code.
 
 \section{Related Work}
