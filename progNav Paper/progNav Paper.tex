@@ -139,7 +139,7 @@ In this section we describe the guiding design principles behind Flower. We deri
 \noindent\textbf{Program Analysis} ---
 Simple textual analysis may lead to inaccurate results in many scenarios. For example, such analysis fails when programs include duplicated variable names that refer to different variables in different scopes. Textual analysis also falls short when programs contain inheritance and when variable names are included in comments, documentation, or other syntactically irrelevant locations.
 By leveraging program analysis techniques, navigation tools can provide more accurate information than simple textual analysis.
-By analyzing abstract syntax trees (ASTs) and call graphs, tools can make references to relevant variables and methods. 
+Flower analyzes abstract syntax trees (ASTs) and call graphs to make accurate references to relevant variables and methods.
 
 \vspace{1em} 
 \noindent\textbf{Low Barriers to Invocation} ---
@@ -149,6 +149,7 @@ She easily invoked \emph{Mark Occurrences}, but initially struggled to locate an
 Tools with high barriers to invocation require users to sift through menus and include unintuitive widgets. 
 Barriers to invocation inhibit adoption~\cite{johnson2013don}.
 As developers navigate multiple program paths concurrently, repetitively invoking tools may be cumbersome, especially if barriers are high. 
+Once initially configure, Flower is automatically invoked as the user navigates.
 
 
 \vspace{1em} 
@@ -159,6 +160,7 @@ Often the methods of interest span across multiple source files.
 For Charlie, \emph{Mark Occurrences} helped her navigate a single file, but fell short when she wanted to inspect methods in other files.
 Furthermore, program navigation tools should support this traversal both upstream and downstream. 
 That is, tools should highlight variable assignments and also subsequent variable uses. 
+Flower allows for upstream and downstream navigation across files.
 
 \vspace{1em} 
 \noindent\textbf{In Situ Navigation}  ---
@@ -166,6 +168,7 @@ Switching between views in the IDE can cause disorientation~\cite{deAlwis2006dis
 As developers navigate through code, navigation tools should present their results in that context. 
 This was a problem for Charlie, who had to constantly switch between the \emph{Call Hierarchy} view and the code view.
 When navigation tools present results outside the code, developers are burdened with the cognitive load of translating those results back to the code.
+Flower displays its results within the code to enable in situ navigation.
 
 \section{Related Work}
 %Summary of related work, including a table evaluating existing %tools on various design principles.
