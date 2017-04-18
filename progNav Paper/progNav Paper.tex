@@ -136,12 +136,6 @@ Further, Flower features a minimalistic interface that enables developers to sim
 \section{Design Principles}
 \label{DesignPrinciples}
 In this section we describe the guiding design principles behind Flower. We derived these design principles from the information needs described in a study by Smith and colleagues~\cite{Smith2015} and by examining existing program navigation tools.
- 
-\vspace{1em} 
-\noindent\textbf{Program Analysis} ---
-Simple textual analysis may lead to inaccurate results in many scenarios. For example, such analysis fails when programs include duplicated variable names that refer to different variables in different scopes. Textual analysis also falls short when programs contain inheritance and when variable names are included in comments, documentation, or other syntactically irrelevant locations.
-By leveraging program analysis techniques, navigation tools can provide more accurate information than simple textual analysis.
-Flower analyzes abstract syntax trees (ASTs) and call graphs to make accurate references to relevant variables and methods.
 
 \vspace{1em} 
 \noindent\textbf{Low Barriers to Invocation} ---
@@ -151,8 +145,13 @@ She easily invoked \emph{Mark Occurrences}, but initially struggled to locate an
 Tools with high barriers to invocation require users to sift through menus and include unintuitive widgets. 
 Barriers to invocation inhibit adoption~\cite{johnson2013don}.
 As developers navigate multiple program paths concurrently, repetitively invoking tools may be cumbersome, especially if barriers are high. 
-Once initially configure, Flower is automatically invoked as the user navigates.
+Once initially configured, Flower is automatically invoked as the user navigates.
 
+\vspace{1em} 
+\noindent\textbf{Accuracy} ---
+Simple textual analysis may lead to inaccurate results in many scenarios. For example, such analysis fails when programs include duplicated variable names that refer to different variables in different scopes. Textual analysis also falls short when programs contain inheritance and when variable names are included in comments, documentation, or other syntactically irrelevant locations.
+By leveraging program analysis techniques, navigation tools can provide more accurate information than simple textual analysis.
+Flower analyzes abstract syntax trees (ASTs) and call graphs to make accurate references to relevant variables and methods.
 
 \vspace{1em} 
 \noindent\textbf{Full Program Navigation}  ---
@@ -175,14 +174,14 @@ Flower displays its results within the code to enable in situ navigation.
 \section{Related Work}
 %Summary of related work, including a table evaluating existing %tools on various design principles.
 %Spoiler alert, none of the tools satisfy all of the principles.
-Here we discuss some of the existing tools that help developers navigate code. We also relate the existing tools back to Design Principles Described in Section \ref{DesignPrinciples}.
+Here we discuss some of the existing tools that help developers navigate code. We also relate the existing tools back to Design Principles described in Section \ref{DesignPrinciples}.
 
 Many modern IDEs provide tools that help developers navigate source code. 
 For example, Eclipse~\cite{Eclipse} includes \emph{Call Hierarchy} and \emph{Find References}. 
 When users invoke either of these tools, Eclipse opens a new view to display the results.
 For \emph{Call Hierarchy}, this view contains a list of the selected method's callers and callees, whereas \emph{Find References} only lists callers.
 Similarly, IntelliJ~\cite{IntelliJ} provides \emph{Analyze Data Flow}, which also displays its results in an external view.
-These tools provide \textit{Program Analysis} for users to navigate throughout their code. 
+These tools provide enable users to navigate throughout their code with \textit{Accuracy}. 
 However, they generally differ from Flower because they lack \textit{Low Barriers to Invocation} and \textit{In Situ Navigation}.
 
 There are also several tools that reside strictly within the code editor, enabling a form of \textit{In Situ Navigation}.
@@ -191,12 +190,12 @@ Eclipse automatically invokes \emph{Mark Occurrences} whenever a user clicks on 
 The tool then highlights occurrences of that element elsewhere in the current file.
 \emph{Mark Occurrences} epitomizes \textit{Low Barriers to Invocation}.
 These approaches are similar to Flower in that they display the results within the editor rather than a separate view or panel.
-However, they do not perform \textit{Program Analysis} or enable \textit{Full Program Navigation}.
+However, they do not enable \textit{Full Program Navigation}.
 
 
 Many other tools help developers navigate code by representing the code graphically and allowing developers to navigate those graphs~\cite{CodeBubbles,CodeCanvas,CodeSurfer,Dora,Reacher,Relo,Whyline}. 
 These works provide various views of control flow graphs, class and UML-like diagrams, trees, call graphs, and other images to describe the hierarchy and relationship between different variables or functions within the code. 
-To generate accurate visualizations, these types of tools utilize \textit{Program Analysis}.
+These tools utilize program analysis to generate visualizations with \textit{Accuracy}.
 Additionally, most of these tools implement some aspects of \textit{Full Program Navigation}.
 Flower differs because from these tools in the way it presents results (\textit{In Situ Navigation}) and because it has \textit{Low Barriers to Invocation}.
 
