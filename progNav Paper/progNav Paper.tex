@@ -258,12 +258,12 @@ To visualize how a programmer would interact with Flower, consider the following
 
 Suppose you are a programmer and you notice that by tampering with the value of the \texttt{fileName} variable, malicious users could gain access to sensitive information in the database. 
 You want to determine whether users can modify \texttt{fileName} before it gets passed into \texttt{parseAndCache}. 
-First, you click on \texttt{fileName} (A).
+First, you click on \texttt{fileName} (A in Figure \ref{fig:tool}).
 Much like \emph{Mark Occurrences}, Flower is automatically invoked.
 To help you locate where the variable is modified and referenced, Flower highlights occurrences of that variable in the code.
 Since \texttt{fileName} is a formal parameter to \texttt{parseAndCache}, any method calling \texttt{parseAndCache} could modify \texttt{fileName}. 
-Those methods reside in other files, so Flower  provides links to their locations (B1).
-Rather than move your mouse up to the top of the editor window, you click on \texttt{parseAndCache} (B2), which conveniently links to the first call site, \texttt{getQueries}. 
+Those methods reside in other files, so Flower  provides links to their locations (B1 in Figure \ref{fig:tool}).
+Rather than move your mouse up to the top of the editor window, you click on \texttt{parseAndCache} (B2 in Figure \ref{fig:tool}), which conveniently links to the first call site, \texttt{getQueries}. 
 Flower  opens \texttt{getQueries} and highlights the location in that method where \texttt{fileName} passed to \texttt{parseAndCache} and shows that the value is passed to \texttt{getQueries} from \texttt{createTables}, \texttt{createProcedures}, \texttt{executeSQLFile}, and \texttt{dropTables} as seen in Fig. \ref{fig:tool}.  
 
 %Something about using Flower for down flow.
