@@ -111,6 +111,8 @@ While maintaining some old code, Charlie notices a static analysis warning indic
 If it is used in a sensitive context before being sanitized, the code could be vulnerable.''
 
 Charlie sets out to determine if the variable is sanitized on all paths leading to the sensitive context.
+First, Charlie searches for the variable's name.
+Unfortunately, this search returns results mostly from comments and other documentation.
 Charlie vaguely recalls using an Eclipse tool to help trace control flow through a program, but is unsure how to invoke it or whether it also traces data flow.
 Charlie looks through various menus, tries out a few tools, but cannot locate the right tool.
 Turning back to the code, Charlie begins scrolling through the current file, unknowingly using Eclipse's \emph{Mark Occurrences} tool while scanning for uses of the variable. 
@@ -150,7 +152,8 @@ Once initially configured, Flower is automatically invoked as the user navigates
 
 \vspace{1em} 
 \noindent\textbf{Accuracy} ---
-Simple textual analysis may lead to inaccurate results in many scenarios. For example, such analysis fails when programs include duplicated variable names that refer to different variables in different scopes. Textual analysis also falls short when programs contain inheritance and when variable names are included in comments, documentation, or other syntactically irrelevant locations.
+Simple textual analysis may lead to inaccurate results in many scenarios. For example, such analysis fails when programs include duplicated variable names that refer to different variables in different scopes. 
+Textual analysis also falls short when programs contain inheritance and when variable names are included in comments, documentation, or other syntactically irrelevant locations, as in Charlie's case.
 By leveraging program analysis techniques, navigation tools can provide more accurate information than simple textual analysis.
 Flower analyzes abstract syntax trees (ASTs) and call graphs to make accurate references to relevant variables and methods.
 
