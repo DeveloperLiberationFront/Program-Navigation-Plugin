@@ -64,8 +64,8 @@ Program navigation is a critical task for software developers.
 State-of-the-art tools have been shown to support effective program navigation strategies, and do so by adding widgets, secondary views, and visualizations to the screen. 
 In this work, we build on prior work by exploring what types of navigation can be supported with relatively few interface elements.
 To that end, we designed and implemented a prototype tool, Flower, that supports structural program navigation while maintaining a minimalistic interface.
-Flower enables developers to simultaneously navigate control flow and data flow within the Eclipse Integrated Development Environment.
-Based on a preliminary evaluation with eight programmers, Flower succeeds when call graphs contain relatively few branches, but is strained by complex program structures.
+Flower enables developers to simultaneously navigate control flow and data flow within the Eclipse Integrated Development Environment (IDE).
+Based on a preliminary evaluation with eight programmers, Flower succeeds when call graphs contained relatively few branches, but was strained by complex program structures.
 %We present a different way to do things... enable the navigation control flow and data flow simultaneously using minimal interface alterations.
 %Something about tradeoffs.
 %For simple sub-tasks tool was effective with very few interface elements. 
@@ -97,8 +97,8 @@ In general, evaluations have demonstrated the effectiveness of such tools~\cite{
 
 However, these tools rely on cumbersome user interface widgets, views, and visualizations that occupy valuable screen real estate and might induce disorientation via thrashing~\cite{deAlwis2006disorient}.
 In this work, we explore whether relatively few interface elements can enable similarly effective program navigation.
-We present a prototype tool, Flower (pronounced flow-er), that instantiates this minimalistic approach to program navigation.
-Flower leverages accurate program analysis techniques, avoids cluttering the IDE with superfluous interface elements, and presents its results integrated within the code.
+We present a prototype tool, \textit{Flower} (pronounced flow-er), that instantiates this minimalistic approach to program navigation.
+\textit{Flower} leverages accurate program analysis techniques, avoids cluttering the IDE with superfluous interface elements, and presents its results integrated within the code.
 %Existing tools feature many cumbersome UI widgets or seem poorly integrated into the IDE.
 %Previous approaches help developers navigate control flow by helping them visualize. 
 %The additional graphs, maps, and visualizations have been shown to help developers stay oriented. However, (occupy a lot of screen real estate, may be difficult for new users to understand, mapping stuff). 
@@ -130,16 +130,16 @@ Two months later, an attacker exploits the vulnerability.
 %Charlie gets fired for her oversight. 
 %Without her high-paying job, she can no longer afford to feed her kids and pay her mortgage. Drowning in credit card debt, homeless, and divorced, Charlie curses the Eclipse tools that let her down.   
 
-The contribution of this work is the design and implementation of a new program navigation tool, Flower.
-Additionally, we evaluate Flower, to better understand what types of tasks it effectively supports. 
-Flower  addresses many of the types of issues that Charlie faced by implementing four design principles (Section \ref{DesignPrinciples}).
-In contrast to existing navigation tools, like the Eclipse tools Charlie used, Flower is easily invoked. 
-Further, Flower features a minimalistic interface that enables developers to simultaneously trace data flow and control flow within the code view. 
+The contribution of this work is the design and implementation of a new program navigation tool, \textit{Flower}.
+Additionally, we evaluate \textit{Flower}, to better understand what types of tasks it effectively supports. 
+\textit{Flower} addresses many of the types of issues that Charlie faced by implementing four design principles (Section \ref{DesignPrinciples}).
+In contrast to existing navigation tools, like the Eclipse tools Charlie used, \textit{Flower} is easily invoked. 
+Further, \textit{Flower} features a minimalistic interface that enables developers to simultaneously trace data flow and control flow within the code view. 
 
 
 \section{Design Principles}
 \label{DesignPrinciples}
-In this section we describe the guiding design principles behind Flower. We derived these design principles from the information needs described in a study by Smith and colleagues~\cite{Smith2015} and by examining existing program navigation tools.
+In this section we describe the guiding design principles behind \textit{Flower}. We derived these design principles from the information needs described in a study by Smith and colleagues~\cite{Smith2015} and by examining existing program navigation tools.
 
 \vspace{1em} 
 \noindent\textsc{Low Barriers to Invocation} ---
@@ -149,14 +149,14 @@ She easily invoked \emph{Mark Occurrences}, but initially struggled to locate an
 Tools with high barriers to invocation require users to sift through menus and include unintuitive widgets. 
 Barriers to invocation inhibit adoption~\cite{johnson2013don}.
 As developers navigate multiple program paths concurrently, repetitively invoking tools may be cumbersome, especially if barriers are high. 
-Once initially configured, Flower is automatically invoked as the user navigates.
+Once initially configured, \textit{Flower} is automatically invoked as the user navigates.
 
 \vspace{1em} 
 \noindent\textsc{Accuracy} ---
 Simple textual analysis may lead to inaccurate results in many scenarios. For example, such analysis fails when programs include duplicated variable names that refer to different variables in different scopes~\cite{DeLine:2005}. 
 Textual analysis also falls short when programs contain inheritance and when variable names are included in comments, documentation, or other syntactically irrelevant locations, as in Charlie's case.
 By leveraging program analysis techniques, navigation tools can provide more accurate information than simple textual analysis.
-Flower analyzes abstract syntax trees (ASTs) and call graphs to make accurate references to relevant variables and methods.
+\textit{Flower} analyzes abstract syntax trees (ASTs) and call graphs to make accurate references to relevant variables and methods.
 
 \vspace{1em} 
 \noindent\textsc{Full Program Navigation}  ---
@@ -166,7 +166,7 @@ Often the methods of interest span across multiple source files.
 For Charlie, \emph{Mark Occurrences} helped her navigate a single file, but fell short when she wanted to inspect methods in other files.
 Furthermore, program navigation tools should support this traversal both upstream and downstream. 
 That is, tools should highlight variable assignments and also subsequent variable uses. 
-Flower allows for upstream and downstream navigation across files.
+\textit{Flower} allows for upstream and downstream navigation across files.
 
 \vspace{1em} 
 \noindent\textsc{In Situ Navigation}  ---
@@ -174,7 +174,7 @@ Switching between views in ``bento box'' style IDEs~\cite{DeLine:2010:bento} can
 As developers navigate through code, navigation tools should present their results in that context. 
 This was a problem for Charlie, who had to constantly switch between the \emph{Call Hierarchy} view and the code view.
 When navigation tools present results outside the code, developers are burdened with the cognitive load of translating those results back to the code.
-Flower displays its results within the code to enable in situ navigation.
+\textit{Flower} displays its results within the code to enable in situ navigation.
 
 \section{Related Work}
 %Summary of related work, including a table evaluating existing %tools on various design principles.
@@ -189,14 +189,14 @@ When users invoke either of these tools, Eclipse opens a new view to display the
 For \emph{Call Hierarchy}, this view contains a list of the selected method's callers and callees, whereas \emph{Find References} only lists callers.
 Similarly, IntelliJ~\cite{IntelliJ} provides \emph{Analyze Data Flow}, which also displays its results in an external view.
 These tools provide enable users to navigate throughout their code with \textsc{Accuracy}. 
-However, they generally differ from Flower because they lack \textsc{Low Barriers to Invocation} and \textsc{In Situ Navigation}.
+However, they generally differ from \textit{Flower} because they lack \textsc{Low Barriers to Invocation} and \textsc{In Situ Navigation}.
 
 There are also several tools that reside strictly within the code editor, enabling a form of \textsc{In Situ Navigation}.
 Two examples of these tools are Eclipse's \emph{Mark Occurrences} and \emph{Open Declaration}. 
 Eclipse automatically invokes \emph{Mark Occurrences} whenever a user clicks on a variable or method name in the code.
 The tool then highlights occurrences of that element elsewhere in the current file.
 \emph{Mark Occurrences} epitomizes \textsc{Low Barriers to Invocation}.
-These approaches are similar to Flower in that they display the results within the editor rather than a separate view or panel.
+These approaches are similar to \textit{Flower} in that they display the results within the editor rather than a separate view or panel.
 However, they do not enable \textsc{Full Program Navigation}.
 
 
@@ -204,7 +204,7 @@ Many other tools help developers navigate code by representing the code graphica
 These works provide various views of control flow graphs, class and UML-like diagrams, trees, call graphs, and other images to describe the hierarchy and relationship between different variables or functions within the code. 
 These tools utilize program analysis to generate visualizations with \textsc{Accuracy}.
 Additionally, most of these tools implement some aspects of \textsc{Full Program Navigation}.
-Flower differs from these tools in the way it presents results (\textsc{In Situ Navigation}) and because it has \textsc{Low Barriers to Invocation}.
+\textit{Flower} differs from these tools in the way it presents results (\textsc{In Situ Navigation}) and because it has \textsc{Low Barriers to Invocation}.
 
 %\begin{table}
 %	\centering
@@ -243,52 +243,52 @@ Flower differs from these tools in the way it presents results (\textsc{In Situ 
 
 \begin{figure*}
 	\includegraphics[width=\textwidth]{images/toolScreenshot}
-	\caption{Code view in the Eclipse IDE with Flower invoked during Task 1. The image on the left shows the tool running in the method \texttt{parseAndCache}. When the user clicks on the link in the editor (B1 or B2), they are taken to the function \texttt{getQueries}, which is a caller of \texttt{parseAndCache}.}	
+	\caption{Code view in the Eclipse IDE with \textit{Flower} invoked during Task 1. The image on the left shows the tool running in the method \texttt{parseAndCache}. When the user clicks on the link in the editor (B1 or B2), they are taken to the function \texttt{getQueries}, which is a caller of \texttt{parseAndCache}.}	
 	\label{fig:tool} 
 \end{figure*}
 
 \section{Flower}
-Flower was designed to realize all of the principles described in Section \ref{DesignPrinciples}. 
-We implemented Flower as a plugin to the Eclipse IDE~\cite{Eclipse}. 
+\textit{Flower} was designed to realize all of the principles described in Section \ref{DesignPrinciples}. 
+We implemented \textit{Flower} as a plugin to the Eclipse IDE~\cite{Eclipse}. 
 We chose Eclipse because it is one of the most widely used open source IDEs for Java development and it provides many extension points for plugins. 
-Flower extends \emph{Call Hierarchy}, using its search functionality to track the flow of data across methods. 
-Leveraging Eclipse's incremental compiler and JDT core, Flower also implements several AST visitors to detect proper and up-to-date variable references.
+\textit{Flower} extends \emph{Call Hierarchy}, using its search functionality to track the flow of data across methods. 
+Leveraging Eclipse's incremental compiler and JDT core, \textit{Flower} also implements several AST visitors to detect proper and up-to-date variable references.
 
-When active, Flower makes two modifications to Eclipse's user interface. 
+When active, \textit{Flower} makes two modifications to Eclipse's user interface. 
 First, it highlights on-screen references to selected variables.
-Secondly, when references to the selected variable appear off-screen -- either elsewhere in the current method or in other methods -- Flower adds links to those locations above and below the code view as well as to the code itself. 
-Figure \ref{fig:tool} depicts Flower invoked on a variable participants were asked to inspect as part of our evaluation. We also provide a video demonstrating Flower online.\footnote{Screen cast of Flower in action: 
+Secondly, when references to the selected variable appear off-screen -- either elsewhere in the current method or in other methods -- \textit{Flower} adds links to those locations above and below the code view as well as to the code itself. 
+Figure \ref{fig:tool} depicts \textit{Flower} invoked on a variable participants were asked to inspect as part of our evaluation. We also provide a video demonstrating \textit{Flower} online.\footnote{Screen cast of \textit{Flower} in action: 
 	\url{redacted}}
 %	\url{tinyurl.com/FlowerDemo}} 
-To visualize how a programmer would interact with Flower, consider the following scenario:
+To visualize how a programmer would interact with \textit{Flower}, consider the following scenario:
 
 Suppose you are a programmer and you notice that by tampering with the value of the \texttt{fileName} variable, malicious users could gain access to sensitive information in the database. 
 You want to determine whether users can modify \texttt{fileName} before it gets passed into \texttt{parseAndCache}. 
 First, you click on \texttt{fileName} (A in Figure \ref{fig:tool}).
-Much like \emph{Mark Occurrences}, Flower is automatically invoked.
-To help you locate where the variable is modified and referenced, Flower highlights occurrences of that variable in the code.
+Much like \emph{Mark Occurrences}, \textit{Flower} is automatically invoked.
+To help you locate where the variable is modified and referenced, \textit{Flower} highlights occurrences of that variable in the code.
 Since \texttt{fileName} is a formal parameter to \texttt{parseAndCache}, any method calling \texttt{parseAndCache} could modify \texttt{fileName}. 
-Those methods reside in other files, so Flower  provides links to their locations (B1 in Figure \ref{fig:tool}).
+Those methods reside in other files, so \textit{Flower} provides links to their locations (B1 in Figure \ref{fig:tool}).
 Rather than move your mouse up to the top of the editor window, you click on \texttt{parseAndCache} (B2 in Figure \ref{fig:tool}), which conveniently links to the first call site, \texttt{getQueries}. 
-Flower  opens \texttt{getQueries} and highlights the location in that method where \texttt{fileName} passed to \texttt{parseAndCache} and shows that the value is passed to \texttt{getQueries} from \texttt{createTables}, \texttt{createProcedures}, \texttt{executeSQLFile}, and \texttt{dropTables} as seen in Fig. \ref{fig:tool}.  
+\textit{Flower} opens \texttt{getQueries} and highlights the location in that method where \texttt{fileName} passed to \texttt{parseAndCache} and shows that the value is passed to \texttt{getQueries} from \texttt{createTables}, \texttt{createProcedures}, \texttt{executeSQLFile}, and \texttt{dropTables} as seen in Fig. \ref{fig:tool}.  
 
 %Something about using Flower for down flow.
 %(A) - When a user clicks on a variable all (visible) instances of that variable are highlighted in the code. (B) - When the variable has been declared as a parameter to the current method, users can click on that method's name in the editor to navigate to a location where that method is called. (X) - When the variable is passed to an external method, users can click on that method's name to open its declaration. (C) - If the variable is passed in from another method or is defined earlier in the current file, a link to that location is displayed in the ``top box.'' (D) - If the variable is passed in to another method or referenced later in the current file, links to those locations appear in the ``bottom box.''
 
 
 \section{Preliminary Evaluation}
-We performed a preliminary evaluation of Flower with eight programmers performing two code navigation tasks.\footnote{Study materials available online at 
+We performed a preliminary evaluation of \textit{Flower} with eight programmers performing two code navigation tasks.\footnote{Study materials available online at 
 	%\url{tinyurl.com/flowerTool}}
 	\url{redacted}}
 As a baseline, we compare our tool against the existing suite of tools available in Eclipse (\emph{Open Declaration}, \emph{Mark Occurrences}, and \emph{Call Hierarchy}).
-Our goals in this study were to (a) determine what types of navigation activities Flower  effectively supports and fails to support and (b) get feedback on the usability of Flower.
+Our goals in this study were to (a) determine what types of navigation activities \textit{Flower} effectively supports and fails to support and (b) get feedback on the usability of \textit{Flower}.
 To answer (a), we measured how quickly and accurately participants completed different activities.
 The remainder of this section describes our participants, study design, and task selection, and concludes with our approach to answer (b).
 
 All participants were graduate students at the time of the study with a mean of 5 years of professional programming experience. 
 We recruited participants using a convenience sampling approach. 
 
-Each participant used Flower for one task and Eclipse's tools for the other task.
+Each participant used \textit{Flower} for one task and Eclipse's tools for the other task.
 To control for learning and fatigue effects, we permuted the order participants received each tool and performed each task. 
 Before the study, we asked participants to report whether they were familiar with the Eclipse IDE. This information helped us balance Eclipse novices across groups.
 
@@ -306,16 +306,16 @@ To evaluate the effectiveness of the navigation tools rather than participants' 
 
 %We chose two tasks that (differentiate between the two tasks... up and down?)
 
-To evaluate the usability of Flower, we administered an adapted version of the Post-Study System Usability Questionnaire (PSSUQ)~\cite{Lewis95ibmcomputer}. We modified the questionnaire by replacing ``this system'' with ``this tool'' and asked questions from the System Quality and Interface Quality categories.
-To prompt discussion about the usability of Flower, we also asked participants open-ended questions based on applicable categories from Nielsen's usability heuristics~\cite{Nielsen1992}.
+To evaluate the usability of \textit{Flower}, we administered an adapted version of the Post-Study System Usability Questionnaire (PSSUQ)~\cite{Lewis95ibmcomputer}. We modified the questionnaire by replacing ``this system'' with ``this tool'' and asked questions from the System Quality and Interface Quality categories.
+To prompt discussion about the usability of \textit{Flower}, we also asked participants open-ended questions based on applicable categories from Nielsen's usability heuristics~\cite{Nielsen1992}.
 %To capture participant's experiences that these two metrics overlooked, two of the authors independently examined each audio/video recording and recorded memos. 
 
 
 \section{Results}
 Here we present the results of our preliminary evaluation. 
 We tested overall task completion time using unpaired two-sample t-tests and task correctness using chi-squared tests. 
-The tests failed to identify a significant difference in completion time and correctness between Flower and the Eclipse suite of tools. 
-In the remainder of this section, we present our observations about the types of activities Flower seemed to support.
+The tests failed to identify a significant difference in completion time and correctness between \textit{Flower} and the Eclipse suite of tools. 
+In the remainder of this section, we present our observations about the types of activities \textit{Flower} seemed to support.
 We organize these results thematically into three topics:
 
 %\begin{figure}
@@ -326,36 +326,36 @@ We organize these results thematically into three topics:
 %\end{figure}
 
 \textbf{Approachable Interface:}
-Compared to other PSSUQ questions, participants responded most positively to the three questions about Flower's simplicity, how easy it was to use, and how easy it was to learn. 
-These responses seem to indicate that participants were most enthusiastic about Flower's minimalistic interface. 
+Compared to other PSSUQ questions, participants responded most positively to the three questions about \textit{Flower's} simplicity, how easy it was to use, and how easy it was to learn. 
+These responses seem to indicate that participants were most enthusiastic about \textit{Flower's} minimalistic interface. 
 Participants reiterated these sentiments in their responses to the open-ended questions. 
-For the most part, participants felt it was easy to remember how to use Flower and that it featured a ``consistent interface.''
+For the most part, participants felt it was easy to remember how to use \textit{Flower} and that it featured a ``consistent interface.''
 
 \textbf{Branchless Navigation:}
-For Task 1, all participants correctly navigated up the call graph and did so faster with Flower  compared to the Eclipse tools.
-With Flower, participants' mean completion time was 276 seconds, compared to 402 seconds with the Eclipse tools.
+For Task 1, all participants correctly navigated up the call graph and did so faster with \textit{Flower} compared to the Eclipse tools.
+With \textit{Flower}, participants' mean completion time was 276 seconds, compared to 402 seconds with the Eclipse tools.
 
 The first two steps in this task involved navigating a portion of the call graph that did not include any branches.
 In other words, participants started in the \texttt{parseSQLFile} method, which was only called in one location, \texttt{parseAndCache}. 
 The \texttt{parseAndCache} method was only called in one method \texttt{getQueries}.
 Participants equipped with our tool were strictly faster in navigating the first step up this branchless chain. 
-The mean times for participants to reach \texttt{parseAndCache} with Flower and the Eclipse tools were 8 seconds and 44 seconds, respectively.
-These two results suggest that Flower successfully adhered to the \textsc{Low Barriers to Invocation} design principle. 
+The mean times for participants to reach \texttt{parseAndCache} with \textit{Flower} and the Eclipse tools were 8 seconds and 44 seconds, respectively.
+These two results suggest that \textit{Flower} successfully adhered to the \textsc{Low Barriers to Invocation} design principle. 
 
 \textbf{Branching and Backtracking:}
-For Task 2, participants were more accurate with Flower.
-Two participants (P3 and P6) navigated to the correct validation method with Flower.
+For Task 2, participants were more accurate with \textit{Flower}.
+Two participants (P3 and P6) navigated to the correct validation method with \textit{Flower}.
 Only one (P8) did so with the Eclipse tools.
 
-However, the mean completion time for Task 2 with Flower was higher (385 seconds) compared to the Eclipse tools (251 seconds).
-Additionally, participants who used Flower  for Task 2 scored the tool lower on the PSSUQ than those who used it for Task 1.
+However, the mean completion time for Task 2 with \textit{Flower} was higher (385 seconds) compared to the Eclipse tools (251 seconds).
+Additionally, participants who used \textit{Flower} for Task 2 scored the tool lower on the PSSUQ than those who used it for Task 1.
 Based on open-ended responses and our observations of participants, we provide one likely explanation for this deficiency.
 Participants were required to sift through more variable references and method calls to complete Task 2.
 In navigating this more complex program structure, when participants took missteps they found it difficult to backtrack.
 %Broken example... P6 was dissatisfied with back buttons while using Eclipse tools
 %While working on Task 2 with Flower P6 attempted to use Eclipse's built-in back buttons to backtrack, but still had difficulty reorienting himself. 
 To a lesser extent, we observed this same difficulty during Task 1.
-After navigating through several chains of method invocations with Flower, P7 felt like she had reached a ``dead end'' and was unsure of how to navigate back to where she came from.
+After navigating through several chains of method invocations with \textit{Flower}, P7 felt like she had reached a ``dead end'' and was unsure of how to navigate back to where she came from.
 Similarly, after reaching a top-level method, P1 asked, ``How can I return back to where I came from?''
 
 %PSSUQ responses support this. Could talk about the low categories
@@ -407,12 +407,12 @@ Similarly, after reaching a top-level method, P1 asked, ``How can I return back 
 \section{Discussion}
 
 \subsection{Systematic Navigation}
-Participants completed simple navigation tasks quickly and accurately with Flower, perhaps due to its minimalistic interface.
+Participants completed simple navigation tasks quickly and accurately with \textit{Flower}, perhaps due to its minimalistic interface.
 However, when the task required participants to navigate more complex semantic structures, participants demanded features that would allow them to navigate more systematically.
 Many existing tools support systematic exploration through the use of secondary views containing either hierarchically structured lists of methods (e.g. \textit{Call Hierarchy} and \textit{Analyze Data Flow}) or call graph visualizations (e.g. \textit{Reacher~\cite{Reacher}}).
-In keeping with Flower's minimalistic design and trying to preserve Flower's \textsc{Low Barriers to Invocation}, we envision several design changes that might enable Flower  to support more systematic navigation.
-In a similar approach to that of \emph{Whyline}~\cite{Whyline}, Flower  could use animation to transition more smoothly between locations, perhaps giving users a sense of naturally moving through the code.
-By tracking developers' progress, Flower could also display already-visited locations differently than unexplored methods either positionally or using colors:
+In keeping with \textit{Flower's} minimalistic design and trying to preserve \textit{Flower's} \textsc{Low Barriers to Invocation}, we envision several design changes that might enable \textit{Flower}  to support more systematic navigation.
+In a similar approach to that of \emph{Whyline}~\cite{Whyline}, \textit{Flower}  could use animation to transition more smoothly between locations, perhaps giving users a sense of naturally moving through the code.
+By tracking developers' progress, \textit{Flower} could also display already-visited locations differently than unexplored methods either positionally or using colors:
 
 \noindent\includegraphics[width=\columnwidth]{images/HyperlinkColoring}
 
@@ -423,10 +423,10 @@ By tracking developers' progress, Flower could also display already-visited loca
 \subsection{Synergistic Tools}
 Navigation without tool support can be frustrating and unfruitful.
 However, full-featured navigation tools might be too cumbersome for simple navigation tasks and too complex for unfamiliar users.
-We envision Flower  serving as a stepping stone to more sophisticated navigation tools. 
-The design principles of \textsc{Low Barriers to Invocation} and \textsc{In Situ Navigation} enable users to quickly begin navigating using Flower. 
-We imagine that Flower  could detect when users reach ``dead ends'' or code that contains many complex branches.
-Upon detecting one of these situations, Flower  could facilitate the user's transition to a more heavy-weight tool by either recommending or automatically invoking a tool that features additional navigation visualizations.
+We envision \textit{Flower} serving as a stepping stone to more sophisticated navigation tools. 
+The design principles of \textsc{Low Barriers to Invocation} and \textsc{In Situ Navigation} enable users to quickly begin navigating using \textit{Flower}. 
+We imagine that \textit{Flower} could detect when users reach ``dead ends'' or code that contains many complex branches.
+Upon detecting one of these situations, \textit{Flower} could facilitate the user's transition to a more heavy-weight tool by either recommending or automatically invoking a tool that features additional navigation visualizations.
 %For the purposes of this evaluation we observed programmers using Flower  in isolation.   
 
 	
@@ -442,16 +442,16 @@ Upon detecting one of these situations, Flower  could facilitate the user's tran
 \section{Study Limitations}
 Our study had several limitations.
 Due to the preliminary nature of this study, we recruited relatively few participants and only had them perform two tasks.
-Although our study materials do not indicate we created Flower, some participants may have deduced it was our tool.
+Although our study materials do not indicate we created \textit{Flower}, some participants may have deduced it was our tool.
 As a result, participants may have inflated their positive responses to the PSSUQ due to social desirability bias.
 Accordingly, we focus on participants' relative responses rather than their absolute values.
 %Finally, we asked participants to navigate unfamiliar code.
 
 \section{Conclusion}
 
-In this work we presented a new tool, Flower, that helps developers navigate program flow with its minimalistic interface. 
-Flower explores the void between tool-less navigation strategies and cumbersome flow visualization tools.
-Based on our preliminary evaluation, Flower  was most effective when developers wished to navigate program structures with few branches.
+In this work we presented a new tool, \textit{Flower}, that helps developers navigate program flow with its minimalistic interface. 
+\textit{Flower} explores the void between tool-less navigation strategies and cumbersome flow visualization tools.
+Based on our preliminary evaluation, \textit{Flower}  was most effective when developers wished to navigate program structures with few branches.
 
 \section*{Acknowledgments}
 Redacted for blind submission.
