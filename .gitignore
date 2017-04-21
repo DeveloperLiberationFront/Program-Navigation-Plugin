@@ -8,3 +8,4 @@ progNav Paper/progNav Paper.synctex.gz
 #Eclipse
 .project
 
+*.out

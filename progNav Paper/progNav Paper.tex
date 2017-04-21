@@ -7,10 +7,12 @@
 \usepackage{dcolumn}
 \usepackage{color, colortbl}
 \usepackage{balance}
-\usepackage{caption}
-\usepackage{url}
+%\usepackage{url}
 \usepackage{subcaption}
 \definecolor{Gray}{gray}{0.9}
+
+\usepackage[hidelinks]{hyperref}
+
 
 \usepackage{fontenc}
 
@@ -257,10 +259,10 @@ Leveraging Eclipse's incremental compiler and JDT core, \textit{Flower} also imp
 When active, \textit{Flower} makes two modifications to Eclipse's user interface. 
 First, it highlights on-screen references to selected variables.
 Secondly, when references to the selected variable appear off-screen -- either elsewhere in the current method or in other methods -- \textit{Flower} adds links to those locations above and below the code view as well as to the code itself. 
-Figure \ref{fig:tool} depicts \textit{Flower} invoked on a variable participants were asked to inspect as part of our evaluation. We also provide a video demonstrating \textit{Flower} online.\footnote{Screen cast of \textit{Flower} in action: 
-	\url{redacted}}
-%	\url{tinyurl.com/FlowerDemo}} 
+Figure \ref{fig:tool} depicts \textit{Flower} invoked on a variable participants were asked to inspect as part of our evaluation. We also provide a video\footnote{Screen cast of \textit{Flower}: 
+	\url{https://figshare.com/s/39eadd74502a014ae018}} demonstrating \textit{Flower} online.
 To visualize how a programmer would interact with \textit{Flower}, consider the following scenario:
+%	\url{tinyurl.com/FlowerDemo}} 
 
 Suppose you are a programmer and you notice that by tampering with the value of the \texttt{fileName} variable, malicious users could gain access to sensitive information in the database. 
 You want to determine whether users can modify \texttt{fileName} before it gets passed into \texttt{parseAndCache}. 
@@ -277,9 +279,9 @@ Rather than move your mouse up to the top of the editor window, you click on \te
 
 
 \section{Preliminary Evaluation}
-We performed a preliminary evaluation of \textit{Flower} with eight programmers performing two code navigation tasks.\footnote{Study materials available online at 
+We performed a preliminary evaluation of \textit{Flower} with eight programmers performing two code navigation tasks.\footnote{Study materials at: 
 	%\url{tinyurl.com/flowerTool}}
-	\url{redacted}}
+	\url{https://figshare.com/s/49edec2b4810fbf5b2a0}}
 As a baseline, we compare our tool against the existing suite of tools available in Eclipse (\emph{Open Declaration}, \emph{Mark Occurrences}, and \emph{Call Hierarchy}).
 Our goals in this study were to (a) determine what types of navigation activities \textit{Flower} effectively supports and fails to support and (b) get feedback on the usability of \textit{Flower}.
 To answer (a), we measured how quickly and accurately participants completed different activities.
