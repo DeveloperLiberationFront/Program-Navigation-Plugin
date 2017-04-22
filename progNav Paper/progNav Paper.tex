@@ -66,7 +66,7 @@ Program navigation is a critical task for software developers.
 State-of-the-art tools have been shown to support effective program navigation strategies, and do so by adding widgets, secondary views, and visualizations to the screen. 
 In this work, we build on prior work by exploring what types of navigation can be supported with relatively few interface elements.
 To that end, we designed and implemented a prototype tool, Flower, that supports structural program navigation while maintaining a minimalistic interface.
-Flower enables developers to simultaneously navigate control flow and data flow within the Eclipse Integrated Development Environment (IDE).
+Flower enables developers to simultaneously navigate control flow and data flow within the Eclipse Integrated Development Environment.
 Based on a preliminary evaluation with eight programmers, Flower succeeds when call graphs contained relatively few branches, but was strained by complex program structures.
 %We present a different way to do things... enable the navigation control flow and data flow simultaneously using minimal interface alterations.
 %Something about tradeoffs.
@@ -136,7 +136,7 @@ This work contributes an understanding of the essence of program navigation, thr
 This prototype tool addresses many of the issues that Charlie faced by implementing four design principles (Section \ref{DesignPrinciples}).
 For instance, \textit{Flower} is easily invoked and enables developers to simultaneously trace data flow and control flow within the code view. 
 We evaluated \textit{Flower} to identify the types of tasks it effectively supports. 
-Our preliminary findings failed to identify any significant differences between \textit{Flower} and more complex navigation tools within Eclipse. 
+Our preliminary findings failed to identify significant differences in task completion time or correctness between \textit{Flower} and more complex navigation tools within Eclipse. 
 This suggests that the simple affordances \textit{Flower} implements may sufficiently aid developers.
 %In contrast to existing navigation tools, like the Eclipse tools Charlie used, 
 %Further, \textit{Flower} features a minimalistic interface that enables developers to simultaneously trace data flow and control flow within the code view. 
@@ -154,7 +154,7 @@ Take, for example, Charlie's case.
 Charlie easily invoked \emph{Mark Occurrences}, but initially struggled to locate and invoke \emph{Call Hierarchy}.
 Tools with high barriers to invocation require users to sift through menus and include unintuitive widgets. 
 Barriers to invocation inhibit adoption~\cite{johnson2013don}.
-As developers navigate multiple program paths concurrently, repetitively invoking tools may be cumbersome, especially if barriers are high. 
+As developers navigate multiple program paths concurrently, difficulties repetitively invoking tools compound, especially if barriers are high. 
 Once initially configured, \textit{Flower} is automatically invoked as the user navigates.
 
 \vspace{1em} 
@@ -268,17 +268,17 @@ video\footnote{Screen cast of \textit{Flower}: \url{https://figshare.com/s/39ead
 and virtual machine 
 image\footnote{VM containing \textit{Flower}: \url{https://figshare.com/s/76aa260f21cf4233dc1c}}
 demonstrating \textit{Flower} online.
-To visualize how a programmer would interact with \textit{Flower}, consider the following scenario:
+To visualize how a programmer would interact with \textit{Flower}, consider the following scenario, which corresponds with Figure \ref{fig:tool}:
 %	\url{tinyurl.com/FlowerDemo}} 
 
 Suppose you are a programmer and you notice that by tampering with the value of the \texttt{fileName} variable, malicious users could gain access to sensitive information in the database. 
 You want to determine whether users can modify \texttt{fileName} before it gets passed into \texttt{parseAndCache}. 
-First, you click on \texttt{fileName} (A in Figure \ref{fig:tool}).
+First, you click on \texttt{fileName} (A).
 Much like \emph{Mark Occurrences}, \textit{Flower} is automatically invoked.
 To help you locate where the variable is modified and referenced, \textit{Flower} highlights occurrences of that variable in the code.
 Since \texttt{fileName} is a formal parameter to \texttt{parseAndCache}, any method calling \texttt{parseAndCache} could modify \texttt{fileName}. 
-Those methods reside in other files, so \textit{Flower} provides links to their locations (B1 in Figure \ref{fig:tool}).
-Rather than move your mouse up to the top of the editor window, you click on \texttt{parseAndCache} (B2 in Figure \ref{fig:tool}), which conveniently links to the first call site, \texttt{getQueries}. 
+Those methods reside in other files, so \textit{Flower} provides links to their locations (B1).
+Rather than move your mouse up to the top of the editor window, you click on \texttt{parseAndCache} (B2), which conveniently links to the first call site, \texttt{getQueries}. 
 \textit{Flower} opens \texttt{getQueries} and highlights the location in that method where \texttt{fileName} passed to \texttt{parseAndCache} and shows that the value is passed to \texttt{getQueries} from \texttt{createTables}, \texttt{createProcedures}, \texttt{executeSQLFile}, and \texttt{dropTables} as seen in Fig. \ref{fig:tool}.  
 
 %Something about using Flower for down flow.
@@ -462,8 +462,8 @@ In this work we presented a new tool, \textit{Flower}, that helps developers nav
 \textit{Flower} explores the void between tool-less navigation strategies and cumbersome flow visualization tools.
 Based on our preliminary evaluation, \textit{Flower}  was most effective when developers wished to navigate program structures with few branches.
 
-\section*{Acknowledgments}
-Redacted for blind submission.
+%\section*{Acknowledgments}
+%Redacted for blind submission.
 %We graciously thank our study participants for their time. 
 %We also thank Titus Barik and the other members of the Developer Liberation Front for their thoughtful input. 
 %This material is based upon work supported by the National Science Foundation under grant number 1318323.
