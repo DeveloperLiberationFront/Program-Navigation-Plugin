@@ -91,7 +91,7 @@ Based on a preliminary evaluation with eight programmers, Flower succeeds when c
 Although integrated development environments (IDEs) present code linearly in the order methods are defined in a file, successful developers do not navigate source code line by line starting at the top of the file. 
 Instead, they methodically navigate the code's hierarchical semantic structures~\cite{robillard2004investigate}.
 While navigating programs, developers need information about control flow and data flow throughout the program~\cite{latoza2010hard, Smith2015}. 
-We will refer to these two concepts together as \textit{program flow}. 
+We will jointly refer to these two concepts as \textit{program flow}. 
 
 To realize their ideal program flow navigation strategies, developers rely on navigation tools that expose the links between sometimes distant locations in the source code. 
 Many existing tools do so by displaying call graph visualizations or adding views to the screen.
@@ -99,7 +99,7 @@ In general, evaluations have demonstrated the effectiveness of such tools~\cite{
 
 However, these tools rely on cumbersome user interface widgets, views, and visualizations that occupy valuable screen real estate and might induce disorientation via thrashing~\cite{deAlwis2006disorient}.
 In this work, we explore whether relatively few interface elements can enable similarly effective program navigation.
-We present a prototype tool, \textit{Flower} (pronounced flow-er), that instantiates this minimalistic approach to program navigation.
+We present a prototype tool, \textit{Flower} (pronounced \textit{flow-er}), that instantiates this minimalistic approach to program navigation.
 \textit{Flower} leverages accurate program analysis techniques, avoids cluttering the IDE with superfluous interface elements, and presents its results integrated within the code.
 %Existing tools feature many cumbersome UI widgets or seem poorly integrated into the IDE.
 %Previous approaches help developers navigate control flow by helping them visualize. 
@@ -109,14 +109,14 @@ We present a prototype tool, \textit{Flower} (pronounced flow-er), that instanti
 %This paper makes the following contributions:
 
 Consider the following motivating example involving Charlie, a professional Java developer at a large software company.
-Though Charlie is fictional, this story is based on the experiences of real developers as described in a previous study by Smith and colleagues~\cite{Smith2015}.
-While maintaining some old code, Charlie notices a static analysis warning indicator next to a variable --- ``This variable contains user-provided data. 
+Charlie is fictional, but this story is based on the experiences of real developers as described in a previous study by Smith and colleagues~\cite{Smith2015}.
+While maintaining some old code, Charlie notices a static analysis warning indicator next to a variable: ``This variable contains user-provided data. 
 If it is used in a sensitive context before being sanitized, the code could be vulnerable.''
 
 Charlie sets out to determine if the variable is sanitized on all paths leading to the sensitive context.
 First, Charlie searches for the variable's name.
 Unfortunately, this search returns results mostly from comments and other documentation.
-Charlie vaguely recalls using an Eclipse tool to help trace control flow through a program, but is unsure how to invoke it or whether it also traces data flow.
+Charlie vaguely recalls using an Eclipse tool to help trace control flow through a program, but is unsure how to invoke it or whether that tool also traces data flow.
 Charlie looks through various menus, tries out a few tools, but cannot locate the right tool.
 Turning back to the code, Charlie begins scrolling through the current file, unknowingly using Eclipse's \emph{Mark Occurrences} tool while scanning for uses of the variable. 
 After inspecting all the occurrences in the current file, Charlie now begins searching for methods that take the variable as input.
@@ -133,7 +133,7 @@ Two months later, an attacker exploits the vulnerability.
 %Without her high-paying job, she can no longer afford to feed her kids and pay her mortgage. Drowning in credit card debt, homeless, and divorced, Charlie curses the Eclipse tools that let her down.   
 
 This work contributes an understanding of the essence of program navigation, through the lens of a minimalistic tool, \textit{Flower}.
-This prototype tool addresses many of the types of issues that Charlie faced by implementing four design principles (Section \ref{DesignPrinciples}).
+This prototype tool addresses many of the issues that Charlie faced by implementing four design principles (Section \ref{DesignPrinciples}).
 For instance, \textit{Flower} is easily invoked and enables developers to simultaneously trace data flow and control flow within the code view. 
 We evaluated \textit{Flower} to identify the types of tasks it effectively supports. 
 Our preliminary findings failed to identify any significant differences between \textit{Flower} and more complex navigation tools within Eclipse. 
@@ -150,8 +150,8 @@ In this section we describe the guiding design principles behind \textit{Flower}
 \vspace{1em} 
 \noindent\textsc{Low Barriers to Invocation} ---
 Some tools are easier to invoke than others. 
-Take Charlie's case for example.
-She easily invoked \emph{Mark Occurrences}, but initially struggled to locate and invoke \emph{Call Hierarchy}.
+Take, for example, Charlie's case.
+Charlie easily invoked \emph{Mark Occurrences}, but initially struggled to locate and invoke \emph{Call Hierarchy}.
 Tools with high barriers to invocation require users to sift through menus and include unintuitive widgets. 
 Barriers to invocation inhibit adoption~\cite{johnson2013don}.
 As developers navigate multiple program paths concurrently, repetitively invoking tools may be cumbersome, especially if barriers are high. 
@@ -167,9 +167,9 @@ By leveraging program analysis techniques, navigation tools can provide more acc
 \vspace{1em} 
 \noindent\textsc{Full Program Navigation}  ---
 Developers are not only interested in traversing programs' call graphs, but also how data flows through the call graph~\cite{Smith2015}.
-To simultaneously navigate the flow of data through call graphs, developers must inspect the relationship between methods as well as the methods themselves.
+To simultaneously navigate the flow of data through call graphs, developers must inspect the relationship between methods, as well as the methods themselves.
 Often the methods of interest span across multiple source files.
-For Charlie, \emph{Mark Occurrences} helped her navigate a single file, but fell short when she wanted to inspect methods in other files.
+For Charlie, \emph{Mark Occurrences} helped with navigation within a single file, but fell short while being used to inspect methods in other files.
 Furthermore, program navigation tools should support this traversal both upstream and downstream. 
 That is, tools should highlight variable assignments and also subsequent variable uses. 
 \textit{Flower} allows for upstream and downstream navigation across files.
@@ -185,7 +185,7 @@ When navigation tools present results outside the code, developers are burdened 
 \section{Related Work}
 %Summary of related work, including a table evaluating existing %tools on various design principles.
 %Spoiler alert, none of the tools satisfy all of the principles.
-The need for better navigation tools has been well-reported~\cite{ko2006seekInfo}.
+The need for better navigation tools has been well reported~\cite{ko2006seekInfo}.
 Here we discuss some of the existing tools that help developers navigate code. 
 We also relate the existing tools back to Design Principles described in Section \ref{DesignPrinciples}.
 
@@ -194,7 +194,7 @@ For example, Eclipse~\cite{Eclipse} includes \emph{Call Hierarchy} and \emph{Fin
 When users invoke either of these tools, Eclipse opens a new view to display the results.
 For \emph{Call Hierarchy}, this view contains a list of the selected method's callers and callees, whereas \emph{Find References} only lists callers.
 Similarly, IntelliJ~\cite{IntelliJ} provides \emph{Analyze Data Flow}, which also displays its results in an external view.
-These tools provide enable users to navigate throughout their code with \textsc{Accuracy}. 
+These tools enable users to navigate through their code with \textsc{Accuracy}. 
 However, they generally differ from \textit{Flower} because they lack \textsc{Low Barriers to Invocation} and \textsc{In Situ Navigation}.
 
 There are also several tools that reside strictly within the code editor, enabling a form of \textsc{In Situ Navigation}.
@@ -209,7 +209,7 @@ However, they do not enable \textsc{Full Program Navigation}.
 Many other tools help developers navigate code by representing the code graphically and allowing developers to navigate those graphs~\cite{CodeBubbles,CodeCanvas,CodeSurfer,Dora,Reacher,Relo,Whyline}. 
 These works provide various views of control flow graphs, class and UML-like diagrams, trees, call graphs, and other images to describe the hierarchy and relationship between different variables or functions within the code. 
 These tools utilize program analysis to generate visualizations with \textsc{Accuracy}.
-Additionally, most of these tools implement some aspects of \textsc{Full Program Navigation}.
+Moreover, most of these tools implement some aspects of \textsc{Full Program Navigation}.
 \textit{Flower} differs from these tools in the way it presents results (\textsc{In Situ Navigation}) and because it has \textsc{Low Barriers to Invocation}.
 
 %\begin{table}
@@ -262,7 +262,7 @@ Leveraging Eclipse's incremental compiler and JDT core, \textit{Flower} also imp
 
 When active, \textit{Flower} makes two modifications to Eclipse's user interface. 
 First, it highlights on-screen references to selected variables.
-Secondly, when references to the selected variable appear off-screen -- either elsewhere in the current method or in other methods -- \textit{Flower} adds links to those locations above and below the code view as well as to the code itself. 
+Second, when references to the selected variable appear off-screen -- either elsewhere in the current method or in other methods -- \textit{Flower} adds links to those locations above and below the code view as well as to the code itself. 
 Figure \ref{fig:tool} depicts \textit{Flower} invoked on a variable participants were asked to inspect as part of our evaluation. We also provide a 
 video\footnote{Screen cast of \textit{Flower}: \url{https://figshare.com/s/39eadd74502a014ae018}} 
 and virtual machine 
@@ -292,9 +292,9 @@ We performed a preliminary evaluation of \textit{Flower} with eight programmers 
 As a baseline, we compare our tool against the existing suite of tools available in Eclipse (\emph{Open Declaration}, \emph{Mark Occurrences}, and \emph{Call Hierarchy}).
 Our goals in this study were to (a) determine what types of navigation activities \textit{Flower} effectively supports and fails to support and (b) get feedback on the usability of \textit{Flower}.
 To answer (a), we measured how quickly and accurately participants completed different activities.
-The remainder of this section describes our participants, study design, and task selection, and concludes with our approach to answer (b).
+The remainder of this section describes our participants, study design, and task selection, then concludes with our approach to answer (b).
 
-All participants were graduate students at the time of the study with a mean of 5 years of professional programming experience. 
+All participants were graduate students at the time of the study with a mean of five years of professional programming experience. 
 We recruited participants using a convenience sampling approach. 
 
 Each participant used \textit{Flower} for one task and Eclipse's tools for the other task.
@@ -304,12 +304,12 @@ Before the study, we asked participants to report whether they were familiar wit
 We based our tasks in this study on two tasks (Tasks 1 and 3) from a prior study~\cite{Smith2015}.
 For these tasks, participants navigated across several classes in an open source Java medical records application containing over 50,000 lines of code.
 In the previous study, participants used a think-aloud protocol to, among other things, describe their program navigation strategies.
-Here, we did not interrupt, prompt, or ask participants to think aloud until after they had completed the tasks as to not distort their task completion time.
+Here, we did not interrupt, prompt, or ask participants to think aloud until after they had completed the tasks, as to not distort their task completion time.
 
 The two tasks we chose are complementary in that Task 1 required participants to navigate up the call graph, inspecting the callers of the initial method. 
 On the other hand, Task 2 required participants to inspect the methods called by the initial method.
-For Task 1 we asked participants to tell us whether a method ever receives user-provided input.
-For Task 2 we asked participants to tell us whether a form field is validated before being sent to the database.
+For Task 1, we asked participants to tell us whether a method ever receives user-provided input.
+For Task 2, we asked participants to tell us whether a form field is validated before being sent to the database.
 To ensure all participants had a baseline familiarity, we trained participants on the appropriate tools preceding each task. 
 To evaluate the effectiveness of the navigation tools rather than participants' familiarity with a particular code base, we asked participants to navigate code they had not previously contributed to. 
 
