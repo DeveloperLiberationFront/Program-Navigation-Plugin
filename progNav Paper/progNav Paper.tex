@@ -103,9 +103,9 @@ We present a prototype tool, \textit{Flower} (pronounced \textit{flow-er}), that
 
 %This paper makes the following contributions:
 
-Consider the following motivating example involving Charlie, a professional Java developer at a large software company.
-Charlie is fictional, but this story is based on the experiences of real developers as described in a previous study by Smith and colleagues~\cite{Smith2015}.
-While maintaining some old code, Charlie notices a static analysis warning indicator next to a variable: ``This variable contains user-provided data. 
+Consider the following motivating example involving Charlie, a professional Java developer. 
+Charlie is fictional, but this story is based on the experiences of real developers as described in our previous study~\cite{Smith2015}.
+While maintaining some old code, Charlie notices a static analysis warning: ``This variable contains user-provided data. 
 If it is used in a sensitive context before being sanitized, the code could be vulnerable.''
 
 Charlie sets out to determine if the variable is sanitized on all paths leading to the sensitive context.
@@ -118,10 +118,10 @@ After inspecting all the occurrences in the current file, Charlie now begins sea
 Charlie stumbles upon Eclipse's \emph{Call Hierarchy} tool, which seems helpful, but is unable to specify a variable when invoking the tool.
 
 Undeterred, Charlie finds a method that takes the variable as a parameter and invokes \emph{Call Hierarchy} on that method.
-Eclipse opens a new view containing \emph{Call Hierarchy's} representation of the call graph.
-Charlie continuously switches back and forth between the \emph{Call Hierarchy} view and the code.
-Charlie uses the \emph{Call Hierarchy} view to navigate chains of method calls and inspects the code in each method to check whether the variable gets sanitized correctly.
-Charlie repeats this process for all the call sites in the current file. 
+%Eclipse opens a new view containing \emph{Call Hierarchy's} representation of the call graph.
+Charlie's attention oscillates between the \emph{Call Hierarchy} view and the code.
+Charlie uses the \emph{Call Hierarchy} view to navigate chains of method calls and checks the code in each method for sanitization.
+Charlie repeats this process for each call site in the current file. 
 Unsure of whether the variable gets sanitized along all paths, Charlie decides to ignore the warning.
 Two months later, an attacker exploits the vulnerability. 
 %Charlie gets fired for her oversight. 
