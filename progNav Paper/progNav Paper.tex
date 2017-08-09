@@ -114,7 +114,7 @@ Unfortunately, this search returns results mostly from comments and other docume
 Charlie vaguely recalls using an Eclipse tool to help trace control flow through a program, but is unsure how to invoke it or whether that tool also traces data flow.
 Charlie looks through various menus, tries out a few tools, but cannot locate the right tool.
 Turning back to the code, Charlie begins scrolling through the current file, unknowingly using Eclipse's \emph{Mark Occurrences} tool while scanning for uses of the variable. 
-After inspecting all the occurrences in the current file, Charlie now begins searching for methods that take the variable as input.
+After inspecting all the occurrences in the current file, Charlie now searches for methods that take the variable as input.
 Charlie stumbles upon Eclipse's \emph{Call Hierarchy} tool, which seems helpful, but is unable to specify a variable when invoking the tool.
 
 Undeterred, Charlie finds a method that takes the variable as a parameter and invokes \emph{Call Hierarchy} on that method.
@@ -244,7 +244,7 @@ Moreover, most of these tools implement some aspects of \textsc{Full Program Nav
 
 \begin{figure*}
 	\includegraphics[width=\textwidth]{images/toolScreenshot}
-	\caption{Code view in the Eclipse IDE with \textit{Flower} invoked during Task 1. The image on the left shows the tool running in the method \texttt{parseAndCache}. When the user clicks on the link in the editor (B1 or B2), they are taken to the function \texttt{getQueries}, which is a caller of \texttt{parseAndCache}.}	
+	\caption{Eclipse IDE with \textit{Flower} invoked during Task 1. The left shows the tool running in the method \texttt{parseAndCache}. When the user clicks on the link in the editor (B1 or B2), they are taken to \texttt{getQueries}, which is a caller of \texttt{parseAndCache}.}	
 	\label{fig:tool} 
 \end{figure*}
 
@@ -257,7 +257,7 @@ Leveraging Eclipse's incremental compiler and JDT core, \textit{Flower} also imp
 
 When active, \textit{Flower} makes two modifications to Eclipse's user interface. 
 First, it highlights on-screen references to selected variables.
-Second, when references to the selected variable appear off-screen -- either elsewhere in the current method or in other methods -- \textit{Flower} adds links to those locations above and below the code view as well as to the code itself. 
+Second, when references to the selected variable appear off-screen --- either elsewhere in the current method or in other methods --- \textit{Flower} adds links to those locations above and below the code view as well as to the code itself. 
 Figure \ref{fig:tool} depicts \textit{Flower} invoked on a variable participants were asked to inspect as part of our evaluation. We also provide a 
 video\footnote{Screen cast of \textit{Flower}: \url{https://figshare.com/s/39eadd74502a014ae018}} 
 and virtual machine 
@@ -284,14 +284,13 @@ Rather than move your mouse up to the top of the editor window, you click on \te
 We performed a preliminary evaluation of \textit{Flower} with eight programmers performing two code navigation tasks.\footnote{Study materials at: 
 	%\url{tinyurl.com/flowerTool}}
 	\url{https://figshare.com/s/49edec2b4810fbf5b2a0}}
-As a baseline, we compare our tool against the existing suite of tools available in Eclipse (\emph{Open Declaration}, \emph{Mark Occurrences}, and \emph{Call Hierarchy}).
+As a baseline, we compare our tool against the existing suite of Eclipse tools (\emph{Open Declaration}, \emph{Mark Occurrences}, and \emph{Call Hierarchy}).
 Our goals in this study were to (a) determine what types of navigation activities \textit{Flower} effectively supports and fails to support and (b) get feedback on the usability of \textit{Flower}.
 To answer (a), we measured how quickly and accurately participants completed different activities.
 The remainder of this section describes our participants, study design, and task selection, then concludes with our approach to answer (b).
 
 All participants were graduate students at the time of the study with a mean of five years of professional programming experience. 
 We recruited participants using a convenience sampling approach. 
-
 Each participant used \textit{Flower} for one task and Eclipse's tools for the other task.
 To control for learning and fatigue effects, we permuted the order participants received each tool and performed each task. 
 Before the study, we asked participants to report whether they were familiar with the Eclipse IDE. This information helped us balance Eclipse novices across groups.
@@ -454,7 +453,7 @@ Accordingly, we focus on participants' relative responses rather than their abso
 
 \section{Conclusion}
 
-In this work we presented a new tool, \textit{Flower}, that helps developers navigate program flow with its minimalistic interface. 
+We presented a new tool, \textit{Flower}, that helps developers navigate program flow with its minimalistic interface. 
 \textit{Flower} explores the void between tool-less navigation strategies and cumbersome flow visualization tools.
 Based on our preliminary evaluation, \textit{Flower}  was most effective when developers wished to navigate program structures with few branches.
 
