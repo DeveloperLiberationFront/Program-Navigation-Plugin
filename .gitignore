@@ -9,3 +9,4 @@ progNav Paper/progNav Paper.synctex.gz
 .project
 
 *.out
+progNav Paper/texput.log
